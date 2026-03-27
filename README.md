@@ -6,7 +6,7 @@
 ## Team Members
 - Clayton Liang
 - Shervin Babaei
-- 
+- Sam Rosati
 - 
 
 ## Tech Stack
