@@ -5,7 +5,8 @@ import PaymentDetails from "./componets/PaymentDetails";
 import PaymentSelection from "./componets/PaymentSelection";
 import Receipt from "./componets/Reciept";
 import Registration from "./componets/Registration";
-import Login from "./componets/login"
+import Profile from "./componets/Profile";
+import Login from "./componets/login";
 import Signup from "./componets/Signup";
 import { CheckoutProvider } from "./context/CheckoutProvider";
 
@@ -13,6 +14,9 @@ type ReceiptData = {
   refNum: string;
   receiptQR: string;
 };
+
+// 1. Added REGISTRATION to the steps
+type CheckoutStep = "REGISTRATION" | "SELECT_PAYMENT" | "PAYMENT_DETAILS" | "RECEIPT" | "PROFILE";
 
 type CheckoutStep = "REGISTRATION" | "SELECT_PAYMENT" | "PAYMENT_DETAILS" | "RECEIPT";
 type AuthStep = "LOGIN" | "SIGNUP" | "APP";
@@ -77,6 +81,8 @@ function App() {
             )}
           </>
         )}
+        {/* Screen 5: Profile page */}
+        {currentStep === "PROFILE" && <Profile />}
       </CheckoutProvider>
     </div>
   );
