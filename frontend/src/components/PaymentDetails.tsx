@@ -1,38 +1,30 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCheckout } from "../context/useCheckout";
 
-type ReceiptData = {
-  refNum: string;
-  receiptQR: string;
-};
-
-type Props = {
-  onComplete: (data: ReceiptData) => void;
-  onBack: () => void;
-};
-
-const PaymentDetails: React.FC<Props> = ({ onComplete, onBack }) => {
+const PaymentDetails: React.FC = () => {
   const { state } = useCheckout();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handlePurchase = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent page reload on form submit
+    e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      // 1. Simulate a 1-second network delay to show the "Processing..." state
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // 2. Fake a successful response from the server to force the transition
-      onComplete({
+      const fakeReceiptData = {
         refNum: "TEST-" + Math.floor(Math.random() * 100000),
         receiptQR: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TestReceiptData",
-      });
+      };
 
-      const response = await axios.post("http://localhost:3000/api/register", {
+      navigate("/course/receipt", { state: fakeReceiptData });
+
+      const response = await axios.post("http://localhost:3000/api/course", {
         name: state.registration?.name,
         email: state.registration?.email,
         age: state.registration?.age,
@@ -41,7 +33,7 @@ const PaymentDetails: React.FC<Props> = ({ onComplete, onBack }) => {
         paymentMethod: state.paymentMethod,
       });
 
-      onComplete(response.data);
+      navigate("/course/receipt", { state: response.data });
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
@@ -54,9 +46,9 @@ const PaymentDetails: React.FC<Props> = ({ onComplete, onBack }) => {
     <>
       <div className="screen-header">
         <h2 className="header-title">
-          <button className="back-button" onClick={onBack} type="button">
+          <button className="back-button" onClick={() => navigate("/course/payments")} type="button">
             ←
-          </button>{" "}
+          </button>
           Purchase
         </h2>
         <p className="header-subtitle">Enter Details</p>
@@ -85,17 +77,14 @@ const PaymentDetails: React.FC<Props> = ({ onComplete, onBack }) => {
             <label className="input-label">Street address</label>
             <input required type="text" className="text-input" />
           </div>
-
           <div className="input-group">
             <label className="input-label">City</label>
             <input required type="text" className="text-input" />
           </div>
-
           <div className="input-group">
             <label className="input-label">Province / State</label>
             <input required type="text" className="text-input" />
           </div>
-
           <div className="input-group">
             <label className="input-label">Postal code</label>
             <input required type="text" className="text-input" />

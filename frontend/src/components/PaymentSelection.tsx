@@ -1,23 +1,25 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useCheckout } from "../context/useCheckout";
 
-type Props = {
-  onNext: () => void;
-};
-
-const PaymentSelection: React.FC<Props> = ({ onNext }) => {
+const PaymentSelection: React.FC = () => {
   const { dispatch } = useCheckout();
+  const navigate = useNavigate(); // <-- Initialized the hook
 
   const handlePaymentSelect = (method: "Visa" | "PayPal") => {
     dispatch({ type: "SET_PAYMENT_METHOD", payload: method });
-    onNext();
+    navigate("/course/purchase");
   };
 
   return (
     <>
       <div className="screen-header">
         <h2 className="header-title">
-          <button className="back-button">←</button> Select
+          {/* <-- Added onClick to the back button to go back to Registration --> */}
+          <button className="back-button" onClick={() => navigate("/course")} type="button">
+            ←
+          </button>{" "}
+          Select
         </h2>
         <p className="header-subtitle">Choose Payment method</p>
       </div>

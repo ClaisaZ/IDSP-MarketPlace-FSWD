@@ -1,12 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCheckout } from "../context/useCheckout";
 
-type Props = {
-  onNext: () => void;
-};
-
-const Registration: React.FC<Props> = ({ onNext }) => {
+const Registration: React.FC = () => {
+  // <-- Removed Props
   const { dispatch } = useCheckout();
+  const navigate = useNavigate(); // <-- Initialized the hook
 
   // Local state to hold form inputs
   const [formData, setFormData] = useState({
@@ -33,11 +32,11 @@ const Registration: React.FC<Props> = ({ onNext }) => {
         email: formData.email,
         age: Number(formData.age),
         phone: formData.phone,
-        ticketAmount: 1, // Defaulting to 1 ticket based on your receipt design
+        ticketAmount: 1, // Defaulting to 1 ticket based on receipt design from designers
       },
     });
 
-    onNext(); // Move to Screen 2
+    navigate("/course/payments");
   };
 
   return (
