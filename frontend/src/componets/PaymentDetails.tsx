@@ -23,6 +23,15 @@ const PaymentDetails: React.FC<Props> = ({ onComplete, onBack }) => {
     setError(null);
 
     try {
+      // 1. Simulate a 1-second network delay to show the "Processing..." state
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // 2. Fake a successful response from the server to force the transition
+      onComplete({
+        refNum: "TEST-" + Math.floor(Math.random() * 100000),
+        receiptQR: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TestReceiptData",
+      });
+
       const response = await axios.post("http://localhost:3000/api/register", {
         name: state.registration?.name,
         email: state.registration?.email,
