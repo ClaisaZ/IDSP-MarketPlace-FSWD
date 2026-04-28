@@ -18,7 +18,6 @@ type ReceiptData = {
 // 1. Added REGISTRATION to the steps
 type CheckoutStep = "REGISTRATION" | "SELECT_PAYMENT" | "PAYMENT_DETAILS" | "RECEIPT" | "PROFILE";
 
-type CheckoutStep = "REGISTRATION" | "SELECT_PAYMENT" | "PAYMENT_DETAILS" | "RECEIPT";
 type AuthStep = "LOGIN" | "SIGNUP" | "APP";
 
 function App() {
