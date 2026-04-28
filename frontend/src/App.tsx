@@ -5,6 +5,7 @@ import PaymentDetails from "./componets/PaymentDetails";
 import PaymentSelection from "./componets/PaymentSelection";
 import Receipt from "./componets/Reciept";
 import Registration from "./componets/Registration";
+import Profile from "./componets/Profile"
 import { CheckoutProvider } from "./context/CheckoutProvider";
 
 type ReceiptData = {
@@ -13,7 +14,7 @@ type ReceiptData = {
 };
 
 // 1. Added REGISTRATION to the steps
-type CheckoutStep = "REGISTRATION" | "SELECT_PAYMENT" | "PAYMENT_DETAILS" | "RECEIPT";
+type CheckoutStep = "REGISTRATION" | "SELECT_PAYMENT" | "PAYMENT_DETAILS" | "RECEIPT" | "PROFILE";
 
 function App() {
   // 2. Start the app on the REGISTRATION screen
@@ -43,6 +44,8 @@ function App() {
         {currentStep === "RECEIPT" && receiptData && (
           <Receipt refNum={receiptData.refNum} receiptQR={receiptData.receiptQR} />
         )}
+        {/* Screen 5: Profile page */}
+        {currentStep === "PROFILE" && <Profile />}
       </CheckoutProvider>
     </div>
   );

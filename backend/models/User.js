@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema(
       enum: ["buyer", "seller", "admin"], 
       default: "buyer" 
     },
+    social: {
+    instagram: { type: String, default: "" },
+    facebook: { type: String, default: "" },
+    },
     profilePicture: { 
       type: String, 
       default: null 

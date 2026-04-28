@@ -4,6 +4,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const registerRoute = require("./routes/register");
 const loginRoutes = require("./routes/login")
+const profileRoute = require("./routes/profile");
 
 const app = express();
 const PORT = 3000;
@@ -23,6 +24,7 @@ async function startServer() {
 
     app.use("/api", registerRoute);
     app.use("/api", loginRoutes);
+    app.use("/api/profile", profileRoute);
     app.get("/", (req, res) => res.send("Hello World!"));
     app.listen(PORT, () => console.log(`🚀 App listening at http://localhost:${PORT}`));
   } catch (err) {
