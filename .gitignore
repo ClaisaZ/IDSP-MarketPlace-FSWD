@@ -1,0 +1,12 @@
+node_modules/
+client/node_modules/
+server/node_modules/
+.env
+
+tasks-worklog.md
+NOTES.md
+TODO.md
+
+.DS_Store
+Thumbs.db
+desktop.ini
