@@ -3,8 +3,8 @@ const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const profileRoute = require("./routes/profile");
-const registerRoute = require("./routes/register"); // Course Registration
-const authRoutes = require("./routes/authRoutes") // User login/signup
+const registerCourseRoute = require("./routes/register"); // Course Registration
+const authRoutes = require("./routes/authRoutes"); // User login/signup
 
 const app = express();
 const PORT = 3000;
@@ -16,15 +16,15 @@ app.use(express.urlencoded({ extended: true }));
 // Connect to MongoDB Atlas
 async function startServer() {
   try {
-    console.log("MONGODB_URI:", process.env.MONGODB_URI); // adding this before connection (testing purposes)
+    console.log("MONGODB_URI:", process.env.MONGODB_URI); // adding this before connection (testing purposes) - REMOVE FOR PROD
     await mongoose.connect(process.env.MONGODB_URI, {
       serverSelectionTimeoutMS: 5000,
     });
     console.log("✅ Connected to MongoDB Atlas");
 
-    app.use("/api", registerRoute);
+    app.use("/api/course", registerCourseRoute);
     app.use("/api/profile", profileRoute);
-    app.use("/api", authRoutes);
+    app.use("/api/auth", authRoutes);
     app.get("/", (req, res) => res.send("Hello World!"));
     app.listen(PORT, () => console.log(`🚀 App listening at http://localhost:${PORT}`));
   } catch (err) {

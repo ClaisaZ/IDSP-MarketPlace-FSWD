@@ -5,32 +5,16 @@ const QRCode = require("qrcode");
 
 const router = express.Router();
 
-router.post("/register", async (req, res) => {
+router.post("/", async (req, res) => {
   console.log("Request Body:", req.body);
 
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({ message: "No data received" });
   }
 
-  const {
-    name,
-    email,
-    password,
-    age,
-    phone,
-    paymentMethod,
-    ticketAmount,
-  } = req.body;
+  const { name, email, age, phone, paymentMethod, ticketAmount } = req.body;
 
-  if (
-    !name ||
-    !email ||
-    !password ||
-    !age ||
-    !phone ||
-    !paymentMethod ||
-    !ticketAmount
-  ) {
+  if (!name || !email || !age || !phone || !paymentMethod || !ticketAmount) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
@@ -62,7 +46,6 @@ router.post("/register", async (req, res) => {
     const user = new User({
       name,
       email,
-      password,
       age,
       phone,
       paymentMethod,
