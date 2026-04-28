@@ -12,20 +12,46 @@ router.post("/register", async (req, res) => {
     return res.status(400).json({ message: "No data received" });
   }
 
-  const { name, email, age, phone, paymentMethod, ticketAmount } = req.body;
+  const {
+    name,
+    email,
+    password,
+    age,
+    phone,
+    paymentMethod,
+    ticketAmount,
+  } = req.body;
 
-  // Validate required fields
-  if (!name || !email || !age || !phone || !paymentMethod || !ticketAmount) {
+  if (
+    !name ||
+    !email ||
+    !password ||
+    !age ||
+    !phone ||
+    !paymentMethod ||
+    !ticketAmount
+  ) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
   try {
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already registered" });
+    }
+
     const refNum = nanoid(10).toUpperCase();
 
-    const qrData = JSON.stringify({ refNum, email, ticketAmount, paymentMethod });
+    const qrData = JSON.stringify({
+      refNum,
+      email,
+      ticketAmount,
+      paymentMethod,
+    });
 
-    // Add error handling for QR generation
     let receiptQR;
+
     try {
       receiptQR = await QRCode.toDataURL(qrData);
     } catch (qrError) {
@@ -36,6 +62,7 @@ router.post("/register", async (req, res) => {
     const user = new User({
       name,
       email,
+      password,
       age,
       phone,
       paymentMethod,
@@ -46,7 +73,7 @@ router.post("/register", async (req, res) => {
 
     await user.save();
 
-    res.json({
+    res.status(201).json({
       message: "Registration successful",
       refNum,
       receiptQR,

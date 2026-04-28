@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const registerRoute = require("./routes/register");
+const loginRoutes = require("./routes/login")
 
 const app = express();
 const PORT = 3000;
@@ -21,6 +22,7 @@ async function startServer() {
     console.log("✅ Connected to MongoDB Atlas");
 
     app.use("/api", registerRoute);
+    app.use("/api", loginRoutes);
     app.get("/", (req, res) => res.send("Hello World!"));
     app.listen(PORT, () => console.log(`🚀 App listening at http://localhost:${PORT}`));
   } catch (err) {
