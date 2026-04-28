@@ -10,8 +10,6 @@ const userSchema = new mongoose.Schema(
     ticketAmount: { type: Number, required: true },
     refNum: { type: String, required: true, unique: true },
     receiptQR: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
   },
   { timestamps: true },
 );
