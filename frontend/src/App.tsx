@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+
 import PaymentDetails from "./componets/PaymentDetails";
 import PaymentSelection from "./componets/PaymentSelection";
 import Receipt from "./componets/Reciept";
