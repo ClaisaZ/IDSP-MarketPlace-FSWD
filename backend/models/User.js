@@ -3,67 +3,71 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: {type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
     age: { type: Number },
     phone: { type: String },
     paymentMethod: { type: String },
     ticketAmount: { type: Number },
     refNum: { type: String, unique: true },
     receiptQR: { type: String },
-    role: { 
-      type: String, 
-      enum: ["buyer", "seller", "admin"], 
-      default: "buyer" 
+    role: {
+      type: String,
+      enum: ["buyer", "seller", "admin"],
+      default: "buyer",
     },
     social: {
-    instagram: { type: String, default: "" },
-    facebook: { type: String, default: "" },
+      instagram: { type: String, default: "" },
+      facebook: { type: String, default: "" },
     },
-    profilePicture: { 
-      type: String, 
-      default: null 
+    profilePicture: {
+      type: String,
+      default: null,
     },
-    bio: { 
-      type: String, 
-      default: "" 
+    bio: {
+      type: String,
+      default: "",
     },
-    interests: { 
-      type: [String], 
+    interests: {
+      type: [String],
       enum: [
-    "Design",
-    "Creativity",
-    "Tech",
-    "Math",
-    "Marketing",
-    "Finance",
-    "Fine Art",
-    "Writing",
-    "Sales",
-    "Teaching",
-    "Coding",
-    "Research",
-    "Fashion",
-    "Hair",
-    "Pottery",
-    "Cooking",
+        "Design",
+        "Creativity",
+        "Tech",
+        "Math",
+        "Marketing",
+        "Finance",
+        "Fine Art",
+        "Writing",
+        "Sales",
+        "Teaching",
+        "Coding",
+        "Research",
+        "Fashion",
+        "Hair",
+        "Pottery",
+        "Cooking",
+      ],
+      default: [],
+    },
+    workshopsAttended: {
+      type: Number,
+      default: 0,
+    },
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
     ],
-      default: [] 
-    },
-    workshopsAttended: { 
-      type: Number, 
-      default: 0 
-    },
-    friends: [{ 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: "User" 
-    }],
-    posts: [{ 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: "Post" 
-    }],
+    posts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("User", userSchema);

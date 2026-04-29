@@ -1,7 +1,27 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCheckout } from "../context/useCheckout";
+
+// Reusable field — same pattern as Registration.tsx
+type FormFieldProps = {
+  label: string;
+  children: React.ReactNode;
+};
+
+const FormField: React.FC<FormFieldProps> = ({ label, children }) => (
+  <div className="input-group">
+    <label className="input-label">{label}</label>
+    {children}
+  </div>
+);
+
+const SHIPPING_FIELDS: { label: string; placeholder?: string }[] = [
+  { label: "Street address" },
+  { label: "City" },
+  { label: "Province / State" },
+  { label: "Postal code" },
+];
 
 const PaymentDetails: React.FC = () => {
   const { state } = useCheckout();
@@ -10,29 +30,59 @@ const PaymentDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Redirect back to registration if state is wiped (e.g., on page refresh)
+  useEffect(() => {
+    if (!state.registration) {
+      console.warn("Registration state missing. Redirecting to start.");
+      // Note: Adjust "/course/register" to your actual first-step route
+      navigate("/course", { replace: true });
+    }
+  }, [state.registration, navigate]);
+
   const handlePurchase = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // STRICTLY/Defensivly checking submit
+    if (!state.registration) {
+      setError("Registration data is missing. Please restart the process.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
       const response = await axios.post("http://localhost:3000/api/course", {
-        name: state.registration?.name,
-        email: state.registration?.email,
-        age: state.registration?.age,
-        phone: state.registration?.phone,
-        ticketAmount: state.registration?.ticketAmount,
+        name: state.registration.name,
+        email: state.registration.email,
+        age: state.registration.age,
+        phone: state.registration.phone,
+        ticketAmount: state.registration.ticketAmount,
         paymentMethod: state.paymentMethod,
       });
 
       navigate("/course/receipt", { state: response.data });
     } catch (err) {
-      console.error(err);
-      setError("Something went wrong. Please try again.");
+      // SILENT LOGGING: Users will never see this, but we can check it if they report a bug.
+      console.error("Payment submission failed:", err);
+
+      if (axios.isAxiosError(err) && err.response) {
+        // BACKEND VALIDATION
+        const serverMessage =
+          err.response.data?.message || err.response.data?.error || "Please check your details and try again.";
+        setError(`Server rejected: ${serverMessage}`);
+      } else {
+        setError("We couldn't connect to the payment system. Please check your internet connection and try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  // Does not render the form while the redirect is occuring
+  if (!state.registration) {
+    return null;
+  }
 
   return (
     <>
@@ -51,55 +101,49 @@ const PaymentDetails: React.FC = () => {
           {/* Dynamic UI: Visa shows card fields, PayPal shows login simulation */}
           {paymentMethod === "Visa" && (
             <>
-              <div className="input-group">
-                <label className="input-label">Card Number</label>
+              <FormField label="Card Number">
                 <input required type="text" className="text-input" placeholder="XXXX XXXX XXXX XXXX" />
-              </div>
-              <div className="input-group">
-                <label className="input-label">Expiry Date</label>
+              </FormField>
+              <FormField label="Expiry Date">
                 <input required type="text" className="text-input" placeholder="MM/YY" />
-              </div>
-              <div className="input-group">
-                <label className="input-label">CVV</label>
+              </FormField>
+              <FormField label="CVV">
                 <input required type="text" className="text-input" />
-              </div>
+              </FormField>
             </>
           )}
 
           {paymentMethod === "PayPal" && (
             <>
-              <div className="input-group">
-                <label className="input-label">PayPal Email</label>
+              <FormField label="PayPal Email">
                 <input required type="email" className="text-input" placeholder="you@paypal.com" />
-              </div>
-              <div className="input-group">
-                <label className="input-label">PayPal Password</label>
+              </FormField>
+              <FormField label="PayPal Password">
                 <input required type="password" className="text-input" placeholder="••••••••" />
-              </div>
-              <p style={{ fontSize: "12px", color: "#ccc", marginTop: "4px" }}>
+              </FormField>
+              <p style={{ fontSize: "14px", color: "#ccc", marginTop: "4px" }}>
                 This is a login simulation — no real PayPal connection.
               </p>
             </>
           )}
 
-          <h4 style={{ margin: "15px 0 10px 0", textAlign: "left", fontSize: "16px" }}>Shipping Address</h4>
+          <h4
+            style={{
+              margin: "15px 0 10px 0",
+              textAlign: "left",
+              fontSize: "24px",
+              marginTop: "2rem",
+              marginBottom: "1rem",
+            }}
+          >
+            Shipping Address
+          </h4>
 
-          <div className="input-group">
-            <label className="input-label">Street address</label>
-            <input required type="text" className="text-input" />
-          </div>
-          <div className="input-group">
-            <label className="input-label">City</label>
-            <input required type="text" className="text-input" />
-          </div>
-          <div className="input-group">
-            <label className="input-label">Province / State</label>
-            <input required type="text" className="text-input" />
-          </div>
-          <div className="input-group">
-            <label className="input-label">Postal code</label>
-            <input required type="text" className="text-input" />
-          </div>
+          {SHIPPING_FIELDS.map(({ label }) => (
+            <FormField key={label} label={label}>
+              <input required type="text" className="text-input" />
+            </FormField>
+          ))}
 
           {error && (
             <p

@@ -19,12 +19,6 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
-      return res.status(409).json({ message: "Email already registered" });
-    }
-
     const refNum = nanoid(10).toUpperCase();
 
     const qrData = JSON.stringify({
@@ -46,6 +40,7 @@ router.post("/", async (req, res) => {
     const user = new User({
       name,
       email,
+      password: "guest_checkout", // ADDED DUMMY PASSWORD TO SATISFY SCHEMA
       age,
       phone,
       paymentMethod,
