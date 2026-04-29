@@ -1,38 +1,32 @@
-import React, { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
+import { type Resolver, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useCheckout } from "../context/useCheckout";
+import { type RegistrationFormData, registrationSchema } from "../schemas/registrationSchema";
 
 const Registration: React.FC = () => {
-  // <-- Removed Props
   const { dispatch } = useCheckout();
-  const navigate = useNavigate(); // <-- Initialized the hook
+  const navigate = useNavigate();
 
-  // Local state to hold form inputs
-  const [formData, setFormData] = useState({
-    name: "",
-    birthday: "",
-    age: "",
-    city: "",
-    email: "",
-    phone: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegistrationFormData>({
+    resolver: zodResolver(registrationSchema) as Resolver<RegistrationFormData>,
+    mode: "onBlur",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Save the required data to global context to send to backend later
+  const onSubmit = (data: RegistrationFormData) => {
     dispatch({
       type: "SET_REGISTRATION",
       payload: {
-        name: formData.name,
-        email: formData.email,
-        age: Number(formData.age),
-        phone: formData.phone,
-        ticketAmount: 1, // Defaulting to 1 ticket based on receipt design from designers
+        name: data.name,
+        email: data.email,
+        age: data.age,
+        phone: data.phone,
+        ticketAmount: 1,
       },
     });
 
@@ -47,71 +41,50 @@ const Registration: React.FC = () => {
       </div>
 
       <div className="purple-card">
-        <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
           <div className="input-group">
             <label className="input-label">Name</label>
-            <input
-              required
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="text-input"
-              placeholder="XXXX XXXX XXXX XXXX"
-            />
+            <input {...register("name")} type="text" className="text-input" placeholder="First and Last Name" />
+            {errors.name && (
+              <span style={{ color: "#FFcccc", fontSize: "12px", marginTop: "4px" }}>{errors.name.message}</span>
+            )}
           </div>
 
           <div className="input-group">
             <label className="input-label">Birthday</label>
-            <input
-              type="text"
-              name="birthday"
-              value={formData.birthday}
-              onChange={handleChange}
-              className="text-input"
-              placeholder="MM/YY"
-            />
+            <input {...register("birthday")} type="text" className="text-input" placeholder="MM/YY" />
+            {errors.birthday && (
+              <span style={{ color: "#FFcccc", fontSize: "12px", marginTop: "4px" }}>{errors.birthday.message}</span>
+            )}
           </div>
 
           <div className="input-group">
             <label className="input-label">Age</label>
-            <input
-              required
-              type="number"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              className="text-input"
-            />
+            <input {...register("age")} type="number" className="text-input" placeholder="Must be 18+" />
+            {errors.age && (
+              <span style={{ color: "#FFcccc", fontSize: "12px", marginTop: "4px" }}>{errors.age.message}</span>
+            )}
           </div>
 
           <div className="input-group">
             <label className="input-label">City</label>
-            <input type="text" name="city" value={formData.city} onChange={handleChange} className="text-input" />
+            <input {...register("city")} type="text" className="text-input" />
           </div>
 
           <div className="input-group">
             <label className="input-label">Email</label>
-            <input
-              required
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="text-input"
-            />
+            <input {...register("email")} type="email" className="text-input" placeholder="you@example.com" />
+            {errors.email && (
+              <span style={{ color: "#FFcccc", fontSize: "12px", marginTop: "4px" }}>{errors.email.message}</span>
+            )}
           </div>
 
           <div className="input-group">
             <label className="input-label">Phone Number</label>
-            <input
-              required
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="text-input"
-            />
+            <input {...register("phone")} type="tel" className="text-input" placeholder="+1234567890" />
+            {errors.phone && (
+              <span style={{ color: "#FFcccc", fontSize: "12px", marginTop: "4px" }}>{errors.phone.message}</span>
+            )}
           </div>
 
           <button type="submit" className="primary-button" style={{ marginTop: "20px" }}>
