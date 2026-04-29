@@ -5,6 +5,7 @@ import { useCheckout } from "../context/useCheckout";
 
 const PaymentDetails: React.FC = () => {
   const { state } = useCheckout();
+  const paymentMethod = state.paymentMethod;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -15,15 +16,6 @@ const PaymentDetails: React.FC = () => {
     setError(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const fakeReceiptData = {
-        refNum: "TEST-" + Math.floor(Math.random() * 100000),
-        receiptQR: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TestReceiptData",
-      };
-
-      navigate("/course/receipt", { state: fakeReceiptData });
-
       const response = await axios.post("http://localhost:3000/api/course", {
         name: state.registration?.name,
         email: state.registration?.email,
@@ -56,20 +48,39 @@ const PaymentDetails: React.FC = () => {
 
       <div className="purple-card">
         <form onSubmit={handlePurchase} style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-          <div className="input-group">
-            <label className="input-label">Card Number</label>
-            <input required type="text" className="text-input" placeholder="XXXX XXXX XXXX XXXX" />
-          </div>
+          {/* Dynamic UI: Visa shows card fields, PayPal shows login simulation */}
+          {paymentMethod === "Visa" && (
+            <>
+              <div className="input-group">
+                <label className="input-label">Card Number</label>
+                <input required type="text" className="text-input" placeholder="XXXX XXXX XXXX XXXX" />
+              </div>
+              <div className="input-group">
+                <label className="input-label">Expiry Date</label>
+                <input required type="text" className="text-input" placeholder="MM/YY" />
+              </div>
+              <div className="input-group">
+                <label className="input-label">CVV</label>
+                <input required type="text" className="text-input" />
+              </div>
+            </>
+          )}
 
-          <div className="input-group">
-            <label className="input-label">Expiry Date</label>
-            <input required type="text" className="text-input" placeholder="MM/YY" />
-          </div>
-
-          <div className="input-group">
-            <label className="input-label">CVV</label>
-            <input required type="text" className="text-input" />
-          </div>
+          {paymentMethod === "PayPal" && (
+            <>
+              <div className="input-group">
+                <label className="input-label">PayPal Email</label>
+                <input required type="email" className="text-input" placeholder="you@paypal.com" />
+              </div>
+              <div className="input-group">
+                <label className="input-label">PayPal Password</label>
+                <input required type="password" className="text-input" placeholder="••••••••" />
+              </div>
+              <p style={{ fontSize: "12px", color: "#ccc", marginTop: "4px" }}>
+                This is a login simulation — no real PayPal connection.
+              </p>
+            </>
+          )}
 
           <h4 style={{ margin: "15px 0 10px 0", textAlign: "left", fontSize: "16px" }}>Shipping Address</h4>
 
