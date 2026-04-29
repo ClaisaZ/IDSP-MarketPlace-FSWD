@@ -51,10 +51,7 @@ function Signup() {
       </div>
 
       <div className="purple-card">
-        <form
-          onSubmit={handleSignup}
-          style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}
-        >
+        <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
           <div className="input-group">
             <label className="input-label">Name</label>
             <input
