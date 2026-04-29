@@ -1,6 +1,7 @@
 import { BrowserRouter, Link, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
 
+import Welcome from './components/Welcome';
 import Login from "./components/login";
 import PaymentDetails from "./components/PaymentDetails";
 import PaymentSelection from "./components/PaymentSelection";
@@ -9,6 +10,7 @@ import Receipt from "./components/Reciept";
 import Registration from "./components/Registration";
 import Signup from "./components/Signup";
 import { CheckoutProvider } from "./context/CheckoutProvider";
+
 
 function CourseLayout() {
   return (
@@ -23,7 +25,9 @@ function App() {
     <div className="app-container">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Welcome />} /> 
+          {/* Will continue working on this tomorrow */}
+          {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
 
           <Route
             path="/login"
