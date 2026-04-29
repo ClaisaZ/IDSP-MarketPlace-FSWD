@@ -1,13 +1,13 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
 router.post("/signup", async (req, res) => {
-  console.log("Register Body:", req.body);
-
-  const { name, email, password } = req.body;
+  const { name, password } = req.body;
+  const email = req.body.email?.toLowerCase().trim();
 
   if (!name || !email || !password) {
     return res.status(400).json({
@@ -44,9 +44,8 @@ router.post("/signup", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  console.log("Login Body:", req.body);
-
-  const { email, password } = req.body;
+  const { password } = req.body;
+  const email = req.body.email?.toLowerCase().trim(); // weird edge cases
 
   if (!email || !password) {
     return res.status(400).json({
@@ -71,14 +70,22 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    const token = jwt.sign(  // create token for future localstorage
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
     res.json({
       message: "Login successful",
+      token,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
       },
     });
+
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ message: "Server error" });
