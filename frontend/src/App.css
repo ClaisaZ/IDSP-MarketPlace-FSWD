@@ -87,6 +87,19 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+.purple-card-2 {
+  background-color: var(--white);
+  border-radius: 20px;
+  padding: 40px;
+  color: var(--white);
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
 .purple-card h4 {
   margin-top: 0;
   font-size: 2rem;

@@ -33,7 +33,7 @@ function SkillMatching() {
         if (isDone) {
             localStorage.setItem("skills", JSON.stringify(selectedSkills));
 
-            navigate("/course");
+            navigate("/account-created");
         }
     }
 
@@ -64,7 +64,7 @@ function SkillMatching() {
 
             {/* Card */}
             <div
-                className="purple-card"
+                className="purple-card-2"
                 style={{
                     height: "75vh",
                     maxHeight: "720px",
@@ -102,11 +102,11 @@ function SkillMatching() {
                                         width: "80%",
                                         padding: "10px",
                                         borderRadius: "20px",
-                                        fontSize: "14px",
+                                        fontSize: "16px",
                                         cursor: "pointer",
                                         textAlign: "center",
-                                        background: isSelected ? "#facc15" : "#1a1a1a",
-                                        color: isSelected ? "#000" : "#fff",
+                                        background: isSelected ? "var(--dark-purple)" : "var(--primary-purple)",
+                                        color: isSelected ? "white" : "black",
                                         transition: "0.2s",
                                     }}
                                 >
