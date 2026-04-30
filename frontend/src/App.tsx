@@ -1,7 +1,6 @@
-import { BrowserRouter, Link, Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
 
-import Welcome from './components/Welcome';
 import Login from "./components/login";
 import PaymentDetails from "./components/PaymentDetails";
 import PaymentSelection from "./components/PaymentSelection";
@@ -9,8 +8,10 @@ import Profile from "./components/Profile";
 import Receipt from "./components/Reciept";
 import Registration from "./components/Registration";
 import Signup from "./components/Signup";
+import Welcome from './components/Welcome';
 import { CheckoutProvider } from "./context/CheckoutProvider";
-
+import WorkshopDetails from "./components/WorkshopDetails";
+import SkillMatching from "./components/SkillMatching";
 
 function CourseLayout() {
   return (
@@ -25,7 +26,7 @@ function App() {
     <div className="app-container">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Welcome />} /> 
+          <Route path="/" element={<Welcome />} />
           {/* Will continue working on this tomorrow */}
           {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
 
@@ -94,10 +95,16 @@ function App() {
               </div>
             }
           />
+          <Route path="/skill-matching" element={<SkillMatching />} />
 
           {/* The URL-Based Course Flow */}
           <Route path="/course" element={<CourseLayout />}>
-            <Route index element={<Registration />} />
+            {/* The default /course page is now the details screen */}
+            <Route index element={<WorkshopDetails />} />
+
+            {/* Registration is explicitly set to /course/register */}
+            <Route path="register" element={<Registration />} />
+
             <Route path="payments" element={<PaymentSelection />} />
             <Route path="purchase" element={<PaymentDetails />} />
             <Route path="receipt" element={<Receipt />} />

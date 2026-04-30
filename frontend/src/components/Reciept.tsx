@@ -2,25 +2,43 @@ import React from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useCheckout } from "../context/useCheckout";
 
+// Reusable info box — eliminates the repeated grid cell pattern
+type InfoBoxProps = {
+  label: string;
+  value: string | number;
+  fontSize?: string;
+  wordBreak?: "break-all" | "normal";
+};
+
+const InfoBox: React.FC<InfoBoxProps> = ({ label, value, fontSize = "14px", wordBreak = "normal" }) => (
+  <div
+    className="info-box"
+    style={{ margin: 0, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}
+  >
+    <span className="info-label">{label}</span>
+    <span className="info-value" style={{ fontSize, wordBreak }}>
+      {value}
+    </span>
+  </div>
+);
+
 const Receipt: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { state } = useCheckout(); // Pulling in the global context to get the user's info
+  const { state } = useCheckout();
 
   const receiptData = location.state;
 
-  // Security check
   if (!receiptData) {
     return <Navigate to="/course" replace />;
   }
 
   const { refNum, receiptQR } = receiptData;
 
-  // Fallback to placeholders if context is empty (e.g., during testing)
   const email = state.registration?.email || "myemail@bcit.ca";
   const phone = state.registration?.phone || "+1 577 656 6789";
   const ticketAmount = state.registration?.ticketAmount || 1;
-  const totalPayment = ticketAmount * 24; // Assuming 24 CAD per course(s)
+  const totalPayment = ticketAmount * 24;
 
   return (
     <>
@@ -35,7 +53,7 @@ const Receipt: React.FC = () => {
       </div>
 
       <div className="purple-card" style={{ position: "relative", marginTop: "40px" }}>
-        {/* Floating Checkmark Icon */}
+        {/* Floating Checkmark */}
         <div
           style={{
             position: "absolute",
@@ -76,7 +94,7 @@ const Receipt: React.FC = () => {
           Payment Success!
         </h3>
 
-        {/* QR Code Container */}
+        {/* QR Code */}
         <div
           style={{
             backgroundColor: "white",
@@ -87,46 +105,19 @@ const Receipt: React.FC = () => {
             marginBottom: "20px",
           }}
         >
-          <img src={receiptQR} alt="QR Code" style={{ width: "130px", height: "130px", marginBottom: "10px" }} />
-          <p style={{ fontSize: "14px", margin: 0, fontWeight: 500, color: "#333" }}>Download QR CODE</p>
+          <img src={receiptQR} alt="QR Code" style={{ width: "180px", height: "180px", marginBottom: "10px" }} />
+          <p style={{ fontSize: "16px", margin: 0, fontWeight: 500, color: "#333" }}>Download QR CODE</p>
         </div>
 
-        {/* 2x2 Grid for Details */}
+        {/* 2x2 Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "20px" }}>
-          <div className="info-box" style={{ margin: 0, textAlign: "center" }}>
-            <span className="info-label">Ref Number</span>
-            <span className="info-value" style={{ fontSize: "13px" }}>
-              {refNum}
-            </span>
-          </div>
-          <div className="info-box" style={{ margin: 0, textAlign: "center" }}>
-            <span className="info-label">Ticket Amount</span>
-            <span className="info-value">x{ticketAmount}</span>
-          </div>
-          <div
-            className="info-box"
-            style={{
-              margin: 0,
-              textAlign: "center",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
-            <span className="info-label">Email Address</span>
-            <span className="info-value" style={{ fontSize: "12px", wordBreak: "break-all" }}>
-              {email}
-            </span>
-          </div>
-          <div className="info-box" style={{ margin: 0, textAlign: "center" }}>
-            <span className="info-label">Phone Number</span>
-            <span className="info-value" style={{ fontSize: "12px" }}>
-              {phone}
-            </span>
-          </div>
+          <InfoBox label="Ref Number" value={refNum} fontSize="13px" />
+          <InfoBox label="Ticket Amount" value={`x${ticketAmount}`} />
+          <InfoBox label="Email Address" value={email} fontSize="12px" wordBreak="break-all" />
+          <InfoBox label="Phone Number" value={phone} fontSize="12px" />
         </div>
 
-        {/* Total Payment Footer */}
+        {/* Total */}
         <div
           style={{
             display: "flex",
