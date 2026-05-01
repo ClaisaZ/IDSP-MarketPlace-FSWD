@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,7 +18,7 @@ function Signup() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/api/auth/register", {
+      const res = await fetch("http://localhost:3000/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,7 +33,7 @@ function Signup() {
         return;
       }
 
-      alert("Account created successfully");
+      navigate("/skill-matching");
 
       setFormData({
         name: "",
