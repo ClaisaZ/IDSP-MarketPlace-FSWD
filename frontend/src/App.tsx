@@ -8,7 +8,7 @@ import Profile from "./components/Profile";
 import Receipt from "./components/Reciept";
 import Registration from "./components/Registration";
 import Signup from "./components/Signup";
-import Welcome from './components/Welcome';
+import Welcome from "./components/Welcome";
 import { CheckoutProvider } from "./context/CheckoutProvider";
 import WorkshopDetails from "./components/WorkshopDetails";
 import SkillMatching from "./components/SkillMatching";
