@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema(
       enum: ["buyer", "seller", "admin"],
       default: "buyer",
     },
+    enablePosts: {
+    type: Boolean,
+    default: false,
+    },
     social: {
       instagram: { type: String, default: "" },
       facebook: { type: String, default: "" },

@@ -13,6 +13,7 @@ import { CheckoutProvider } from "./context/CheckoutProvider";
 import WorkshopDetails from "./components/WorkshopDetails";
 import SkillMatching from "./components/SkillMatching";
 import AccountCreated from "./components/AccountCreated";
+import EditProfile from "./components/EditProfile";
 
 function CourseLayout() {
   return (
@@ -114,6 +115,7 @@ function App() {
             <Route path="purchase" element={<PaymentDetails />} />
             <Route path="receipt" element={<Receipt />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="profile/edit" element={<EditProfile />} />
           </Route>
         </Routes>
       </BrowserRouter>
