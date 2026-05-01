@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const profileRoute = require("./routes/profile");
 const registerCourseRoute = require("./routes/register"); // Course Registration
 const authRoutes = require("./routes/authRoutes"); // User login/signup
+const postsRoute = require("./routes/post");
 
 const app = express();
 const PORT = 3000;
@@ -25,6 +26,7 @@ async function startServer() {
     app.use("/api/course", registerCourseRoute);
     app.use("/api/profile", profileRoute);
     app.use("/api/auth", authRoutes);
+    app.use("/api/posts", postsRoute);
     app.get("/", (req, res) => res.send("Hello World!"));
     app.listen(PORT, () => console.log(`🚀 App listening at http://localhost:${PORT}`));
   } catch (err) {

@@ -1,18 +1,19 @@
 const express = require("express");
 const User = require("../models/User");
+const { protectRoute } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/me", protectRoute, async (req, res) => {
   try {
-    const users = await User.find();
-    res.json(users);
+    const user = await User.findById(req.user._id).populate("posts");
+    res.json(user);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", protectRoute, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -20,7 +21,22 @@ router.get("/:id", async (req, res) => {
     }
     res.json(user);
   } catch (error) {
-    console.error("Get Profile Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.post("/update", protectRoute, async (req, res) => {
+  try {
+    const { name, bio, interests, social, enablePosts, profilePicture } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { name, bio, interests, social, enablePosts, profilePicture },
+      { new: true }
+    );
+
+    res.json(updatedUser);
+  } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 });
