@@ -8,9 +8,11 @@ import Profile from "./components/Profile";
 import Receipt from "./components/Reciept";
 import Registration from "./components/Registration";
 import Signup from "./components/Signup";
-import Welcome from "./components/Welcome";
+import Welcome from './components/Welcome';
 import { CheckoutProvider } from "./context/CheckoutProvider";
 import WorkshopDetails from "./components/WorkshopDetails";
+import SkillMatching from "./components/SkillMatching";
+import AccountCreated from "./components/AccountCreated";
 
 function CourseLayout() {
   return (
@@ -26,8 +28,6 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Welcome />} />
-          {/* Will continue working on this tomorrow */}
-          {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
 
           <Route
             path="/login"
@@ -64,6 +64,11 @@ function App() {
                       Continue to app
                     </button>
                   </Link>
+                  <Link to="/skill-matching" style={{ textDecoration: "none" }}>
+                    <button className="primary-button" style={{ width: "100%" }}>
+                      Test: Skill match page after register
+                    </button>
+                  </Link>
                 </div>
               </div>
             }
@@ -94,6 +99,8 @@ function App() {
               </div>
             }
           />
+          <Route path="/skill-matching" element={<SkillMatching />} />
+          <Route path="/account-created" element={<AccountCreated />} />
 
           {/* The URL-Based Course Flow */}
           <Route path="/course" element={<CourseLayout />}>

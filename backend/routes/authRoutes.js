@@ -6,22 +6,27 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 router.post("/signup", async (req, res) => {
-  const { name, password } = req.body;
+  const name = req.body.name?.trim();
   const email = req.body.email?.toLowerCase().trim();
+  const { password } = req.body;
 
   if (!name || !email || !password) {
-    return res.status(400).json({
-      message: "All fields are required",
-    });
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (!email.includes("@")) {
+    return res.status(400).json({ message: "Invalid email format" });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ message: "Password must be at least 6 characters" });
   }
 
   try {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({
-        message: "User already exists",
-      });
+      return res.status(400).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -34,12 +39,12 @@ router.post("/signup", async (req, res) => {
 
     await newUser.save();
 
-    res.json({
+    return res.status(201).json({
       message: "Registration successful",
     });
   } catch (error) {
-    console.error("Register Error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Signup Error:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -48,26 +53,20 @@ router.post("/login", async (req, res) => {
   const email = req.body.email?.toLowerCase().trim(); // weird edge cases
 
   if (!email || !password) {
-    return res.status(400).json({
-      message: "Email and password are required",
-    });
+    return res.status(400).json({ message: "Email and password are required" });
   }
 
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const token = jwt.sign(  // create token for future localstorage
