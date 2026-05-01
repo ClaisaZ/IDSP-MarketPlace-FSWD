@@ -361,7 +361,32 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
+/* Edit Profile */
+.edit-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.edit-avatar-circle {
+  width: 90px;
+  height: 90px;
+  font-size: 40px;
+}
+.edit-avatar-label {
+  color: white;
+  font-size: 14px;
+  margin-top: 8px;
+}
+.interest-tag--selected {
+  background: white;
+  color: var(--primary-purple);
+}
+.enable-posts-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 /* WORKSHOP DETAILS SPECIFIC */
 .hero-image {
   width: 100%;
