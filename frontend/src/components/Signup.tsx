@@ -16,7 +16,8 @@ function Signup() {
 
   async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     try {
       const res = await fetch("http://localhost:3000/api/auth/signup", {
         method: "POST",
@@ -32,7 +33,8 @@ function Signup() {
         alert(data.message || "Registration failed");
         return;
       }
-
+      localStorage.setItem("token", data.token);
+      
       navigate("/skill-matching");
 
       setFormData({

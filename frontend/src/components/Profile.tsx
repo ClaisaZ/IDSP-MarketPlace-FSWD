@@ -21,6 +21,7 @@ type User = {
   createdAt: string;
   }[];
   enablePosts: boolean;
+  position: string;
 };
 
 export default function Profile() {
@@ -58,13 +59,13 @@ useEffect(() => {
        <img src={user.profilePicture} alt="avatar" className="avatar" />
         ) : (
        <div className="avatar-placeholder">
-        {user.name[0].toUpperCase()}
+        {user.name ? user.name[0].toUpperCase() : "?"}
        </div>
         )}
         </div>
         <div className="profile-meta">
         <p className="profile-username">@{user.name}</p>
-        <p className="profile-role">{user.role}</p>
+        <p className="profile-role">{user.position}</p>
         </div>
       </div>
       <div className="stats-row">

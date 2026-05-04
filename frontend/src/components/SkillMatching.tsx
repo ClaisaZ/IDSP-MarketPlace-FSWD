@@ -22,19 +22,30 @@ function SkillMatching() {
         );
     }
 
-    function handleConfirm() {
-        if (selectedSkills.length === 0) {
-            alert("Please select at least one skill");
-            return;
-        }
+    async function handleConfirm() {
+    if (selectedSkills.length === 0) {
+        alert("Please select at least one skill");
+        return;
+    }
 
-        const isDone = window.confirm("Are you done selecting skills?");
+    try {
+        const token = localStorage.getItem("token");
 
-        if (isDone) {
-            localStorage.setItem("skills", JSON.stringify(selectedSkills));
+        await fetch("http://localhost:3000/api/profile/update", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ interests: selectedSkills }),
+        });
 
-            navigate("/account-created");
-        }
+        localStorage.setItem("skills", JSON.stringify(selectedSkills));
+        navigate("/account-created");
+    } catch (error) {
+        console.error("Failed to save skills:", error);
+        alert("Could not save skills");
+    }
     }
 
     return (
