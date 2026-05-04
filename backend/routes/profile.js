@@ -27,12 +27,12 @@ router.get("/:id", protectRoute, async (req, res) => {
 
 router.post("/update", protectRoute, async (req, res) => {
   try {
-    const { name, bio, interests, social, enablePosts, profilePicture } = req.body;
+    const { name, bio, position, interests, social, enablePosts, profilePicture } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
-      { name, bio, interests, social, enablePosts, profilePicture },
-      { new: true }
+      { name, bio, position, interests, social, enablePosts, profilePicture },
+      { returnDocument: 'after' }
     );
 
     res.json(updatedUser);

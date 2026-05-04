@@ -23,6 +23,7 @@ const WorkshopDetails: React.FC = () => {
           Workshop Details
         </h2>
         <span style={{ fontSize: "24px", cursor: "pointer" }}>🔖</span>
+        <span style={{ fontSize: "24px", cursor: "pointer" }} onClick={() => navigate("/course/profile")}>👤</span>
       </div>
 
       {/* Hero Section */}

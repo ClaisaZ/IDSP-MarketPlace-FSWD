@@ -7,10 +7,15 @@ const INTERESTS = [
   "Design", "Creativity", "Tech", "Math",
   "Marketing", "Finance", "Fine Art", "Writing",
   "Sales", "Teaching", "Coding", "Research",
-  "Fashion", "Hair", "Pottery", "Cooking"
+  "Fashion", "Hair", "Pottery", "Cooking",
+  "Photography", "Music", "Video Editing", "Public Speaking",
+  "Leadership", "UI/UX", "Animation", "Game Dev",
+  "AI", "Data Science", "Fitness", "Nutrition",
+  "Languages", "Entrepreneurship",
 ];
 
 export default function EditProfile() {
+  const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
@@ -25,6 +30,7 @@ export default function EditProfile() {
   const [formData, setFormData] = useState({
     name: "",
     bio: "",
+    position: "",
     instagram: "",
     facebook: "",
     interests: [] as string[],
@@ -50,6 +56,7 @@ export default function EditProfile() {
         interests: user.interests || [],
         enablePosts: user.enablePosts || false,
         profilePicture: user.profilePicture || "",
+        position: user.position || ""
       });
     } catch (error) {
       console.error("Failed to fetch profile:", error);
@@ -58,6 +65,7 @@ export default function EditProfile() {
   fetchProfile();
   }, []);
   const handleSave = async () => {
+  setIsSaving(true);
   try {
     const token = localStorage.getItem("token");
 
@@ -69,6 +77,7 @@ export default function EditProfile() {
         instagram: formData.instagram,
         facebook: formData.facebook,
       },
+      position: formData.position,
       enablePosts: formData.enablePosts,
       profilePicture: formData.profilePicture,
     }, {
@@ -80,6 +89,8 @@ export default function EditProfile() {
     navigate("/course/profile");
   } catch (error) {
     console.error("Failed to save profile:", error);
+  } finally {
+    setIsSaving(false);
   }
 };
   return (
@@ -116,8 +127,16 @@ export default function EditProfile() {
         </div>
 
         <div className="input-group">
+          <label className="input-label">Position / Job Title</label>
+          <input type="text" className="text-input" placeholder="e.g. UX Designer"
+            value={formData.position}
+            onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+          />
+        </div>
+
+        <div className="input-group">
           <label className="input-label">Describe Yourself</label>
-          <input type="text" className="text-input" placeholder="Software Engineer"
+          <input type="text" className="text-input" placeholder="Description"
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
           />
@@ -136,14 +155,6 @@ export default function EditProfile() {
           <input type="text" className="text-input" placeholder="https://facebook.com/username"
             value={formData.facebook}
             onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
-          />
-        </div>
-
-        <div className="input-group">
-          <label className="input-label">Describe Your Interests</label>
-          <textarea className="text-input" placeholder="Type" rows={4}
-            value={formData.bio}
-            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
           />
         </div>
 
@@ -179,8 +190,8 @@ export default function EditProfile() {
         </div>
       </div>
 
-      <button className="primary-button" style={{ marginTop: "20px" }} onClick={handleSave}>
-        Save
+      <button className="primary-button" style={{ marginTop: "20px" }} onClick={handleSave}disabled={isSaving}>
+        {isSaving ? "Saving..." : "Save"}
       </button>
     </div>
   );
