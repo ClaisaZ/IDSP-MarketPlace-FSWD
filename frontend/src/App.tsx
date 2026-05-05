@@ -1,6 +1,9 @@
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
 
+import AccountCreated from "./components/AccountCreated";
+import EditProfile from "./components/EditProfile";
+import HostWorkshopForm from "./components/HostWorkshopForm";
 import Login from "./components/login";
 import PaymentDetails from "./components/PaymentDetails";
 import PaymentSelection from "./components/PaymentSelection";
@@ -8,12 +11,11 @@ import Profile from "./components/Profile";
 import Receipt from "./components/Reciept";
 import Registration from "./components/Registration";
 import Signup from "./components/Signup";
-import Welcome from "./components/Welcome";
-import { CheckoutProvider } from "./context/CheckoutProvider";
-import WorkshopDetails from "./components/WorkshopDetails";
 import SkillMatching from "./components/SkillMatching";
-import AccountCreated from "./components/AccountCreated";
-import EditProfile from "./components/EditProfile";
+import Welcome from "./components/Welcome";
+import WorkshopDetails from "./components/WorkshopDetails";
+import WorkshopPreview from "./components/WorkshopPreview";
+import { CheckoutProvider } from "./context/CheckoutProvider";
 
 function CourseLayout() {
   return (
@@ -102,6 +104,8 @@ function App() {
           />
           <Route path="/skill-matching" element={<SkillMatching />} />
           <Route path="/account-created" element={<AccountCreated />} />
+          <Route path="/host" element={<HostWorkshopForm />} />
+          <Route path="/host/preview" element={<WorkshopPreview />} />
 
           {/* The URL-Based Course Flow */}
           <Route path="/course" element={<CourseLayout />}>
