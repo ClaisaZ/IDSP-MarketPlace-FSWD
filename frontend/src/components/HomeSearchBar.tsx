@@ -1,4 +1,12 @@
-function HomeSearchBar() {
+import { IoSearch } from "react-icons/io5";
+
+function HomeSearchBar({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+}) {
   return (
     <div
       style={{
@@ -10,9 +18,11 @@ function HomeSearchBar() {
         gap: "8px",
       }}
     >
-      <span style={{ color: "white", fontSize: "14px" }}>⌕</span>
+      <span style={{ color: "white"}}><IoSearch /></span>
 
       <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         placeholder="Search..."
         style={{
           flex: 1,
@@ -20,13 +30,25 @@ function HomeSearchBar() {
           border: "none",
           outline: "none",
           color: "white",
-          fontSize: "12px",
         }}
       />
 
-      <span style={{ color: "white", fontSize: "14px" }}>⚙</span>
+      {value.length > 0 && (
+        <button
+          onClick={() => onChange("")}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "white",
+            fontSize: "16px",
+            cursor: "pointer",
+          }}
+        >
+          ✕
+        </button>
+      )}
     </div>
   );
 }
 
-export default HomeSearchBar;
+export default HomeSearchBar
