@@ -3,6 +3,7 @@ import "./App.css";
 
 import AccountCreated from "./components/AccountCreated";
 import EditProfile from "./components/EditProfile";
+import Home from "./components/Home";
 import HostWorkshopForm from "./components/HostWorkshopForm";
 import Login from "./components/login";
 import PaymentDetails from "./components/PaymentDetails";
@@ -111,6 +112,7 @@ function App() {
           <Route path="/account-created" element={<AccountCreated />} />
           <Route path="/host" element={<HostWorkshopForm />} />
           <Route path="/host/preview" element={<WorkshopPreview />} />
+          <Route path="/home" element={<Home />} />
 
           {/* The URL-Based Course Flow */}
           <Route path="/course" element={<CourseLayout />}>
