@@ -72,6 +72,11 @@ function App() {
                       Test: Skill match page after register
                     </button>
                   </Link>
+                  <Link to="/home" style={{ textDecoration: "none" }}>
+                    <button className="primary-button" style={{ width: "100%" }}>
+                      Test: home page
+                    </button>
+                  </Link>
                 </div>
               </div>
             }
