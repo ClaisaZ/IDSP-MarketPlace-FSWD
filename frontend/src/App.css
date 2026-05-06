@@ -230,6 +230,20 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
+.signout-btn {
+  background-color: #7c3aed;
+  color: white;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
 .profile-info {
   display: flex;
   align-items: center;
@@ -656,6 +670,20 @@ textarea.bordered-input {
   margin-top: 10px;
 }
 
+.delete-workshop-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 10;
+}
+
 /*  HOST WORKSHOP PREVIEW SPECIFIC  */
 
 .badge-open {
@@ -713,4 +741,16 @@ textarea.bordered-input {
 
 .btn-dark-purple:active {
   background-color: #3d0878;
+}
+
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-header-row .btn-dark-purple {
+  width: auto;
+  padding: 10px 20px;
+  font-size: 1rem;
 }
