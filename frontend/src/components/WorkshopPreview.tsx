@@ -6,6 +6,24 @@ const WorkshopPreview: React.FC = () => {
   const location = useLocation();
   const [showModal, setShowModal] = useState(false);
 
+  const handleHost = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await fetch("http://localhost:3000/api/workshops", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+      setShowModal(false);
+      navigate("/course/profile");
+    } catch {
+      alert("Failed to host workshop. Try again.");
+    }
+  };
+
   const data = location.state || {
     name: "Pottery and Sculpting Basics",
     date: "May 20, 2026",
@@ -149,13 +167,7 @@ const WorkshopPreview: React.FC = () => {
             <h2 style={{ fontSize: "1.5rem", fontWeight: "800", marginBottom: "24px", color: "#1a1a1a" }}>
               Ready to host this workshop?
             </h2>
-            <button
-              className="btn-dark-purple"
-              onClick={() => {
-                setShowModal(false);
-                alert("Workshop Hosted Successfully!");
-              }}
-            >
+            <button className="btn-dark-purple" onClick={handleHost}>
               Yes
             </button>
             <button
