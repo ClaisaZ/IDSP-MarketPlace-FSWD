@@ -14,6 +14,7 @@ import WorkshopDetails from "./components/WorkshopDetails";
 import SkillMatching from "./components/SkillMatching";
 import AccountCreated from "./components/AccountCreated";
 import EditProfile from "./components/EditProfile";
+import Home from "./components/Home";
 
 function CourseLayout() {
   return (
@@ -102,6 +103,7 @@ function App() {
           />
           <Route path="/skill-matching" element={<SkillMatching />} />
           <Route path="/account-created" element={<AccountCreated />} />
+          <Route path="/home" element={<Home />} />
 
           {/* The URL-Based Course Flow */}
           <Route path="/course" element={<CourseLayout />}>
