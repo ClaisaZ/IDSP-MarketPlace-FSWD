@@ -1,38 +1,35 @@
+require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
-const path = require("path");
-const fs = require("fs");
+const { v2: cloudinary } = require("cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const app = express();
 app.use(cors());
 
-const uploadDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "workshops",
+    allowed_formats: ["jpg", "jpeg", "png"],
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 app.post("/api/media/upload", upload.single("image"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
-  const fileUrl = `http://localhost:5000/media/${req.file.filename}`;
-  res.json({ message: "File uploaded successfully", imageUrl: fileUrl });
+  res.json({ imageUrl: req.file.path });
 });
-
-app.use("/media", express.static(uploadDir));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Media server running on port ${PORT}`));
