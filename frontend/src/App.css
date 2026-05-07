@@ -754,3 +754,8 @@ textarea.bordered-input {
   padding: 10px 20px;
   font-size: 1rem;
 }
+
+/* Testing carousel here */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
