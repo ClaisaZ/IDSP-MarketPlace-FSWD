@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCheckout } from "../context/useCheckout";
 
 const ONLINE_METHODS: { label: string; icon: string; method: "Visa" | "PayPal" }[] = [
@@ -11,9 +11,12 @@ const PaymentSelection: React.FC = () => {
   const { dispatch } = useCheckout();
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const workshopId = location.state?.workshopId;
+
   const handlePaymentSelect = (method: "Visa" | "PayPal") => {
     dispatch({ type: "SET_PAYMENT_METHOD", payload: method });
-    navigate("/course/purchase");
+    navigate("/course/purchase", { state: { workshopId } });
   };
 
   return (
