@@ -16,10 +16,12 @@ function FeaturedEventCard({ event }: { event: Event }) {
         <div
             style={{
                 width: "300px",
+                height: "440px",
                 background: "black",
                 borderRadius: "10px",
                 padding: "7px",
                 color: "white",
+                overflow: "hidden",
             }}
         >
             <img

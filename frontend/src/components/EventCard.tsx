@@ -1,7 +1,7 @@
 import { CiImageOff } from "react-icons/ci";
 import { FaRegCalendarAlt } from "react-icons/fa";
-import { IoTimeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { IoTimeOutline } from "react-icons/io5";
 
 type Event = {
   _id?: string;

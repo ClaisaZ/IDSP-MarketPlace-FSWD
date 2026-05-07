@@ -212,7 +212,7 @@ function Home() {
         {filteredEvents.length === 0 ? (
           <p style={{ textAlign: "center", marginTop: "20px" }}>No events match your search</p>
         ) : (
-          filteredEvents.map((event) => <EventCard key={event.title} event={event} />)
+          filteredEvents.map((event, index) => <EventCard key={`${event.title}-${index}`} event={event} />)
         )}
       </div>
     </div>
