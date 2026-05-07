@@ -12,6 +12,16 @@ const workshopSchema = new mongoose.Schema(
     seats: String,
     imageUrl: String,
     hostedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    reviews: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        name: String,
+        comment: String,
+        rating: Number,
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true },
 );
