@@ -1,14 +1,96 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+
+type Review = {
+  name: string;
+  comment: string;
+  rating: number;
+};
+
+type Attendee = {
+  _id: string;
+  name: string;
+  profilePicture: string | null;
+};
+
+type Host = {
+  _id: string;
+  name: string;
+  profilePicture: string | null;
+};
 
 const WorkshopPreview: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showModal, setShowModal] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
+  const data = location.state || {
+    name: "Pottery and Sculpting Basics",
+    date: "May 20, 2026",
+    time: "10:00 AM - 11:35 AM",
+    location: "33 W 8th Ave, Vancouver",
+    about:
+      "This workshop will cover the fundamental techniques of pottery and sculpting. Participants will learn hand-building methods such as pinch pots, coiling, and slab construction...",
+    ticketPrice: "$50",
+    applicationPeriod: "March 20, 2026 - April 27, 2026",
+    seats: "35",
+  };
+
+  const token = localStorage.getItem("token");
+  // Decod=ing JWT to get current user ID for owner check
+  const currentUserId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+  const isOwner =
+    data.hostedBy &&
+    currentUserId &&
+    (typeof data.hostedBy === "object" ? data.hostedBy._id : data.hostedBy).toString() === currentUserId;
+
+  const [workshopData, setWorkshopData] = useState(data);
+
+  useEffect(() => {
+    const fetchWorkshop = async () => {
+      if (!data._id) return;
+      try {
+        const res = await fetch(`http://localhost:3000/api/workshops/${data._id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const fresh = await res.json();
+        setWorkshopData(fresh);
+      } catch {
+        console.error("Failed to fetch workshop");
+      }
+    };
+    fetchWorkshop();
+  }, [data._id, token]);
+
+  const reviews: Review[] = workshopData.reviews || [];
+
+  // Calculate avg rating from all reviews
+  const avgRating =
+    reviews.length > 0
+      ? (reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / reviews.length).toFixed(1)
+      : "0.0";
+
+  const visibleReviews = showAllReviews ? reviews : reviews.slice(0, 3);
+  const attendees: Attendee[] = workshopData.attendees || [];
+  const host: Host | null = typeof workshopData.hostedBy === "object" ? workshopData.hostedBy : null;
+
+  const totalSeats = parseInt(workshopData.seats) || 0;
+  const capacityPercent = totalSeats > 0 ? attendees.length / totalSeats : 0;
+
+  const getStatusBadge = () => {
+    if (capacityPercent >= 1)
+      return { label: "Closing", color: "#fee2e2", borderColor: "#ff8b8b", textColor: "#ff8b8b" };
+    if (capacityPercent >= 0.75)
+      return { label: "Filling", color: "#fef9c3", borderColor: "#eab308", textColor: "#a16207" };
+    return { label: "Open", color: "#dff7e2", borderColor: "var(--text-dark)", textColor: "var(--text-dark)" };
+  };
+
+  const badge = getStatusBadge();
+
+  // POST workshop to backend -> called from the confirmation modal
   const handleHost = async () => {
     try {
-      const token = localStorage.getItem("token");
       await fetch("http://localhost:3000/api/workshops", {
         method: "POST",
         headers: {
@@ -24,22 +106,14 @@ const WorkshopPreview: React.FC = () => {
     }
   };
 
-  const data = location.state || {
-    name: "Pottery and Sculpting Basics",
-    date: "May 20, 2026",
-    time: "10:00 AM - 11:35 AM",
-    location: "33 W 8th Ave, Vancouver",
-    about:
-      "This workshop will cover the fundamental techniques of pottery and sculpting. Participants will learn hand-building methods such as pinch pots, coiling, and slab construction...",
-    ticketPrice: "$50",
-    applicationPeriod: "March 20, 2026 - April 27, 2026",
-    seats: "35",
+  // Navigating to registration flow, passing workshopId so it can be
+  // recorded as an attendee after payment is complete
+  const handleAttend = () => {
+    navigate("/course/register", { state: { workshopId: data._id } });
   };
 
-  const hostAvatar = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80";
-
   return (
-    <div className="host-page-container" style={{ padding: "0 20px" }}>
+    <div className="host-page-container" style={{ padding: "0 20px 160px 20px" }}>
       {/* Header */}
       <div
         className="screen-header"
@@ -60,28 +134,61 @@ const WorkshopPreview: React.FC = () => {
 
       {/* Hero Image */}
       <img
-        src={data.imageUrl || "https://placehold.co/800x400?text=Workshop+Image"}
-        alt={data.name || "Workshop"}
+        src={workshopData.imageUrl || "https://placehold.co/800x400?text=Workshop+Image"}
+        alt={workshopData.name || "Workshop"}
         className="hero-image"
       />
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-        <span className="badge-open">Open</span>
-        <span style={{ fontWeight: "600", fontSize: "16px" }}>★ 0.0</span>
+        <span
+          style={{
+            backgroundColor: badge.color,
+            color: badge.textColor,
+            padding: "6px 20px",
+            borderRadius: "20px",
+            border: `1px solid ${badge.borderColor}`,
+            fontSize: "14px",
+            fontWeight: "600",
+          }}
+        >
+          {badge.label}
+        </span>
+        <span style={{ fontWeight: "600", fontSize: "16px" }}>
+          ★ {avgRating} ({reviews.length} {reviews.length === 1 ? "review" : "reviews"})
+        </span>
       </div>
 
-      <h3 style={{ fontSize: "22px", margin: "0 0 20px 0", color: "var(--text-dark)" }}>{data.name}</h3>
+      <h3 style={{ fontSize: "22px", margin: "0 0 20px 0", color: "var(--text-dark)" }}>{workshopData.name}</h3>
 
       {/* Host Info */}
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500", marginBottom: "8px" }}>Workshop Host</div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <img
-            src={hostAvatar}
-            alt="Host"
-            style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }}
-          />
-          <span style={{ fontSize: "14px", color: "var(--text-dark)" }}>Jake Cobsey</span>
+          {host?.profilePicture ? (
+            <img
+              src={host.profilePicture}
+              alt={host.name}
+              style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                backgroundColor: "var(--primary-purple)",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "14px",
+                fontWeight: "600",
+              }}
+            >
+              {host?.name ? host.name[0].toUpperCase() : "?"}
+            </div>
+          )}
+          <span style={{ fontSize: "14px", color: "var(--text-dark)" }}>{host?.name || "Unknown Host"}</span>
         </div>
       </div>
 
@@ -89,55 +196,157 @@ const WorkshopPreview: React.FC = () => {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "20px" }}>
         <div>
           <div style={{ fontSize: "16px", fontWeight: "500" }}>Workshop Date</div>
-          <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{data.date}</div>
+          <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.date}</div>
         </div>
         <div>
           <div style={{ fontSize: "16px", fontWeight: "500" }}>Workshop Time</div>
-          <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{data.time}</div>
+          <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.time}</div>
         </div>
       </div>
 
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500" }}>Workshop Location</div>
-        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{data.location}</div>
+        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.location}</div>
       </div>
 
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500" }}>About This Workshop</div>
         <p style={{ fontSize: "14px", color: "var(--text-dark)", lineHeight: "1.5", margin: "5px 0 0 0" }}>
-          {data.about}
+          {workshopData.about}
         </p>
       </div>
 
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500" }}>Ticket Price</div>
-        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{data.ticketPrice}</div>
+        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.ticketPrice}</div>
       </div>
 
       <div style={{ marginBottom: "25px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500" }}>Application Period</div>
-        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{data.applicationPeriod}</div>
+        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.applicationPeriod}</div>
       </div>
 
       {/* Attending Card */}
       <div className="bordered-card-green">
-        <div style={{ fontSize: "18px", fontWeight: "600", marginBottom: "5px" }}>Who is attending?</div>
-        <div style={{ fontSize: "14px" }}>0/{data.seats} Seats</div>
+        <div style={{ fontSize: "18px", fontWeight: "600", marginBottom: "10px" }}>
+          Who is attending? ({attendees.length}/{workshopData.seats} Seats)
+        </div>
+        {attendees.length > 0 ? (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+            {attendees.slice(0, 6).map((attendee) => (
+              <div
+                key={attendee._id}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}
+              >
+                {attendee.profilePicture ? (
+                  <img
+                    src={attendee.profilePicture}
+                    alt={attendee.name}
+                    style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      backgroundColor: "var(--dark-purple)",
+                      color: "white",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "14px",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {attendee.name ? attendee.name[0].toUpperCase() : "?"}
+                  </div>
+                )}
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: "var(--text-dark)",
+                    maxWidth: "50px",
+                    textAlign: "center",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  @{attendee.name}
+                </span>
+              </div>
+            ))}
+            {attendees.length > 6 && (
+              <div style={{ fontSize: "13px", color: "var(--text-gray)", alignSelf: "center" }}>
+                +{attendees.length - 6} more
+              </div>
+            )}
+          </div>
+        ) : (
+          <p style={{ fontSize: "14px", color: "var(--text-dark)", margin: 0 }}>No attendees yet.</p>
+        )}
       </div>
 
       {/* Reviews Card */}
       <div className="bordered-card-white">
-        <div style={{ fontSize: "18px", fontWeight: "600" }}>Reviews</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+          <div style={{ fontSize: "18px", fontWeight: "600" }}>Reviews ({reviews.length})</div>
+          <div style={{ fontSize: "14px", fontWeight: "600", color: "var(--dark-purple)" }}>★ {avgRating}</div>
+        </div>
+        {reviews.length > 0 ? (
+          visibleReviews.map((review: Review, index: number) => (
+            <div key={index} className="review-card">
+              <div className="review-header">
+                <span style={{ fontWeight: "600", fontSize: "14px" }}>{review.name}</span>
+                <span style={{ fontSize: "14px", color: "var(--text-gray)" }}>
+                  {"★".repeat(review.rating)}
+                  {"☆".repeat(5 - review.rating)}
+                </span>
+              </div>
+              <p style={{ fontSize: "14px", color: "var(--text-dark)", margin: 0 }}>{review.comment}</p>
+            </div>
+          ))
+        ) : (
+          <p style={{ fontSize: "14px", color: "var(--text-gray)" }}>No reviews yet.</p>
+        )}
       </div>
+
+      {/* View All Reviews Button - outside card */}
+      {reviews.length > 3 && (
+        <button
+          className="btn-dark-purple"
+          style={{ marginBottom: "20px" }}
+          onClick={() => setShowAllReviews(!showAllReviews)}
+        >
+          {showAllReviews ? "Show Less" : `View All ${reviews.length} Reviews`}
+        </button>
+      )}
 
       {/* Floating Action Buttons */}
       <div className="floating-btn-stack">
-        <button className="btn-dark-purple" onClick={() => navigate(-1)}>
-          Edit Workshop
-        </button>
-        <button className="btn-dark-purple" onClick={() => setShowModal(true)}>
-          Host Workshop
-        </button>
+        {isOwner ? (
+          <>
+            <button className="btn-dark-purple" onClick={() => navigate(-1)}>
+              Edit Workshop
+            </button>
+            <button className="btn-dark-purple" onClick={() => setShowModal(true)}>
+              Host Workshop
+            </button>
+          </>
+        ) : (
+          <>
+            <button className="btn-dark-purple" onClick={handleAttend}>
+              Attend Workshop
+            </button>
+            <button
+              className="btn-dark-purple"
+              onClick={() => navigate("/workshop/review", { state: { workshopId: data._id } })}
+            >
+              Leave a Review
+            </button>
+          </>
+        )}
       </div>
 
       {/* Confirmation Modal */}
