@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCheckout } from "../context/useCheckout";
 
 // Reusable field — same pattern as Registration.tsx
@@ -29,12 +29,18 @@ const PaymentDetails: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  /*
+  workshopId is passed from WorkshopPreview through the navigate state
+  It's carried through the entire checkout flow so the user can be
+  registered as an attendee once payment is complete in Receipt.tsx
+  */
+  const workshopId = location.state?.workshopId;
 
-  // Redirect back to registration if state is wiped (e.g., on page refresh)
+  // Redirect back to registration if state is wiped/missing (e.g., on page refresh)
   useEffect(() => {
     if (!state.registration) {
       console.warn("Registration state missing. Redirecting to start.");
-      // Note: Adjust "/course/register" to your actual first-step route
       navigate("/course", { replace: true });
     }
   }, [state.registration, navigate]);
@@ -42,7 +48,6 @@ const PaymentDetails: React.FC = () => {
   const handlePurchase = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // STRICTLY/Defensivly checking submit
     if (!state.registration) {
       setError("Registration data is missing. Please restart the process.");
       return;
@@ -61,13 +66,12 @@ const PaymentDetails: React.FC = () => {
         paymentMethod: state.paymentMethod,
       });
 
-      navigate("/course/receipt", { state: response.data });
+      // Passing workshopId alongside data so Receipt.tsx can call
+      navigate("/course/receipt", { state: { ...response.data, workshopId } });
     } catch (err) {
-      // SILENT LOGGING: Users will never see this, but we can check it if they report a bug.
       console.error("Payment submission failed:", err);
 
       if (axios.isAxiosError(err) && err.response) {
-        // BACKEND VALIDATION
         const serverMessage =
           err.response.data?.message || err.response.data?.error || "Please check your details and try again.";
         setError(`Server rejected: ${serverMessage}`);

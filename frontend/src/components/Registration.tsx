@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { type Resolver, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCheckout } from "../context/useCheckout";
 import { type RegistrationFormData, registrationSchema } from "../schemas/registrationSchema";
 
@@ -33,6 +33,9 @@ const Registration: React.FC = () => {
     mode: "onBlur",
   });
 
+  const location = useLocation();
+  const workshopId = location.state?.workshopId;
+
   const onSubmit = (data: RegistrationFormData) => {
     dispatch({
       type: "SET_REGISTRATION",
@@ -44,7 +47,7 @@ const Registration: React.FC = () => {
         ticketAmount: 1,
       },
     });
-    navigate("/course/payments");
+    navigate("/course/payments", { state: { workshopId } });
   };
 
   return (

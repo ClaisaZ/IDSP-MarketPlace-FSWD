@@ -1,19 +1,23 @@
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
 
+import AccountCreated from "./components/AccountCreated";
+import EditProfile from "./components/EditProfile";
+import Home from "./components/Home";
+import HostWorkshopForm from "./components/HostWorkshopForm";
 import Login from "./components/login";
 import PaymentDetails from "./components/PaymentDetails";
 import PaymentSelection from "./components/PaymentSelection";
 import Profile from "./components/Profile";
 import Receipt from "./components/Reciept";
 import Registration from "./components/Registration";
+import ReviewForm from "./components/ReviewForm";
 import Signup from "./components/Signup";
-import Welcome from "./components/Welcome";
-import { CheckoutProvider } from "./context/CheckoutProvider";
-import WorkshopDetails from "./components/WorkshopDetails";
 import SkillMatching from "./components/SkillMatching";
-import AccountCreated from "./components/AccountCreated";
-import EditProfile from "./components/EditProfile";
+import Welcome from "./components/Welcome";
+import WorkshopDetails from "./components/WorkshopDetails";
+import WorkshopPreview from "./components/WorkshopPreview";
+import { CheckoutProvider } from "./context/CheckoutProvider";
 
 function CourseLayout() {
   return (
@@ -70,6 +74,11 @@ function App() {
                       Test: Skill match page after register
                     </button>
                   </Link>
+                  <Link to="/home" style={{ textDecoration: "none" }}>
+                    <button className="primary-button" style={{ width: "100%" }}>
+                      Test: home page
+                    </button>
+                  </Link>
                 </div>
               </div>
             }
@@ -102,6 +111,10 @@ function App() {
           />
           <Route path="/skill-matching" element={<SkillMatching />} />
           <Route path="/account-created" element={<AccountCreated />} />
+          <Route path="/host" element={<HostWorkshopForm />} />
+          <Route path="/host/preview" element={<WorkshopPreview />} />
+          <Route path="/workshop/review" element={<ReviewForm />} />
+          <Route path="/home" element={<Home />} />
 
           {/* The URL-Based Course Flow */}
           <Route path="/course" element={<CourseLayout />}>
