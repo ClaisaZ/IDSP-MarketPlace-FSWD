@@ -29,6 +29,7 @@ const Receipt: React.FC = () => {
 
   const receiptData = location.state;
 
+  // Redirects to start if receipt data is missing
   if (!receiptData) {
     return <Navigate to="/course" replace />;
   }
@@ -38,7 +39,25 @@ const Receipt: React.FC = () => {
   const email = state.registration?.email || "myemail@bcit.ca";
   const phone = state.registration?.phone || "+1 577 656 6789";
   const ticketAmount = state.registration?.ticketAmount || 1;
+  // TODO: totalPayment is hardcoded at $24/ticket -->  we will update when dynamic pricing is added
   const totalPayment = ticketAmount * 24;
+
+  // If user came from a workshop, we are going to register them as an attendee after payment
+  // workshopId is passed through the entire checkout flow from WorkshopPreview
+  const handleComplete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (receiptData.workshopId) {
+        await fetch(`http://localhost:3000/api/workshops/${receiptData.workshopId}/attend`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+    } catch {
+      console.error("Failed to register attendance");
+    }
+    navigate("/course/profile");
+  };
 
   return (
     <>
@@ -141,7 +160,7 @@ const Receipt: React.FC = () => {
           </span>
         </div>
 
-        <button className="primary-button" onClick={() => navigate("/course/profile")}>
+        <button className="primary-button" onClick={handleComplete}>
           Complete
         </button>
       </div>
