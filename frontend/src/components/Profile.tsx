@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
+
 type User = {
   name: string;
   role: string;
@@ -24,17 +24,23 @@ type User = {
   position: string;
 };
 
+type Workshop = {
+  _id: string;
+  name: string;
+  imageUrl: string;
+};
+
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
+  const [hostedWorkshops, setHostedWorkshops] = useState<Workshop[]>([]);
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get("http://localhost:3000/api/profile/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setUser(response.data);
       } catch (error) {
@@ -44,16 +50,56 @@ export default function Profile() {
     fetchProfile();
   }, []);
 
+  useEffect(() => {
+    const fetchHosted = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:3000/api/workshops/mine", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setHostedWorkshops(res.data);
+      } catch (error) {
+        console.error("Failed to fetch hosted workshops:", error);
+      }
+    };
+    fetchHosted();
+  }, []);
+
+  const handleDelete = async (workshopId: string) => {
+    if (!confirm("Are you sure you want to delete this workshop?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:3000/api/workshops/${workshopId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setHostedWorkshops((prev) => prev.filter((w) => w._id !== workshopId));
+    } catch (error) {
+      console.error("Failed to delete workshop:", error);
+    }
+  };
+
   if (!user) {
     return <div className="profile-page">Loading...</div>;
   }
+
   return (
     <div className="profile-page">
       <div className="screen-header">
         <h2 className="header-title">Profile</h2>
-        <button className="edit-btn" onClick={() => navigate("/course/profile/edit")}>
-          ✏️ Edit
-        </button>
+        <div className="header-actions">
+          <button
+            className="signout-btn"
+            onClick={() => {
+              localStorage.removeItem("token");
+              navigate("/login");
+            }}
+          >
+            🚪 Sign Out
+          </button>
+          <button className="edit-btn" onClick={() => navigate("/course/profile/edit")}>
+            ✏️ Edit
+          </button>
+        </div>
       </div>
       <div className="profile-info">
         <div className="avatar-wrapper">
@@ -129,10 +175,38 @@ export default function Profile() {
             ))}
           </div>
         )}
-        {/* Host Workshop Button */}
-        <button className="btn-dark-purple" onClick={() => navigate("/host")}>
-          🎓 Host Workshop
-        </button>
+
+        <div className="section-header-row">
+          <h2 className="header-title">Hosted Workshops</h2>
+          <button className="btn-dark-purple" onClick={() => navigate("/host")}>
+            🎓 Host
+          </button>
+        </div>
+        <div className="posts-grid">
+          {hostedWorkshops.map((workshop) => (
+            <div
+              key={workshop._id}
+              className="post-card"
+              onClick={() => navigate("/host/preview", { state: workshop })}
+            >
+              <img
+                src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
+                alt={workshop.name}
+                className="post-image"
+              />
+              <button
+                className="delete-workshop-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(workshop._id);
+                }}
+              >
+                🗑️
+              </button>
+              <p className="post-caption">{workshop.name}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

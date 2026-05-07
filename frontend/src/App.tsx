@@ -11,6 +11,7 @@ import PaymentSelection from "./components/PaymentSelection";
 import Profile from "./components/Profile";
 import Receipt from "./components/Reciept";
 import Registration from "./components/Registration";
+import ReviewForm from "./components/ReviewForm";
 import Signup from "./components/Signup";
 import SkillMatching from "./components/SkillMatching";
 import Welcome from "./components/Welcome";
@@ -112,6 +113,7 @@ function App() {
           <Route path="/account-created" element={<AccountCreated />} />
           <Route path="/host" element={<HostWorkshopForm />} />
           <Route path="/host/preview" element={<WorkshopPreview />} />
+          <Route path="/workshop/review" element={<ReviewForm />} />
           <Route path="/home" element={<Home />} />
 
           {/* The URL-Based Course Flow */}
