@@ -31,6 +31,20 @@ async function startServer() {
       serverSelectionTimeoutMS: 5000,
     });
     console.log("✅ Connected to MongoDB Atlas");
+
+    // Pinging the DB every 5 minutes to prevent cold starts
+    setInterval(
+      async () => {
+        try {
+          await mongoose.connection.db.admin().ping();
+          console.log("DB keepalive ping");
+        } catch (err) {
+          console.error("Keepalive ping failed:", err);
+        }
+      },
+      5 * 60 * 1000,
+    );
+
     app.listen(PORT, () => console.log(`🚀 App listening at http://localhost:${PORT}`));
   } catch (err) {
     console.error("❌ MongoDB connection failed:", err);

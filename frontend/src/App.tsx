@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import "./App.css";
@@ -20,6 +20,14 @@ const Signup = lazy(() => import("./components/Signup"));
 const SkillMatching = lazy(() => import("./components/SkillMatching"));
 const Welcome = lazy(() => import("./components/Welcome"));
 const AccountCreated = lazy(() => import("./components/AccountCreated"));
+
+const preloadRoutes = () => {
+  import("./components/Home");
+  import("./components/WorkshopPreview");
+  import("./components/Profile");
+  import("./components/login");
+  import("./components/Registration");
+};
 
 const LoadingScreen = () => (
   <div
@@ -45,6 +53,9 @@ function CourseLayout() {
 }
 
 function App() {
+  useEffect(() => {
+    preloadRoutes();
+  }, []);
   return (
     <div className="app-container">
       <Toaster position="top-right" richColors />
