@@ -13,7 +13,7 @@ router.get("/me", protectRoute, async (req, res) => {
   }
 });
 
-router.get("/:id", protectRoute, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
