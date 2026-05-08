@@ -3,13 +3,14 @@ const router = express.Router();
 const { protectRoute } = require("../middleware/authMiddleware");
 const Workshop = require("../models/Workshop");
 
-router.post("/", protectRoute, async (req, res) => {
+router.get("/", protectRoute, async (req, res) => {
   try {
-    const workshop = new Workshop({ ...req.body, hostedBy: req.user.id });
-    await workshop.save();
-    res.json(workshop);
+    const workshops = await Workshop.find()
+      .populate("hostedBy", "name profilePicture")
+      .populate("attendees", "name profilePicture");
+    res.json(workshops);
   } catch (err) {
-    res.status(500).json({ error: "Failed to save workshop" });
+    res.status(500).json({ error: "Failed to fetch workshops" });
   }
 });
 
@@ -72,6 +73,7 @@ router.post("/:id/review", protectRoute, async (req, res) => {
     await workshop.save();
     res.json(workshop);
   } catch (err) {
+    console.error("Review error:", err);
     res.status(500).json({ error: "Failed to post review" });
   }
 });

@@ -39,42 +39,27 @@ export default function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchAll = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setUser(null);
+        setNotLoggedIn(true);
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          setUser(null);
-          setNotLoggedIn(true);
-          return;
-        }
-
-        const response = await axios.get("http://localhost:3000/api/profile/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUser(response.data);
+        const [profileRes, workshopsRes] = await Promise.all([
+          axios.get("http://localhost:3000/api/profile/me", { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get("http://localhost:3000/api/workshops/mine", { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+        setUser(profileRes.data);
+        setHostedWorkshops(workshopsRes.data);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
         toast.error("Failed to load profile. Please try again.");
       }
     };
-    fetchProfile();
-  }, []);
-
-  useEffect(() => {
-    const fetchHosted = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:3000/api/workshops/mine", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setHostedWorkshops(res.data);
-      } catch (error) {
-        console.error("Failed to fetch hosted workshops:", error);
-        toast.error("Failed to fetch the hosted workshops. Please try again.");
-      }
-    };
-    fetchHosted();
+    fetchAll();
   }, []);
 
   const handleDelete = async (workshopId: string) => {
@@ -219,7 +204,7 @@ export default function Profile() {
             <div
               key={workshop._id}
               className="post-card"
-              onClick={() => navigate("/host/preview", { state: workshop })}
+              onClick={() => navigate("/host/preview", { state: { ...workshop, _id: workshop._id } })}
             >
               <img
                 src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
