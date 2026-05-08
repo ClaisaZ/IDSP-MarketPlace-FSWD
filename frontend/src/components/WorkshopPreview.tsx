@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 type Review = {
   name: string;
@@ -61,6 +62,7 @@ const WorkshopPreview: React.FC = () => {
         setWorkshopData(fresh);
       } catch {
         console.error("Failed to fetch workshop");
+        toast.error("Failed to load workshop. Please try again.");
       }
     };
     fetchWorkshop();
@@ -108,9 +110,12 @@ const WorkshopPreview: React.FC = () => {
         body: JSON.stringify(data),
       });
       setShowModal(false);
-      navigate("/course/profile");
+      toast.success("Workshop hosted successfully!");
+      setTimeout(() => {
+        navigate("/course/profile");
+      }, 1000);
     } catch {
-      alert("Failed to host workshop. Try again.");
+      toast.error("Failed to host workshop. Try again.");
     }
   };
 

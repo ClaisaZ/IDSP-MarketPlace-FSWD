@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const HostWorkshopForm: React.FC = () => {
   const navigate = useNavigate();
@@ -52,6 +53,7 @@ const HostWorkshopForm: React.FC = () => {
       setFormData((prev) => ({ ...prev, imageUrl: data.imageUrl }));
     } catch {
       setUploadError("Image upload failed. Please try again.");
+      toast.error("Image upload failed. Please try again.");
       setImageName("");
     } finally {
       setIsUploading(false);

@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useCheckout } from "../context/useCheckout";
 
 // Reusable field — same pattern as Registration.tsx
@@ -70,6 +71,7 @@ const PaymentDetails: React.FC = () => {
       navigate("/course/receipt", { state: { ...response.data, workshopId } });
     } catch (err) {
       console.error("Payment submission failed:", err);
+      toast.error("Payment failed. Please try again.");
 
       if (axios.isAxiosError(err) && err.response) {
         const serverMessage =
