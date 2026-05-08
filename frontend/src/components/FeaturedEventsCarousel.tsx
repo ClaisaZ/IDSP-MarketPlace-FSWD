@@ -7,6 +7,11 @@ type Event = {
   time: string;
   image: string;
   category: string;
+  hostedBy?: {
+    _id: string;
+    name: string;
+    profilePicture: string | null;
+  };
 };
 
 function FeaturedEventsCarousel({ events }: { events: Event[] }) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 type Review = {
   name: string;
@@ -38,8 +39,9 @@ const WorkshopPreview: React.FC = () => {
   };
 
   const token = localStorage.getItem("token");
-  // Decod=ing JWT to get current user ID for owner check
+  // Decoding JWT to get current user ID for owner check
   const currentUserId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+  // hostedBy can be a string ID or populated object depending on whether data came from backend or navigation state
   const isOwner =
     data.hostedBy &&
     currentUserId &&
@@ -47,6 +49,8 @@ const WorkshopPreview: React.FC = () => {
 
   const [workshopData, setWorkshopData] = useState(data);
 
+  // Fetch fresh workshop data from backend on mount
+  // Ensures attendees, reviews, and seats are always up to date
   useEffect(() => {
     const fetchWorkshop = async () => {
       if (!data._id) return;
@@ -58,6 +62,7 @@ const WorkshopPreview: React.FC = () => {
         setWorkshopData(fresh);
       } catch {
         console.error("Failed to fetch workshop");
+        toast.error("Failed to load workshop. Please try again.");
       }
     };
     fetchWorkshop();
@@ -71,6 +76,7 @@ const WorkshopPreview: React.FC = () => {
       ? (reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / reviews.length).toFixed(1)
       : "0.0";
 
+  // Only show first 3 reviews by default - user can expand with "View All"
   const visibleReviews = showAllReviews ? reviews : reviews.slice(0, 3);
   const attendees: Attendee[] = workshopData.attendees || [];
   const host: Host | null = typeof workshopData.hostedBy === "object" ? workshopData.hostedBy : null;
@@ -78,8 +84,11 @@ const WorkshopPreview: React.FC = () => {
   const totalSeats = parseInt(workshopData.seats) || 0;
   const capacityPercent = totalSeats > 0 ? attendees.length / totalSeats : 0;
 
+  // Open → Filling (75%+) → Closing (90%+) → Closed (100%)
   const getStatusBadge = () => {
     if (capacityPercent >= 1)
+      return { label: "Closed", color: "#fee2e2", borderColor: "#ff8b8b", textColor: "#ff8b8b" };
+    if (capacityPercent >= 0.9)
       return { label: "Closing", color: "#fee2e2", borderColor: "#ff8b8b", textColor: "#ff8b8b" };
     if (capacityPercent >= 0.75)
       return { label: "Filling", color: "#fef9c3", borderColor: "#eab308", textColor: "#a16207" };
@@ -87,6 +96,7 @@ const WorkshopPreview: React.FC = () => {
   };
 
   const badge = getStatusBadge();
+  const isClosed = capacityPercent >= 1;
 
   // POST workshop to backend -> called from the confirmation modal
   const handleHost = async () => {
@@ -100,9 +110,12 @@ const WorkshopPreview: React.FC = () => {
         body: JSON.stringify(data),
       });
       setShowModal(false);
-      navigate("/course/profile");
+      toast.success("Workshop hosted successfully!");
+      setTimeout(() => {
+        navigate("/course/profile");
+      }, 1000);
     } catch {
-      alert("Failed to host workshop. Try again.");
+      toast.error("Failed to host workshop. Try again.");
     }
   };
 
@@ -226,8 +239,16 @@ const WorkshopPreview: React.FC = () => {
         <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.applicationPeriod}</div>
       </div>
 
-      {/* Attending Card */}
-      <div className="bordered-card-green">
+      {/* Attending Card -> color changes based on capacity */}
+      <div
+        style={{
+          backgroundColor: isClosed ? "#fee2e2" : capacityPercent >= 0.75 ? "#fef9c3" : "#dff7e2",
+          border: `2px solid ${isClosed ? "#ff8b8b" : capacityPercent >= 0.75 ? "#eab308" : "#500aa0"}`,
+          borderRadius: "12px",
+          padding: "20px",
+          marginBottom: "20px",
+        }}
+      >
         <div style={{ fontSize: "18px", fontWeight: "600", marginBottom: "10px" }}>
           Who is attending? ({attendees.length}/{workshopData.seats} Seats)
         </div>
@@ -334,6 +355,11 @@ const WorkshopPreview: React.FC = () => {
               Host Workshop
             </button>
           </>
+        ) : isClosed ? (
+          // Workshop is full - block registration
+          <button className="btn-dark-purple" disabled style={{ opacity: 0.5, cursor: "not-allowed" }}>
+            Workshop Full
+          </button>
         ) : (
           <>
             <button className="btn-dark-purple" onClick={handleAttend}>

@@ -4,6 +4,11 @@ import { CiImageOff } from "react-icons/ci";
 type Event = {
     title: string;
     instructor: string;
+    hostedBy?: {
+    _id: string;
+    name: string;
+    profilePicture: string | null;
+    };
     time: string;
     image: string;
     category: string;
@@ -16,10 +21,12 @@ function FeaturedEventCard({ event }: { event: Event }) {
         <div
             style={{
                 width: "300px",
+                height: "440px",
                 background: "black",
                 borderRadius: "10px",
                 padding: "7px",
                 color: "white",
+                overflow: "hidden",
             }}
         >
             <img
@@ -59,11 +66,24 @@ function FeaturedEventCard({ event }: { event: Event }) {
                 {event.location || "Burnaby, Metro"}
             </p>
 
-            <p style={{ fontSize: "16px", margin: "4px 0" }}>
-                <CiImageOff style={{ marginRight: "4px", marginTop: "1px", paddingTop: "2px" }}/>  
-                {/* Need to add instructor profile picture here */}
-                {event.instructor}
-            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                {event.hostedBy?.profilePicture ? (
+                <img
+                    src={event.hostedBy.profilePicture}
+                    alt={event.hostedBy.name}
+                    className="avatar"
+                    style={{ width: "24px", height: "24px" }}
+                />
+                ) : (
+                <div className="avatar-placeholder"
+                    style={{ width: "24px", height: "24px", fontSize: "10px" }}>
+                    {(event.hostedBy?.name || event.instructor)[0].toUpperCase()}
+                </div>
+                )}
+                <p style={{ margin: 0, fontSize: "12px", fontWeight: "600" }}>
+                {event.hostedBy?.name || event.instructor}
+                </p>
+            </div>
         </div>
     );
 }

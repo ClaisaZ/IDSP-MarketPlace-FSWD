@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 type User = {
   name: string;
@@ -33,18 +34,28 @@ type Workshop = {
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
   const [hostedWorkshops, setHostedWorkshops] = useState<Workshop[]>([]);
+  const [notLoggedIn, setNotLoggedIn] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
+
+        if (!token) {
+          setUser(null);
+          setNotLoggedIn(true);
+          return;
+        }
+
         const response = await axios.get("http://localhost:3000/api/profile/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(response.data);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
+        toast.error("Failed to load profile. Please try again.");
       }
     };
     fetchProfile();
@@ -60,6 +71,7 @@ export default function Profile() {
         setHostedWorkshops(res.data);
       } catch (error) {
         console.error("Failed to fetch hosted workshops:", error);
+        toast.error("Failed to fetch the hosted workshops. Please try again.");
       }
     };
     fetchHosted();
@@ -75,9 +87,29 @@ export default function Profile() {
       setHostedWorkshops((prev) => prev.filter((w) => w._id !== workshopId));
     } catch (error) {
       console.error("Failed to delete workshop:", error);
+      toast.error("Failed to delete workshop. Please try again.");
     }
   };
-
+  if (notLoggedIn) {
+    return (
+      <div className="profile-page">
+        <div className="purple-card">
+          <h4>You don't have an account yet</h4>
+          <p style={{ color: "white", marginBottom: "20px", textAlign: "center" }}>Want to sign up?</p>
+          <button className="primary-button" onClick={() => navigate("/signup")}>
+            Yes, Sign Up
+          </button>
+          <button
+            className="primary-button"
+            style={{ marginTop: "10px", background: "var(--dark-purple)" }}
+            onClick={() => navigate("/course")}
+          >
+            No, Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
   if (!user) {
     return <div className="profile-page">Loading...</div>;
   }

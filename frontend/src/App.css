@@ -5,6 +5,7 @@
   --text-dark: #1a1a1a;
   --text-gray: #666666;
   --white: #ffffff;
+  --primary-dark-blue: #1a237e;
 }
 
 #root {
@@ -254,7 +255,7 @@ body {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: var(--primary-purple);
+  background: var(--primary-dark-blue);
   color: white;
   display: flex;
   align-items: center;

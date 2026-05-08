@@ -1,6 +1,7 @@
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
 
+import { Toaster } from "sonner";
 import AccountCreated from "./components/AccountCreated";
 import EditProfile from "./components/EditProfile";
 import Home from "./components/Home";
@@ -30,6 +31,7 @@ function CourseLayout() {
 function App() {
   return (
     <div className="app-container">
+      <Toaster position="top-right" richColors />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Welcome />} />
