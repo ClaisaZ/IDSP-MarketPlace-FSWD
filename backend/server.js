@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const profileRoute = require("./routes/profile");
 const registerCourseRoute = require("./routes/register"); // Course Registration
 const authRoutes = require("./routes/authRoutes"); // User login/signup
-const postsRoute = require("./routes/post");
 const workshopRoutes = require("./routes/workshopRoutes");
 
 const app = express();
@@ -14,8 +13,7 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use("/api/workshops", workshopRoutes);
-app.use("/api/profile", require("./routes/profile"));
+
 
 // Connect to MongoDB Atlas
 async function startServer() {
@@ -25,11 +23,11 @@ async function startServer() {
       serverSelectionTimeoutMS: 5000,
     });
     console.log("✅ Connected to MongoDB Atlas");
-
+    
     app.use("/api/course", registerCourseRoute);
     app.use("/api/profile", profileRoute);
     app.use("/api/auth", authRoutes);
-    app.use("/api/posts", postsRoute);
+    app.use("/api/workshops", workshopRoutes);
     app.get("/", (req, res) => res.send("Hello World!"));
     app.listen(PORT, () => console.log(`🚀 App listening at http://localhost:${PORT}`));
   } catch (err) {
