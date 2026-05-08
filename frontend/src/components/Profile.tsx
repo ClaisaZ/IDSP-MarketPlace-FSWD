@@ -85,6 +85,7 @@ export default function Profile() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setHostedWorkshops((prev) => prev.filter((w) => w._id !== workshopId));
+      toast.success("Workshop deleted");
     } catch (error) {
       console.error("Failed to delete workshop:", error);
       toast.error("Failed to delete workshop. Please try again.");
@@ -123,6 +124,7 @@ export default function Profile() {
             className="signout-btn"
             onClick={() => {
               localStorage.removeItem("token");
+              toast.success("Signed out successfully");
               navigate("/login");
             }}
           >

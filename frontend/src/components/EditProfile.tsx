@@ -39,16 +39,7 @@ const INTERESTS = [
 export default function EditProfile() {
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData({ ...formData, profilePicture: reader.result as string });
-    };
-    reader.readAsDataURL(file);
-  };
   const [formData, setFormData] = useState({
     name: "",
     bio: "",
@@ -59,6 +50,8 @@ export default function EditProfile() {
     enablePosts: false,
     profilePicture: "",
   });
+
+  // Fetch profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -82,46 +75,60 @@ export default function EditProfile() {
         });
       } catch (error) {
         console.error("Failed to fetch profile:", error);
-        toast.error("Failed to load profile. Please try again.");
+        toast.error("Failed to load profile details.");
       }
     };
     fetchProfile();
   }, []);
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      const token = localStorage.getItem("token");
 
-      await axios.post(
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData({ ...formData, profilePicture: reader.result as string });
+      toast.info("Image preview updated!"); // Instant feedback
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSave = async () => {
+    const token = localStorage.getItem("token");
+    setIsSaving(true);
+
+    // Using toast.promise to handle the loading, success, and error states elegantly
+    toast.promise(
+      axios.post(
         "http://localhost:3000/api/profile/update",
         {
-          name: formData.name,
-          bio: formData.bio,
-          interests: formData.interests,
+          ...formData,
           social: {
             instagram: formData.instagram,
             facebook: formData.facebook,
           },
-          position: formData.position,
-          enablePosts: formData.enablePosts,
-          profilePicture: formData.profilePicture,
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         },
-      );
-
-      toast.success("Profile saved!");
-      navigate("/course/profile");
-    } catch (error) {
-      console.error("Failed to save profile:", error);
-      toast.error("Failed to save profile. Please try again.");
-    } finally {
-      setIsSaving(false);
-    }
+      ),
+      {
+        loading: "Saving your changes...",
+        success: () => {
+          setIsSaving(false);
+          navigate("/course/profile");
+          return "Profile updated successfully!";
+        },
+        error: (err) => {
+          setIsSaving(false);
+          return err.response?.data?.message || "Failed to save profile.";
+        },
+      },
+    );
   };
+
   return (
     <div className="profile-page">
       <div className="screen-header">
@@ -149,7 +156,7 @@ export default function EditProfile() {
           <input
             type="text"
             className="text-input"
-            placeholder="@user_G68927"
+            placeholder="@username"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
@@ -160,7 +167,7 @@ export default function EditProfile() {
           <input
             type="text"
             className="text-input"
-            placeholder="e.g. UX Designer"
+            placeholder="e.g. Full Stack Developer"
             value={formData.position}
             onChange={(e) => setFormData({ ...formData, position: e.target.value })}
           />
@@ -171,7 +178,7 @@ export default function EditProfile() {
           <input
             type="text"
             className="text-input"
-            placeholder="Description"
+            placeholder="A short bio..."
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
           />
@@ -233,7 +240,7 @@ export default function EditProfile() {
       </div>
 
       <button className="primary-button" style={{ marginTop: "20px" }} onClick={handleSave} disabled={isSaving}>
-        {isSaving ? "Saving..." : "Save"}
+        {isSaving ? "Saving..." : "Save Profile"}
       </button>
     </div>
   );

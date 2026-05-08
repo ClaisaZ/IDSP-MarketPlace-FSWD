@@ -1,3 +1,4 @@
+import { IoCheckmarkCircle } from "react-icons/io5"; // If you have react-icons
 import { useNavigate } from "react-router-dom";
 
 function AccountCreated() {
@@ -9,9 +10,11 @@ function AccountCreated() {
         width: "100%",
         maxWidth: "390px",
         margin: "0 auto",
+        padding: "20px",
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "center",
       }}
     >
       {/* Header */}
@@ -21,17 +24,20 @@ function AccountCreated() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
           textAlign: "center",
+          marginBottom: "40px",
         }}
       >
-        <h2 className="header-title">Account Created</h2>
-        <p className="header-subtitle">
-          Your account is created and your profile is updated
-        </p>
+        {/* Celebration Icon */}
+        <IoCheckmarkCircle size={80} color="#facc15" style={{ marginBottom: "10px" }} />
+
+        <h2 className="header-title" style={{ fontSize: "28px" }}>
+          Account Created!
+        </h2>
+        <p className="header-subtitle">Everything is set up and your profile is ready to go.</p>
       </div>
 
-      {/* Card */}
+      {/* Success Card */}
       <div
         className="purple-card"
         style={{
@@ -39,21 +45,23 @@ function AccountCreated() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          gap: "20px",
+          padding: "30px",
+          gap: "24px",
         }}
       >
-        <h1 style={{ fontSize: "40px" }}>NICE...yea... they dont have a flow for this so idk</h1>
+        <h1 style={{ fontSize: "36px", fontWeight: "800", lineHeight: "1.1" }}>You're in, @User!</h1>
 
-        <p>
-          You’re ready to start exploring SkillMatch.
+        <p style={{ fontSize: "16px", opacity: 0.9 }}>
+          You’re ready to start exploring workshops and connecting with other creators on SkillMatch.
         </p>
 
         <button
           className="primary-button"
           onClick={() => navigate("/course")}
           style={{
-            width: "80%",
+            width: "100%",
+            padding: "15px",
+            fontSize: "18px",
           }}
         >
           Go to Home

@@ -51,6 +51,7 @@ const HostWorkshopForm: React.FC = () => {
 
       const data = await response.json();
       setFormData((prev) => ({ ...prev, imageUrl: data.imageUrl }));
+      toast.success("Image uploaded!");
     } catch {
       setUploadError("Image upload failed. Please try again.");
       toast.error("Image upload failed. Please try again.");

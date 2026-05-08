@@ -62,7 +62,10 @@ function SkillMatching() {
       });
 
       localStorage.setItem("skills", JSON.stringify(selectedSkills));
-      navigate("/account-created");
+      toast.success("Skills saved!");
+      setTimeout(() => {
+        navigate("/account-created");
+      }, 1000);
     } catch (error) {
       console.error("Failed to save skills:", error);
       toast.error("Could not save skills. Please try again.");
