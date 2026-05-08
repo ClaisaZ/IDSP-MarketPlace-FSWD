@@ -13,6 +13,11 @@ type Event = {
   imageUrl?: string;
   category: string;
   date?: string;
+  hostedBy?: {
+    _id: string;
+    name: string;
+    profilePicture: string | null;
+  };
 };
 
 function EventCard({ event }: { event: Event }) {
@@ -53,9 +58,24 @@ function EventCard({ event }: { event: Event }) {
           {event.name || event.title}
         </h4>
 
+      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        {event.hostedBy?.profilePicture ? (
+          <img
+            src={event.hostedBy.profilePicture}
+            alt={event.hostedBy.name}
+            className="avatar"
+            style={{ width: "24px", height: "24px" }}
+          />
+        ) : (
+          <div className="avatar-placeholder"
+            style={{ width: "24px", height: "24px", fontSize: "10px" }}>
+            {(event.hostedBy?.name || event.instructor)[0].toUpperCase()}
+          </div>
+        )}
         <p style={{ margin: 0, fontSize: "12px", fontWeight: "600" }}>
-          <CiImageOff style={{ marginRight: "3px" }} /> {event.instructor}
+          {event.hostedBy?.name || event.instructor}
         </p>
+      </div>
 
         <p style={{ margin: 0, fontSize: "12px" }}>
           <FaRegCalendarAlt style={{ marginRight: "6px" }} />
