@@ -56,7 +56,6 @@ export default function EditProfile() {
     instagram: "",
     facebook: "",
     interests: [] as string[],
-    enablePosts: false,
     profilePicture: "",
   });
   useEffect(() => {
@@ -76,7 +75,6 @@ export default function EditProfile() {
           instagram: user.social?.instagram || "",
           facebook: user.social?.facebook || "",
           interests: user.interests || [],
-          enablePosts: user.enablePosts || false,
           profilePicture: user.profilePicture || "",
           position: user.position || "",
         });
@@ -103,7 +101,6 @@ export default function EditProfile() {
             facebook: formData.facebook,
           },
           position: formData.position,
-          enablePosts: formData.enablePosts,
           profilePicture: formData.profilePicture,
         },
         {
@@ -220,15 +217,6 @@ export default function EditProfile() {
               </span>
             ))}
           </div>
-        </div>
-
-        <div className="enable-posts-row">
-          <label className="input-label">Enable Posts</label>
-          <input
-            type="checkbox"
-            checked={formData.enablePosts}
-            onChange={(e) => setFormData({ ...formData, enablePosts: e.target.checked })}
-          />
         </div>
       </div>
 

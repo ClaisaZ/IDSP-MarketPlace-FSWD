@@ -15,13 +15,6 @@ type User = {
     instagram: string;
     facebook: string;
   };
-  posts: {
-    _id: string;
-    image: string;
-    caption: string;
-    createdAt: string;
-  }[];
-  enablePosts: boolean;
   position: string;
 };
 
@@ -184,27 +177,6 @@ export default function Profile() {
                 </a>
               )}
             </div>
-          </div>
-        )}
-
-        <h2 className="header-title">Posts</h2>
-        {user.enablePosts && (
-          <div className="posts-grid">
-            {user.posts.map((post) => (
-              <div key={post._id} className="post-card">
-                <img src={post.image} alt={post.caption} className="post-image" />
-                <div className="post-overlay">
-                  <span className="post-date">
-                    {new Date(post.createdAt).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-                <p className="post-caption">{post.caption}</p>
-              </div>
-            ))}
           </div>
         )}
 
