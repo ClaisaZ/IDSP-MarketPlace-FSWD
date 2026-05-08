@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useCheckout } from "../context/useCheckout";
+import { toast } from "sonner";
 
 // Reusable info box — eliminates the repeated grid cell pattern
 type InfoBoxProps = {
@@ -55,6 +56,7 @@ const Receipt: React.FC = () => {
       }
     } catch {
       console.error("Failed to register attendance");
+      toast.error("Failed to register attendance. Please try again.");
     }
     navigate("/course/profile");
   };

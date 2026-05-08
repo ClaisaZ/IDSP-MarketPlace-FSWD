@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const ReviewForm: React.FC = () => {
   const navigate = useNavigate();
@@ -23,9 +24,10 @@ const ReviewForm: React.FC = () => {
         },
         body: JSON.stringify({ comment, rating }),
       });
-      navigate(-1);
+      toast.success("Review submitted!");
+      setTimeout(() => navigate(-1), 1000);
     } catch {
-      setError("Failed to submit review. Try again.");
+      toast.error("Failed to submit review. Try again.");
     }
   };
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function Signup() {
   const navigate = useNavigate();
@@ -30,12 +31,14 @@ function Signup() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Registration failed");
+        toast.error(data.message || "Registration failed");
         return;
       }
       localStorage.setItem("token", data.token);
-      
-      navigate("/skill-matching");
+      toast.success("Account created!");
+      setTimeout(() => {
+        navigate("/skill-matching");
+      }, 1000);
 
       setFormData({
         name: "",
@@ -44,7 +47,7 @@ function Signup() {
       });
     } catch (error) {
       console.error("Signup error:", error);
-      alert("Could not connect to server");
+      toast.error("Could not connect to server. Please try again.");
     }
   }
 

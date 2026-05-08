@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -19,18 +20,20 @@ function Login() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Login failed");
+        toast.error(data.message || "Login failed");
         return;
       }
 
-      alert("Login successful");
+      toast.success("Login successful");
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", data.token);
-      window.location.href = "/course";
+      setTimeout(() => {
+        window.location.href = "/course";
+      }, 1000);
       console.log("Logged in user:", data.user);
     } catch (error) {
       console.error("Login error:", error);
-      alert("Could not connect to server");
+      toast.error("Could not connect to server");
     }
   }
 
@@ -42,10 +45,7 @@ function Login() {
       </div>
 
       <div className="purple-card">
-        <form
-          onSubmit={handleLogin}
-          style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}
-        >
+        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
           <div className="input-group">
             <label className="input-label">Email</label>
             <input
