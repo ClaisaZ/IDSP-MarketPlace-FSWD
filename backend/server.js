@@ -15,6 +15,7 @@ app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/workshops", workshopRoutes);
+app.use("/api/profile", require("./routes/profile"));
 
 // Connect to MongoDB Atlas
 async function startServer() {

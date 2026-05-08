@@ -25,7 +25,9 @@ const WorkshopPreview: React.FC = () => {
   const location = useLocation();
   const [showModal, setShowModal] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const [currentUser, setCurrentUser] = useState<Host | null>(null);
 
+  // Initialize data from navigation state.
   const data = location.state || {
     name: "Pottery and Sculpting Basics",
     date: "May 20, 2026",
@@ -38,19 +40,20 @@ const WorkshopPreview: React.FC = () => {
     seats: "35",
   };
 
-  const token = localStorage.getItem("token");
-  // Decoding JWT to get current user ID for owner check
-  const currentUserId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
-  // hostedBy can be a string ID or populated object depending on whether data came from backend or navigation state
-  const isOwner =
-    data.hostedBy &&
-    currentUserId &&
-    (typeof data.hostedBy === "object" ? data.hostedBy._id : data.hostedBy).toString() === currentUserId;
-
   const [workshopData, setWorkshopData] = useState(data);
+  const token = localStorage.getItem("token");
 
-  // Fetch fresh workshop data from backend on mount
-  // Ensures attendees, reviews, and seats are always up to date
+  // Decodes the JWT to identify the logged-in user for ownership and permission checks.
+  const currentUserId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+
+  // Verifies if the current user is the host by comparing IDs, handling both string and object formats.
+  const isOwner =
+    workshopData.hostedBy &&
+    currentUserId &&
+    (typeof workshopData.hostedBy === "object" ? workshopData.hostedBy._id : workshopData.hostedBy).toString() ===
+      currentUserId;
+
+  // Synchronizes the component with the backend to ensure reviews and attendee lists are current.
   useEffect(() => {
     const fetchWorkshop = async () => {
       if (!data._id) return;
@@ -68,23 +71,45 @@ const WorkshopPreview: React.FC = () => {
     fetchWorkshop();
   }, [data._id, token]);
 
-  const reviews: Review[] = workshopData.reviews || [];
+  // Fetches the host's profile details specifically for preview mode when data isn't yet in the database.
+  useEffect(() => {
+    if (typeof workshopData.hostedBy !== "string" || !token) return;
 
-  // Calculate avg rating from all reviews
+    const fetchCurrentUser = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/profile/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const user = await res.json();
+        setCurrentUser({
+          _id: user._id,
+          name: user.name,
+          profilePicture: user.profilePicture ?? null,
+        });
+      } catch {
+        console.error("Failed to fetch current user");
+      }
+    };
+
+    fetchCurrentUser();
+  }, [workshopData.hostedBy, token]);
+
+  const reviews: Review[] = workshopData.reviews || [];
   const avgRating =
     reviews.length > 0
       ? (reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / reviews.length).toFixed(1)
       : "0.0";
 
-  // Only show first 3 reviews by default - user can expand with "View All"
   const visibleReviews = showAllReviews ? reviews : reviews.slice(0, 3);
   const attendees: Attendee[] = workshopData.attendees || [];
-  const host: Host | null = typeof workshopData.hostedBy === "object" ? workshopData.hostedBy : null;
+
+  // Prioritizes populated host data from the backend, falling back to the current user during preview.
+  const host: Host | null = typeof workshopData.hostedBy === "object" ? workshopData.hostedBy : currentUser;
 
   const totalSeats = parseInt(workshopData.seats) || 0;
   const capacityPercent = totalSeats > 0 ? attendees.length / totalSeats : 0;
 
-  // Open → Filling (75%+) → Closing (90%+) → Closed (100%)
+  // Determines the visual status badge based on how many seats are remaining.
   const getStatusBadge = () => {
     if (capacityPercent >= 1)
       return { label: "Closed", color: "#fee2e2", borderColor: "#ff8b8b", textColor: "#ff8b8b" };
@@ -98,7 +123,7 @@ const WorkshopPreview: React.FC = () => {
   const badge = getStatusBadge();
   const isClosed = capacityPercent >= 1;
 
-  // POST workshop to backend -> called from the confirmation modal
+  // Submits the new workshop data to the server and redirects the user upon success.
   const handleHost = async () => {
     try {
       await fetch("http://localhost:3000/api/workshops", {
@@ -119,15 +144,12 @@ const WorkshopPreview: React.FC = () => {
     }
   };
 
-  // Navigating to registration flow, passing workshopId so it can be
-  // recorded as an attendee after payment is complete
   const handleAttend = () => {
-    navigate("/course/register", { state: { workshopId: data._id } });
+    navigate("/course/register", { state: { workshopId: workshopData._id } });
   };
 
   return (
     <div className="host-page-container" style={{ padding: "0 20px 160px 20px" }}>
-      {/* Header */}
       <div
         className="screen-header"
         style={{ flexDirection: "row", alignItems: "center", paddingTop: "30px", marginBottom: "15px" }}
@@ -145,7 +167,6 @@ const WorkshopPreview: React.FC = () => {
         </h2>
       </div>
 
-      {/* Hero Image */}
       <img
         src={workshopData.imageUrl || "https://placehold.co/800x400?text=Workshop+Image"}
         alt={workshopData.name || "Workshop"}
@@ -173,7 +194,6 @@ const WorkshopPreview: React.FC = () => {
 
       <h3 style={{ fontSize: "22px", margin: "0 0 20px 0", color: "var(--text-dark)" }}>{workshopData.name}</h3>
 
-      {/* Host Info */}
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500", marginBottom: "8px" }}>Workshop Host</div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -205,7 +225,6 @@ const WorkshopPreview: React.FC = () => {
         </div>
       </div>
 
-      {/* Logistics Grid */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "20px" }}>
         <div>
           <div style={{ fontSize: "16px", fontWeight: "500" }}>Workshop Date</div>
@@ -239,7 +258,6 @@ const WorkshopPreview: React.FC = () => {
         <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.applicationPeriod}</div>
       </div>
 
-      {/* Attending Card -> color changes based on capacity */}
       <div
         style={{
           backgroundColor: isClosed ? "#fee2e2" : capacityPercent >= 0.75 ? "#fef9c3" : "#dff7e2",
@@ -309,7 +327,6 @@ const WorkshopPreview: React.FC = () => {
         )}
       </div>
 
-      {/* Reviews Card */}
       <div className="bordered-card-white">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
           <div style={{ fontSize: "18px", fontWeight: "600" }}>Reviews ({reviews.length})</div>
@@ -333,30 +350,29 @@ const WorkshopPreview: React.FC = () => {
         )}
       </div>
 
-      {/* View All Reviews Button - outside card */}
       {reviews.length > 3 && (
         <button
           className="btn-dark-purple"
-          style={{ marginBottom: "20px" }}
+          style={{ marginBottom: "20px", marginTop: "10px" }}
           onClick={() => setShowAllReviews(!showAllReviews)}
         >
           {showAllReviews ? "Show Less" : `View All ${reviews.length} Reviews`}
         </button>
       )}
 
-      {/* Floating Action Buttons */}
       <div className="floating-btn-stack">
         {isOwner ? (
           <>
             <button className="btn-dark-purple" onClick={() => navigate(-1)}>
               Edit Workshop
             </button>
-            <button className="btn-dark-purple" onClick={() => setShowModal(true)}>
-              Host Workshop
-            </button>
+            {!workshopData._id && (
+              <button className="btn-dark-purple" onClick={() => setShowModal(true)}>
+                Host Workshop
+              </button>
+            )}
           </>
         ) : isClosed ? (
-          // Workshop is full - block registration
           <button className="btn-dark-purple" disabled style={{ opacity: 0.5, cursor: "not-allowed" }}>
             Workshop Full
           </button>
@@ -367,7 +383,7 @@ const WorkshopPreview: React.FC = () => {
             </button>
             <button
               className="btn-dark-purple"
-              onClick={() => navigate("/workshop/review", { state: { workshopId: data._id } })}
+              onClick={() => navigate("/workshop/review", { state: { workshopId: workshopData._id } })}
             >
               Leave a Review
             </button>
@@ -375,7 +391,6 @@ const WorkshopPreview: React.FC = () => {
         )}
       </div>
 
-      {/* Confirmation Modal */}
       {showModal && (
         <div
           style={{
