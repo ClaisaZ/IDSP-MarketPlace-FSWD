@@ -409,11 +409,7 @@ body {
   background: white;
   color: var(--primary-purple);
 }
-.enable-posts-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+
 
 /* WORKSHOP DETAILS SPECIFIC */
 

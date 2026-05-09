@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get("/me", protectRoute, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate("posts");
+    const user = await User.findById(req.user._id)
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -27,7 +27,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/update", protectRoute, async (req, res) => {
   try {
-    const { name, bio, position, interests, social, enablePosts, profilePicture } = req.body;
+    const { name, bio, position, interests, social, profilePicture } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
