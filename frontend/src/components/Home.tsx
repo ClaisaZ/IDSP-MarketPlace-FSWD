@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EventCard from "./EventCard";
 import EventCategoryChips from "./EventCategoryChips";
 import FeaturedEventsCarousel from "./FeaturedEventsCarousel";
@@ -48,6 +48,26 @@ const reviewerNames = [
   "Marcus J",
   "Claire N",
 ];
+
+type Workshop = {
+  _id: string;
+  name?: string;
+  title?: string;
+  instructor?: string;
+  time: string;
+  date?: string;
+  image?: string;
+  imageUrl?: string;
+  category: string;
+  location?: string;
+  about?: string;
+  ticketPrice?: string;
+  applicationPeriod?: string;
+  seats?: string;
+  hostedBy?: { _id: string; name: string; profilePicture: string | null };
+  attendees?: { _id: string; name: string; profilePicture: string | null }[];
+  reviews?: { name: string; comment: string; rating: number }[];
+};
 
 // Generating a random array of reviews with varied ratings (1-5 stars)
 const generateReviews = (count: number) => {
@@ -177,9 +197,20 @@ const sampleEvents = [
 function Home() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [events, setEvents] = useState<Workshop[]>([]);
 
-  const filteredEvents = sampleEvents.filter((event) => {
-    const matchesSearch = event.title.toLowerCase().includes(search.toLowerCase());
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:3000/api/workshops", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => setEvents([...sampleEvents, ...(Array.isArray(data) ? data : [])]))
+      .catch(() => console.error("Failed to fetch workshops"));
+  }, []);
+
+  const filteredEvents = events.filter((event) => {
+    const matchesSearch = (event.name || event.title || "").toLowerCase().includes(search.toLowerCase());
     const matchesCategory = !activeCategory || event.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
@@ -212,7 +243,7 @@ function Home() {
         {filteredEvents.length === 0 ? (
           <p style={{ textAlign: "center", marginTop: "20px" }}>No events match your search</p>
         ) : (
-          filteredEvents.map((event, index) => <EventCard key={`${event.title}-${index}`} event={event} />)
+          filteredEvents.map((event, index) => <EventCard key={`${event._id || index}`} event={event} />)
         )}
       </div>
     </div>

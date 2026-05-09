@@ -5,21 +5,29 @@ import { useNavigate } from "react-router-dom";
 
 type Event = {
   _id?: string;
-  title: string;
+  title?: string;
   name?: string;
-  instructor: string;
+  instructor?: string;
   time: string;
-  image: string;
+  image?: string;
   imageUrl?: string;
   category: string;
   date?: string;
+  hostedBy?: { _id: string; name: string; profilePicture: string | null } | string;
 };
 
 function EventCard({ event }: { event: Event }) {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    navigate("/host/preview", { state: { ...event, name: event.name || event.title } });
+    const token = localStorage.getItem("token");
+    const currentUserId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+    const hostId = typeof event.hostedBy === "object" ? event.hostedBy?._id : event.hostedBy;
+    const isOwner = currentUserId && hostId && hostId === currentUserId;
+
+    navigate(isOwner ? "/host/preview" : "/workshop/preview", {
+      state: { ...event, name: event.name || event.title },
+    });
   };
 
   return (
