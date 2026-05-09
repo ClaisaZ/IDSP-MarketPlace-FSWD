@@ -80,8 +80,6 @@ const WorkshopPreview: React.FC = () => {
 
   // Fetches the host's profile details specifically for preview mode when data isn't yet in the database.
   useEffect(() => {
-    let isMounted = true;
-    // We only need to fetch 'me' if the host isn't already populated as an object
     if (typeof workshopData.hostedBy !== "string" || !token) return;
 
     const fetchCurrentUser = async () => {
@@ -90,24 +88,17 @@ const WorkshopPreview: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const user = await res.json();
-
-        // this ensures the "old" screen doesn't try to update itself in the background, which keeps the app stable and ensures the data you see is only for the screen you're actually on.
-        if (isMounted) {
-          setCurrentUser({
-            _id: user._id,
-            name: user.name,
-            profilePicture: user.profilePicture ?? null,
-          });
-        }
-      } catch (err) {
-        console.error("User fetch failed", err);
+        setCurrentUser({
+          _id: user._id,
+          name: user.name,
+          profilePicture: user.profilePicture ?? null,
+        });
+      } catch {
+        console.error("Failed to fetch current user");
       }
     };
 
     fetchCurrentUser();
-    return () => {
-      isMounted = false;
-    };
   }, [workshopData.hostedBy, token]);
 
   const reviews: Review[] = workshopData.reviews || [];
