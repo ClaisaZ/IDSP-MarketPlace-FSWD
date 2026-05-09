@@ -15,7 +15,8 @@ router.post("/", protectRoute, async (req, res) => {
 
 router.get("/mine", protectRoute, async (req, res) => {
   try {
-    const workshops = await Workshop.find({ hostedBy: req.user.id });
+    const workshops = await Workshop.find({ hostedBy: req.user.id })
+      .populate("hostedBy", "name profilePicture");
     res.json(workshops);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch workshops" });
@@ -57,6 +58,17 @@ router.post("/:id/attend", protectRoute, async (req, res) => {
     res.json(workshop);
   } catch (err) {
     res.status(500).json({ error: "Failed to attend" });
+  }
+});
+
+// GET workshops user has registered for
+router.get("/attending", protectRoute, async (req, res) => {
+  try {
+    const workshops = await Workshop.find({ attendees: req.user.id })
+      .populate("hostedBy", "name profilePicture");
+    res.json(workshops);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch workshops" });
   }
 });
 

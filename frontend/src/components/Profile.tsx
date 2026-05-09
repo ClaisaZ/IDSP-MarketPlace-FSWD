@@ -22,13 +22,20 @@ type Workshop = {
   _id: string;
   name: string;
   imageUrl: string;
+  date: string;
+  time: string;
+  hostedBy: {
+    name: string;
+    profilePicture: string | null;
+  };
 };
 
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
   const [hostedWorkshops, setHostedWorkshops] = useState<Workshop[]>([]);
   const [notLoggedIn, setNotLoggedIn] = useState(false);
-
+  const [activeTab, setActiveTab] = useState<"registered" | "hosting">("registered");
+  const [registeredWorkshops, setRegisteredWorkshops] = useState<Workshop[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,6 +76,20 @@ export default function Profile() {
     };
     fetchHosted();
   }, []);
+  useEffect(() => {
+  const fetchRegistered = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:3000/api/workshops/attending", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRegisteredWorkshops(res.data);
+    } catch (error) {
+      console.error("Failed to fetch registered workshops:", error);
+    }
+  };
+  fetchRegistered();
+}, []);
 
   const handleDelete = async (workshopId: string) => {
     if (!confirm("Are you sure you want to delete this workshop?")) return;
@@ -179,38 +200,94 @@ export default function Profile() {
             </div>
           </div>
         )}
-
-        <div className="section-header-row">
-          <h2 className="header-title">Hosted Workshops</h2>
-          <button className="btn-dark-purple" onClick={() => navigate("/host")}>
-            🎓 Host
+      {/* Workshops Section */}
+      <div className="workshops-section">
+        <h2 className="header-title">Workshops</h2>
+        
+        {/* Tabs */}
+        <div className="workshop-tabs">
+          <button 
+            className={`workshop-tab ${activeTab === "registered" ? "workshop-tab--active" : ""}`}
+            onClick={() => setActiveTab("registered")}
+          >
+            Registered
+          </button>
+          <button 
+            className={`workshop-tab ${activeTab === "hosting" ? "workshop-tab--active" : ""}`}
+            onClick={() => setActiveTab("hosting")}
+          >
+            Hosting
           </button>
         </div>
-        <div className="posts-grid">
-          {hostedWorkshops.map((workshop) => (
-            <div
-              key={workshop._id}
-              className="post-card"
-              onClick={() => navigate("/host/preview", { state: workshop })}
-            >
-              <img
-                src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
-                alt={workshop.name}
-                className="post-image"
-              />
-              <button
-                className="delete-workshop-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(workshop._id);
-                }}
-              >
-                🗑️
-              </button>
-              <p className="post-caption">{workshop.name}</p>
-            </div>
-          ))}
+
+        {/* Workshop List */}
+          <div className="workshop-list">
+            {activeTab === "hosting" && hostedWorkshops.map((workshop) => (
+              <div key={workshop._id} className="workshop-card"
+                onClick={() => navigate("/host/preview", { state: workshop })}>
+                <img
+                  src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
+                  alt={workshop.name}
+                  className="workshop-thumbnail"
+                />
+                <div className="workshop-info">
+                <p className="workshop-name">{workshop.name}</p>
+                <div className="workshop-host">
+                  <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
+                    {workshop.hostedBy?.name[0].toUpperCase()}
+                  </div>
+                  <span>{workshop.hostedBy?.name}</span>
+                </div>
+                <div style={{ fontSize: "12px", opacity: 0.85 }}>
+                  <p style={{ margin: 0 }}>📅 {workshop.date}</p>
+                  <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
+                </div>
+              </div>
+                <button className="delete-workshop-btn"
+                    onClick={(e) => { e.stopPropagation(); handleDelete(workshop._id); }}>
+                    🗑️
+                </button>
+                </div>
+              ))}
+
+            {activeTab === "registered" && (
+            registeredWorkshops.length === 0 ? (
+              <p style={{ color: "var(--text-gray)", textAlign: "center", marginTop: "20px" }}>
+                No registered workshops yet
+              </p>
+            ) : (
+              registeredWorkshops.map((workshop) => (
+                <div key={workshop._id} className="workshop-card"
+                  onClick={() => navigate("/host/preview", { state: workshop })}>
+                  <img
+                    src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
+                    alt={workshop.name}
+                    className="workshop-thumbnail"
+                  />
+                  <div className="workshop-info">
+                    <p className="workshop-name">{workshop.name}</p>
+                    <div className="workshop-host">
+                      <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
+                        {workshop.hostedBy?.name[0].toUpperCase()}
+                      </div>
+                      <span>{workshop.hostedBy?.name}</span>
+                    </div>
+                    <div style={{ fontSize: "12px", opacity: 0.85 }}>
+                      <p style={{ margin: 0 }}>📅 {workshop.date}</p>
+                      <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )
+          )}
         </div>
+
+      <button className="btn-dark-purple" onClick={() => navigate("/host")}
+        style={{ marginTop: "16px", width: "100%" }}>
+        🎓 Host a Workshop
+      </button>
+    </div>
       </div>
     </div>
   );
