@@ -55,6 +55,7 @@ const WorkshopPreview: React.FC = () => {
 
   // Synchronizes the component with the backend to ensure reviews and attendee lists are current.
   useEffect(() => {
+    let isMounted = true;
     const fetchWorkshop = async () => {
       if (!data._id) return;
       try {
@@ -62,14 +63,20 @@ const WorkshopPreview: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const fresh = await res.json();
-        setWorkshopData(fresh);
-      } catch {
-        console.error("Failed to fetch workshop");
-        toast.error("Failed to load workshop. Please try again.");
+
+        // Only updating state if the user hasn't navigated away from the component.
+        if (isMounted) setWorkshopData(fresh);
+      } catch (err) {
+        console.error("Workshop fetch failed", err);
       }
     };
+
     fetchWorkshop();
-  }, [data._id, token]);
+    // Cleanup - prevents memory leaks by stopping state updates on unmounted components.
+    return () => {
+      isMounted = false;
+    };
+  }, [data._id, token, location.key]);
 
   // Fetches the host's profile details specifically for preview mode when data isn't yet in the database.
   useEffect(() => {
@@ -271,11 +278,11 @@ const WorkshopPreview: React.FC = () => {
           Who is attending? ({attendees.length}/{workshopData.seats} Seats)
         </div>
         {attendees.length > 0 ? (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {attendees.slice(0, 6).map((attendee) => (
               <div
                 key={attendee._id}
-                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}
+                style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}
               >
                 {attendee.profilePicture ? (
                   <img
@@ -301,19 +308,7 @@ const WorkshopPreview: React.FC = () => {
                     {attendee.name ? attendee.name[0].toUpperCase() : "?"}
                   </div>
                 )}
-                <span
-                  style={{
-                    fontSize: "11px",
-                    color: "var(--text-dark)",
-                    maxWidth: "50px",
-                    textAlign: "center",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  @{attendee.name}
-                </span>
+                <span style={{ fontSize: "13px", color: "var(--text-dark)" }}>@{attendee.name}</span>
               </div>
             ))}
             {attendees.length > 6 && (
