@@ -257,27 +257,33 @@ export default function Profile() {
               </p>
             ) : (
               registeredWorkshops.map((workshop) => (
-                <div key={workshop._id} className="workshop-card"
-                  onClick={() => navigate("/host/preview", { state: workshop })}>
-                  <img
-                    src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
-                    alt={workshop.name}
-                    className="workshop-thumbnail"
-                  />
-                  <div className="workshop-info">
-                    <p className="workshop-name">{workshop.name}</p>
-                    <div className="workshop-host">
-                      <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
-                        {workshop.hostedBy?.name[0].toUpperCase()}
-                      </div>
-                      <span>{workshop.hostedBy?.name}</span>
-                    </div>
-                    <div style={{ fontSize: "12px", opacity: 0.85 }}>
-                      <p style={{ margin: 0 }}>📅 {workshop.date}</p>
-                      <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
-                    </div>
+            <div key={workshop._id} className="workshop-card"
+              onClick={() => navigate("/host/preview", { state: workshop })}>
+              <img
+                src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
+                alt={workshop.name}
+                className="workshop-thumbnail"
+              />
+              <div className="workshop-info">
+                <p className="workshop-name">{workshop.name}</p>
+                <div className="workshop-host">
+                  <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
+                    {workshop.hostedBy?.name[0].toUpperCase()}
                   </div>
+                  <span>{workshop.hostedBy?.name}</span>
                 </div>
+                <div style={{ fontSize: "12px", opacity: 0.85 }}>
+                  <p style={{ margin: 0 }}>📅 {workshop.date}</p>
+                  <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
+                </div>
+              </div>
+              <button 
+                className="delete-workshop-btn"
+                onClick={(e) => { e.stopPropagation(); handleDelete(workshop._id); }}
+              >
+                🗑️
+              </button>
+            </div>
               ))
             )
           )}
