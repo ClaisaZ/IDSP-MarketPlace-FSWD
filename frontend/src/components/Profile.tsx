@@ -185,11 +185,10 @@ export default function Profile() {
             </div>
           </div>
         )}
-      {/* Workshops Section */}
+        
       <div className="workshops-section">
         <h2 className="header-title">Workshops</h2>
         
-        {/* Tabs */}
         <div className="workshop-tabs">
           <button 
             className={`workshop-tab ${activeTab === "registered" ? "workshop-tab--active" : ""}`}
@@ -205,7 +204,6 @@ export default function Profile() {
           </button>
         </div>
 
-        {/* Workshop List */}
           <div className="workshop-list">
             {activeTab === "hosting" && hostedWorkshops.map((workshop) => (
               <div key={workshop._id} className="workshop-card"
