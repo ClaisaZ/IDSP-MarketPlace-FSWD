@@ -55,6 +55,7 @@ const WorkshopPreview: React.FC = () => {
 
   // Synchronizes the component with the backend to ensure reviews and attendee lists are current.
   useEffect(() => {
+    let isMounted = true;
     const fetchWorkshop = async () => {
       if (!data._id) return;
       try {
@@ -62,17 +63,25 @@ const WorkshopPreview: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const fresh = await res.json();
-        setWorkshopData(fresh);
-      } catch {
-        console.error("Failed to fetch workshop");
-        toast.error("Failed to load workshop. Please try again.");
+
+        // Only updating state if the user hasn't navigated away from the component.
+        if (isMounted) setWorkshopData(fresh);
+      } catch (err) {
+        console.error("Workshop fetch failed", err);
       }
     };
+
     fetchWorkshop();
+    // Cleanup - prevents memory leaks by stopping state updates on unmounted components.
+    return () => {
+      isMounted = false;
+    };
   }, [data._id, token, location.key]);
 
   // Fetches the host's profile details specifically for preview mode when data isn't yet in the database.
   useEffect(() => {
+    let isMounted = true;
+    // We only need to fetch 'me' if the host isn't already populated as an object
     if (typeof workshopData.hostedBy !== "string" || !token) return;
 
     const fetchCurrentUser = async () => {
@@ -81,17 +90,24 @@ const WorkshopPreview: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const user = await res.json();
-        setCurrentUser({
-          _id: user._id,
-          name: user.name,
-          profilePicture: user.profilePicture ?? null,
-        });
-      } catch {
-        console.error("Failed to fetch current user");
+
+        // this ensures the "old" screen doesn't try to update itself in the background, which keeps the app stable and ensures the data you see is only for the screen you're actually on.
+        if (isMounted) {
+          setCurrentUser({
+            _id: user._id,
+            name: user.name,
+            profilePicture: user.profilePicture ?? null,
+          });
+        }
+      } catch (err) {
+        console.error("User fetch failed", err);
       }
     };
 
     fetchCurrentUser();
+    return () => {
+      isMounted = false;
+    };
   }, [workshopData.hostedBy, token]);
 
   const reviews: Review[] = workshopData.reviews || [];
