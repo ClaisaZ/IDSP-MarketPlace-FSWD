@@ -13,6 +13,7 @@ const ReviewForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!workshopId) return toast.error("Workshop ID missing. Go back and try again.");
     if (rating === 0) return setError("Please select a rating.");
     try {
       const token = localStorage.getItem("token");
