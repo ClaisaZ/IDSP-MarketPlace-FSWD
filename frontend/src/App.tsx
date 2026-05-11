@@ -1,25 +1,48 @@
+import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
-import "./App.css";
-
 import { Toaster } from "sonner";
-import AccountCreated from "./components/AccountCreated";
-import EditProfile from "./components/EditProfile";
-import Home from "./components/Home";
-import HostWorkshopForm from "./components/HostWorkshopForm";
-import Login from "./components/login";
-import PaymentDetails from "./components/PaymentDetails";
-import PaymentSelection from "./components/PaymentSelection";
-import Profile from "./components/Profile";
-import Receipt from "./components/Reciept";
-import Registration from "./components/Registration";
-import ReviewForm from "./components/ReviewForm";
-import Signup from "./components/Signup";
-import SkillMatching from "./components/SkillMatching";
-import Welcome from "./components/Welcome";
-import WorkshopDetails from "./components/WorkshopDetails";
-import WorkshopPreview from "./components/WorkshopPreview";
-
+import "./App.css";
 import { CheckoutProvider } from "./context/CheckoutProvider";
+
+const Home = lazy(() => import("./components/Home"));
+const Profile = lazy(() => import("./components/Profile"));
+const WorkshopPreview = lazy(() => import("./components/WorkshopPreview"));
+const HostWorkshopForm = lazy(() => import("./components/HostWorkshopForm"));
+const ReviewForm = lazy(() => import("./components/ReviewForm"));
+const Registration = lazy(() => import("./components/Registration"));
+const PaymentSelection = lazy(() => import("./components/PaymentSelection"));
+const PaymentDetails = lazy(() => import("./components/PaymentDetails"));
+const Receipt = lazy(() => import("./components/Reciept"));
+const EditProfile = lazy(() => import("./components/EditProfile"));
+const WorkshopDetails = lazy(() => import("./components/WorkshopDetails"));
+const Login = lazy(() => import("./components/login"));
+const Signup = lazy(() => import("./components/Signup"));
+const SkillMatching = lazy(() => import("./components/SkillMatching"));
+const Welcome = lazy(() => import("./components/Welcome"));
+const AccountCreated = lazy(() => import("./components/AccountCreated"));
+
+const preloadRoutes = () => {
+  import("./components/Home");
+  import("./components/WorkshopPreview");
+  import("./components/Profile");
+  import("./components/login");
+  import("./components/Registration");
+};
+
+const LoadingScreen = () => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      fontSize: "16px",
+      color: "var(--primary-purple)",
+    }}
+  >
+    Loading...
+  </div>
+);
 
 function CourseLayout() {
   return (
@@ -30,110 +53,112 @@ function CourseLayout() {
 }
 
 function App() {
+  useEffect(() => {
+    preloadRoutes();
+  }, []);
   return (
     <div className="app-container">
       <Toaster position="top-right" richColors />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
+        <Suspense fallback={<LoadingScreen />}>
+          <Routes>
+            <Route path="/" element={<Welcome />} />
 
-          <Route
-            path="/login"
-            element={
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: "100%",
-                  maxWidth: "400px",
-                  margin: "0 auto",
-                  paddingTop: "40px",
-                }}
-              >
-                <Login />
+            <Route
+              path="/login"
+              element={
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    gap: "10px",
+                    alignItems: "center",
                     width: "100%",
-                    marginTop: "15px",
-                    padding: "0 20px",
+                    maxWidth: "400px",
+                    margin: "0 auto",
+                    paddingTop: "40px",
                   }}
                 >
-                  <Link to="/signup" style={{ textDecoration: "none" }}>
-                    <button className="white-button" style={{ justifyContent: "center", width: "100%" }}>
-                      Create an account
-                    </button>
-                  </Link>
-                  <Link to="/course" style={{ textDecoration: "none" }}>
-                    <button className="primary-button" style={{ width: "100%" }}>
-                      Continue to app
-                    </button>
-                  </Link>
-                  <Link to="/skill-matching" style={{ textDecoration: "none" }}>
-                    <button className="primary-button" style={{ width: "100%" }}>
-                      Test: Skill match page after register
-                    </button>
-                  </Link>
-                  <Link to="/home" style={{ textDecoration: "none" }}>
-                    <button className="primary-button" style={{ width: "100%" }}>
-                      Test: home page
-                    </button>
-                  </Link>
+                  <Login />
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                      width: "100%",
+                      marginTop: "15px",
+                      padding: "0 20px",
+                    }}
+                  >
+                    <Link to="/signup" style={{ textDecoration: "none" }}>
+                      <button className="white-button" style={{ justifyContent: "center", width: "100%" }}>
+                        Create an account
+                      </button>
+                    </Link>
+                    <Link to="/course" style={{ textDecoration: "none" }}>
+                      <button className="primary-button" style={{ width: "100%" }}>
+                        Continue to app
+                      </button>
+                    </Link>
+                    <Link to="/skill-matching" style={{ textDecoration: "none" }}>
+                      <button className="primary-button" style={{ width: "100%" }}>
+                        Test: Skill match page after register
+                      </button>
+                    </Link>
+                    <Link to="/home" style={{ textDecoration: "none" }}>
+                      <button className="primary-button" style={{ width: "100%" }}>
+                        Test: home page
+                      </button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            }
-          />
+              }
+            />
 
-          <Route
-            path="/signup"
-            element={
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: "100%",
-                  maxWidth: "400px",
-                  margin: "0 auto",
-                  paddingTop: "40px",
-                }}
-              >
-                <Signup />
-                <div style={{ width: "100%", marginTop: "15px", padding: "0 20px" }}>
-                  <Link to="/login" style={{ textDecoration: "none" }}>
-                    <button className="white-button" style={{ justifyContent: "center", width: "100%" }}>
-                      Already have an account? Login
-                    </button>
-                  </Link>
+            <Route
+              path="/signup"
+              element={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    width: "100%",
+                    maxWidth: "400px",
+                    margin: "0 auto",
+                    paddingTop: "40px",
+                  }}
+                >
+                  <Signup />
+                  <div style={{ width: "100%", marginTop: "15px", padding: "0 20px" }}>
+                    <Link to="/login" style={{ textDecoration: "none" }}>
+                      <button className="white-button" style={{ justifyContent: "center", width: "100%" }}>
+                        Already have an account? Login
+                      </button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            }
-          />
-          <Route path="/skill-matching" element={<SkillMatching />} />
-          <Route path="/account-created" element={<AccountCreated />} />
-          <Route path="/host" element={<HostWorkshopForm />} />
-          <Route path="/host/preview" element={<WorkshopPreview />} />
-          <Route path="/workshop/review" element={<ReviewForm />} />
-          <Route path="/home" element={<Home />} />
+              }
+            />
 
-          {/* The URL-Based Course Flow */}
-          <Route path="/course" element={<CourseLayout />}>
-            {/* The default /course page is now the details screen */}
-            <Route index element={<WorkshopDetails />} />
+            <Route path="/skill-matching" element={<SkillMatching />} />
+            <Route path="/account-created" element={<AccountCreated />} />
+            <Route path="/host" element={<HostWorkshopForm />} />
+            <Route path="/host/preview" element={<WorkshopPreview />} />
+            <Route path="/workshop/preview" element={<WorkshopPreview />} />
+            <Route path="/workshop/review" element={<ReviewForm />} />
+            <Route path="/home" element={<Home />} />
 
-            {/* Registration is explicitly set to /course/register */}
-            <Route path="register" element={<Registration />} />
-
-            <Route path="payments" element={<PaymentSelection />} />
-            <Route path="purchase" element={<PaymentDetails />} />
-            <Route path="receipt" element={<Receipt />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="profile/edit" element={<EditProfile />} />
-          </Route>
-        </Routes>
+            <Route path="/course" element={<CourseLayout />}>
+              <Route index element={<WorkshopDetails />} />
+              <Route path="register" element={<Registration />} />
+              <Route path="payments" element={<PaymentSelection />} />
+              <Route path="purchase" element={<PaymentDetails />} />
+              <Route path="receipt" element={<Receipt />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="profile/edit" element={<EditProfile />} />
+            </Route>
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </div>
   );

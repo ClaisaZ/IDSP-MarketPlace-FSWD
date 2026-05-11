@@ -40,49 +40,32 @@ export default function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem("token");
+  const fetchAll = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setUser(null);
+      setNotLoggedIn(true);
+      return;
+    }
 
-        if (!token) {
-          setUser(null);
-          setNotLoggedIn(true);
-          return;
-        }
-
-        const response = await axios.get("http://localhost:3000/api/profile/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUser(response.data);
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
+    try {
+      const [profileRes, workshopsRes] = await Promise.all([
+        axios.get("http://localhost:3000/api/profile/me", { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get("http://localhost:3000/api/workshops/mine", { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+      setUser(profileRes.data);
+      setHostedWorkshops(workshopsRes.data);
+    } catch (error: any) {
+      console.error("Failed to fetch profile:", error);
+      if (error.response?.status === 401) {
+        setNotLoggedIn(true);
+      } else {
         toast.error("Failed to load profile. Please try again.");
       }
-    };
-    fetchProfile();
-  }, []);
-
-  useEffect(() => {
-    const fetchHosted = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        
-        if (!token) {
-        setUser(null);
-        setNotLoggedIn(true);
-        return;
-      }
-        const res = await axios.get("http://localhost:3000/api/workshops/mine", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setHostedWorkshops(res.data);
-      } catch (error) {
-        console.error("Failed to fetch hosted workshops:", error);
-        toast.error("Failed to fetch the hosted workshops. Please try again.");
-      }
-    };
-    fetchHosted();
-  }, []);
+    }
+  };
+  fetchAll();
+}, []);
   useEffect(() => {
   const fetchRegistered = async () => {
     try {
