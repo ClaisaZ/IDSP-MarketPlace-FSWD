@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Signup() {
   const navigate = useNavigate();
@@ -9,7 +10,11 @@ function Signup() {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,15 +22,28 @@ function Signup() {
 
   async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+
     try {
       const res = await fetch("http://localhost:3000/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+
+        // confirmPassword is NOT sent to backend
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
       });
 
       const data = await res.json();
@@ -34,8 +52,11 @@ function Signup() {
         toast.error(data.message || "Registration failed");
         return;
       }
+
       localStorage.setItem("token", data.token);
+
       toast.success("Account created!");
+
       setTimeout(() => {
         navigate("/skill-matching");
       }, 1000);
@@ -44,6 +65,7 @@ function Signup() {
         name: "",
         email: "",
         password: "",
+        confirmPassword: "",
       });
     } catch (error) {
       console.error("Signup error:", error);
@@ -59,9 +81,17 @@ function Signup() {
       </div>
 
       <div className="purple-card">
-        <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+        <form
+          onSubmit={handleSignup}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            flexGrow: 1,
+          }}
+        >
           <div className="input-group">
             <label className="input-label">Name</label>
+
             <input
               required
               type="text"
@@ -75,6 +105,7 @@ function Signup() {
 
           <div className="input-group">
             <label className="input-label">Email</label>
+
             <input
               required
               type="email"
@@ -88,18 +119,95 @@ function Signup() {
 
           <div className="input-group">
             <label className="input-label">Password</label>
-            <input
-              required
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="text-input"
-              placeholder="Create a password"
-            />
+
+            <div
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <input
+                required
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="text-input"
+                placeholder="Create a password"
+                style={{ width: "100%", paddingRight: "45px" }}
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "20px",
+                  color: "#222",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </button>
+            </div>
           </div>
 
-          <button type="submit" className="primary-button" style={{ marginTop: "20px" }}>
+          <div className="input-group">
+            <label className="input-label">Confirm Password</label>
+
+            <div
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <input
+                required
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="text-input"
+                placeholder="Confirm your password"
+                style={{ width: "100%", paddingRight: "45px" }}
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "20px",
+                  color: "#222",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="primary-button"
+            style={{ marginTop: "20px" }}
+          >
             Sign Up
           </button>
         </form>

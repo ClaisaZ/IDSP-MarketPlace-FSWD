@@ -73,9 +73,11 @@ function EventCard({ event }: { event: Event }) {
               style={{ width: "24px", height: "24px" }}
             />
           ) : (
-            <div className="avatar-placeholder"
-              style={{ width: "24px", height: "24px", fontSize: "10px" }}>
-              {(event.hostedBy?.name || event.instructor)[0].toUpperCase()}
+            <div
+              className="avatar-placeholder"
+              style={{ width: "24px", height: "24px", fontSize: "10px" }}
+            >
+              {(event.hostedBy?.name || event.instructor || "?").charAt(0).toUpperCase()}
             </div>
           )}
           <p style={{ margin: 0, fontSize: "12px", fontWeight: "600" }}>
