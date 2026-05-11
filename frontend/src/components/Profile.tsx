@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import NavBar from "./navbar";
 
 type User = {
   name: string;
@@ -39,32 +40,42 @@ export default function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAll = async () => {
+  const fetchAll = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setUser(null);
+      setNotLoggedIn(true);
+      return;
+    }
+
+    try {
+      const [profileRes, workshopsRes] = await Promise.all([
+        axios.get("http://localhost:3000/api/profile/me", { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get("http://localhost:3000/api/workshops/mine", { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+      setUser(profileRes.data);
+      setHostedWorkshops(workshopsRes.data);
+    } catch (error: any) {
+      console.error("Failed to fetch profile:", error);
+      if (error.response?.status === 401) {
+        setNotLoggedIn(true);
+      } else {
+        toast.error("Failed to load profile. Please try again.");
+      }
+    }
+  };
+  fetchAll();
+}, []);
+  useEffect(() => {
+  const fetchRegistered = async () => {
+    try {
       const token = localStorage.getItem("token");
+
       if (!token) {
         setUser(null);
         setNotLoggedIn(true);
         return;
       }
-
-      try {
-        const [profileRes, workshopsRes] = await Promise.all([
-          axios.get("http://localhost:3000/api/profile/me", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:3000/api/workshops/mine", { headers: { Authorization: `Bearer ${token}` } }),
-        ]);
-        setUser(profileRes.data);
-        setHostedWorkshops(workshopsRes.data);
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-        toast.error("Failed to load profile. Please try again.");
-      }
-    };
-    fetchAll();
-  }, []);
-  useEffect(() => {
-  const fetchRegistered = async () => {
-    try {
-      const token = localStorage.getItem("token");
       const res = await axios.get("http://localhost:3000/api/workshops/attending", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -278,6 +289,7 @@ export default function Profile() {
       </button>
     </div>
       </div>
+      <NavBar/>
     </div>
   );
 }

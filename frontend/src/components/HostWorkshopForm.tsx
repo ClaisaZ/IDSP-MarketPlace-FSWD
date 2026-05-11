@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import NavBar from "./navbar";
 
 type WorkshopFormData = {
   name: string;
@@ -305,6 +306,7 @@ const HostWorkshopForm: React.FC = () => {
           View Preview
         </button>
       </form>
+      <NavBar/>
     </div>
   );
 };

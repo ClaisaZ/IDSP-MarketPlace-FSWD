@@ -1,0 +1,44 @@
+import { useNavigate, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse, faCalendar, faBullseye, faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
+
+export default function NavBar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname.includes(path);
+
+  return (
+    <nav className="bottom-nav">
+      <button className={`nav-item ${isActive("/course") ? "nav-item--active" : ""}`}
+        onClick={() => navigate("/course")}>
+        <FontAwesomeIcon icon={faHouse} />
+        <span>Home</span>
+      </button>
+
+      <button className={`nav-item ${isActive("/Home") ? "nav-item--active" : ""}`}
+        onClick={() => navigate("/Home")}>
+        <FontAwesomeIcon icon={faCalendar} />
+        <span>Workshops</span>
+      </button>
+
+      <button className="nav-item nav-item--center"
+        onClick={() => navigate("/skill-matching")}>
+        <FontAwesomeIcon icon={faBullseye} />
+        <span>SkillMatch</span>
+      </button>
+
+      <button className={`nav-item ${isActive("/host") ? "nav-item--active" : ""}`}
+        onClick={() => navigate("/host")}>
+        <FontAwesomeIcon icon={faPlus} />
+        <span>Host</span>
+      </button>
+
+      <button className={`nav-item ${isActive("/course/profile") ? "nav-item--active" : ""}`}
+        onClick={() => navigate("/course/profile")}>
+        <FontAwesomeIcon icon={faUser} />
+        <span>Profile</span>
+      </button>
+    </nav>
+  );
+}
