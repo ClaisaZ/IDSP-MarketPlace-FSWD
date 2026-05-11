@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import NavBar from "./navbar";
 
 const ReviewForm: React.FC = () => {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ const ReviewForm: React.FC = () => {
           Submit Review
         </button>
       </form>
+      <NavBar/>
     </div>
   );
 };

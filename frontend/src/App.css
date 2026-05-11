@@ -14,6 +14,9 @@
   background-color: var(--bg-light);
 }
 
+.app-container {
+  padding-bottom: 5rem;
+}
 body {
   font-family:
     "Inter",
@@ -489,7 +492,7 @@ body {
 /* Floating Yellow Register Button */
 .floating-register-btn {
   position: fixed;
-  bottom: 30px;
+  bottom: 90px;
   left: 50%;
   transform: translateX(-50%);
   background-color: #fde047; /* Yellow from mockup */
@@ -789,7 +792,7 @@ textarea.bordered-input {
 
 .floating-btn-stack {
   position: fixed;
-  bottom: 30px;
+  bottom: 90px;
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
@@ -832,4 +835,35 @@ textarea.bordered-input {
 /* Testing carousel here */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+/* Nav Bar */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 800px;
+  background: #0d0d0d;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0 20px;
+  z-index: 100;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: #6b6375;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0 8px;
+}
+.nav-item--active {
+  color: white;
 }

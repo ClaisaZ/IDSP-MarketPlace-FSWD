@@ -3,6 +3,7 @@ import EventCard from "./EventCard";
 import EventCategoryChips from "./EventCategoryChips";
 import FeaturedEventsCarousel from "./FeaturedEventsCarousel";
 import HomeSearchBar from "./HomeSearchBar";
+import NavBar from "./navbar";
 
 // bot hosts --> static bot users used showcasing workshop on homepages
 const mockHosts = [
@@ -246,6 +247,7 @@ function Home() {
           filteredEvents.map((event, index) => <EventCard key={`${event._id || index}`} event={event} />)
         )}
       </div>
+      <NavBar/>
     </div>
   );
 }
