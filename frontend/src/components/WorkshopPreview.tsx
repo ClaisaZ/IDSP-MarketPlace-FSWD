@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import NavBar from "./navbar";
 
 type Review = {
   name: string;
@@ -430,6 +431,7 @@ const WorkshopPreview: React.FC = () => {
           </div>
         </div>
       )}
+      <NavBar/>
     </div>
   );
 };

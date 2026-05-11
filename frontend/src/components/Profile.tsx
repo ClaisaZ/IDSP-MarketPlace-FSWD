@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import NavBar from "./navbar";
 
 type User = {
   name: string;
@@ -65,6 +66,12 @@ export default function Profile() {
     const fetchHosted = async () => {
       try {
         const token = localStorage.getItem("token");
+        
+        if (!token) {
+        setUser(null);
+        setNotLoggedIn(true);
+        return;
+      }
         const res = await axios.get("http://localhost:3000/api/workshops/mine", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -80,6 +87,12 @@ export default function Profile() {
   const fetchRegistered = async () => {
     try {
       const token = localStorage.getItem("token");
+
+      if (!token) {
+        setUser(null);
+        setNotLoggedIn(true);
+        return;
+      }
       const res = await axios.get("http://localhost:3000/api/workshops/attending", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -293,6 +306,7 @@ export default function Profile() {
       </button>
     </div>
       </div>
+      <NavBar/>
     </div>
   );
 }

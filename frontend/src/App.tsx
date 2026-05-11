@@ -18,6 +18,7 @@ import SkillMatching from "./components/SkillMatching";
 import Welcome from "./components/Welcome";
 import WorkshopDetails from "./components/WorkshopDetails";
 import WorkshopPreview from "./components/WorkshopPreview";
+
 import { CheckoutProvider } from "./context/CheckoutProvider";
 
 function CourseLayout() {
