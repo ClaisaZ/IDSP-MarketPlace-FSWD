@@ -10,14 +10,14 @@ export default function NavBar() {
 
   return (
     <nav className="bottom-nav">
-      <button className={`nav-item ${isActive("/course") ? "nav-item--active" : ""}`}
-        onClick={() => navigate("/course")}>
+      <button className={`nav-item ${isActive("/home") ? "nav-item--active" : ""}`}
+        onClick={() => navigate("/home")}>
         <FontAwesomeIcon icon={faHouse} />
         <span>Home</span>
       </button>
 
-      <button className={`nav-item ${isActive("/Home") ? "nav-item--active" : ""}`}
-        onClick={() => navigate("/Home")}>
+      <button className={`nav-item ${isActive("/Course") ? "nav-item--active" : ""}`}
+        onClick={() => navigate("/Course")}>
         <FontAwesomeIcon icon={faCalendar} />
         <span>Workshops</span>
       </button>
