@@ -141,9 +141,19 @@ const WorkshopPreview: React.FC = () => {
     if (capacityPercent >= 1)
       return { label: "Closed", color: "#fee2e2", borderColor: "#ff8b8b", textColor: "#ff8b8b" };
     if (capacityPercent >= 0.9)
-      return { label: "Closing", color: "#fee2e2", borderColor: "#ff8b8b", textColor: "#ff8b8b" };
+      return {
+        label: "Nearly Full",
+        color: "#fee2e2",
+        borderColor: "#ff8b8b",
+        textColor: "#ff8b8b",
+      };
     if (capacityPercent >= 0.75)
-      return { label: "Filling", color: "#fef9c3", borderColor: "#eab308", textColor: "#a16207" };
+      return {
+        label: "Filling Up",
+        color: "#fef9c3",
+        borderColor: "#eab308",
+        textColor: "#a16207",
+      };
     return {
       label: "Open",
       color: "#dff7e2",
