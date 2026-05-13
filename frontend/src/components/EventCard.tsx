@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 type Event = {
   _id?: string;
-  title?: string;
   name?: string;
-  instructor?: string;
   time: string;
   image?: string;
   imageUrl?: string;
@@ -24,14 +22,26 @@ function EventCard({ event }: { event: Event }) {
 
   const handleNavigate = () => {
     const token = localStorage.getItem("token");
-    const currentUserId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+    let currentUserId = null;
+
+    // Safe token parsing added here!
+    if (token) {
+      try {
+        currentUserId = JSON.parse(atob(token.split(".")[1])).id;
+      } catch (e) {
+        console.error("Invalid or malformed token", e);
+      }
+    }
+
     const hostId = typeof event.hostedBy === "object" ? event.hostedBy?._id : event.hostedBy;
     const isOwner = currentUserId && hostId && hostId === currentUserId;
 
     navigate(isOwner ? "/host/preview" : "/workshop/preview", {
-      state: { ...event, name: event.name || event.title },
+      state: { ...event },
     });
   };
+
+  const displayName = event.hostedBy?.name || "Unknown Host";
 
   return (
     <div
@@ -50,7 +60,11 @@ function EventCard({ event }: { event: Event }) {
     >
       <img
         src={event.imageUrl || event.image}
-        alt={event.title}
+        alt={event.name}
+        onError={(e) => {
+          // Made this 120x120 so it fits your grid perfectly
+          e.currentTarget.src = "https://placehold.co/120x120/3d0878/ffffff?text=Workshop";
+        }}
         style={{
           width: "120px",
           height: "120px",
@@ -61,37 +75,45 @@ function EventCard({ event }: { event: Event }) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
         <h4 style={{ margin: 0, fontSize: "14px", lineHeight: "1.2", fontWeight: "700" }}>
-          {event.name || event.title}
+          {event.name}
         </h4>
 
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           {event.hostedBy?.profilePicture ? (
             <img
               src={event.hostedBy.profilePicture}
-              alt={event.hostedBy.name}
+              alt={displayName}
               className="avatar"
-              style={{ width: "24px", height: "24px" }}
+              style={{ width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover" }}
             />
           ) : (
             <div
               className="avatar-placeholder"
-              style={{ width: "24px", height: "24px", fontSize: "10px" }}
+              style={{
+                width: "24px",
+                height: "24px",
+                fontSize: "10px",
+                borderRadius: "50%",
+                backgroundColor: "rgba(255,255,255,0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              {(event.hostedBy?.name || event.instructor || "?").charAt(0).toUpperCase()}
+              {displayName.charAt(0).toUpperCase()}
             </div>
           )}
-          <p style={{ margin: 0, fontSize: "12px", fontWeight: "600" }}>
-            {event.hostedBy?.name || event.instructor}
-          </p>
+          <p style={{ margin: 0, fontSize: "12px", fontWeight: "600" }}>{displayName}</p>
         </div>
 
         <p style={{ margin: 0, fontSize: "12px" }}>
-          <FaRegCalendarAlt style={{ marginRight: "6px" }} />
+          <FaRegCalendarAlt style={{ marginRight: "6px", transform: "translateY(1px)" }} />
           {event.date || "Sunday, May 28"}
         </p>
 
         <p style={{ margin: 0, fontSize: "12px" }}>
-          <IoTimeOutline style={{ marginRight: "3px" }} /> {event.time}
+          <IoTimeOutline style={{ marginRight: "3px", transform: "translateY(1px)" }} />{" "}
+          {event.time}
         </p>
 
         <button
@@ -105,6 +127,12 @@ function EventCard({ event }: { event: Event }) {
             padding: "5px 12px",
             fontSize: "12px",
             marginTop: "auto",
+            backgroundColor: "white",
+            color: "var(--primary-purple)",
+            border: "none",
+            borderRadius: "4px",
+            fontWeight: "bold",
+            cursor: "pointer",
           }}
         >
           See More
