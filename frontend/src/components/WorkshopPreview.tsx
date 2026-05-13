@@ -44,15 +44,25 @@ const WorkshopPreview: React.FC = () => {
   const [workshopData, setWorkshopData] = useState(data);
   const token = localStorage.getItem("token");
 
-  // Decodes the JWT to identify the logged-in user for ownership and permission checks.
-  const currentUserId = token ? JSON.parse(atob(token.split(".")[1])).id : null;
+  // Decodes the JWT safely to prevent crashes from malformed tokens
+  let currentUserId = null;
+  if (token) {
+    try {
+      currentUserId = JSON.parse(atob(token.split(".")[1])).id;
+    } catch {
+      // If the token is gibberish, we leave currentUserId as null.
+      console.warn("Invalid token structure detected.");
+    }
+  }
 
   // Verifies if the current user is the host by comparing IDs, handling both string and object formats.
   const isOwner =
     workshopData.hostedBy &&
     currentUserId &&
-    (typeof workshopData.hostedBy === "object" ? workshopData.hostedBy._id : workshopData.hostedBy).toString() ===
-      currentUserId;
+    (typeof workshopData.hostedBy === "object"
+      ? workshopData.hostedBy._id
+      : workshopData.hostedBy
+    ).toString() === currentUserId;
 
   // Synchronizes the component with the backend to ensure reviews and attendee lists are current.
   useEffect(() => {
@@ -63,6 +73,14 @@ const WorkshopPreview: React.FC = () => {
         const res = await fetch(`http://localhost:3000/api/workshops/${data._id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            localStorage.removeItem("token"); // Destroy the corrupted token
+            toast.error("Session expired or invalid. Please log in again.");
+            navigate("/login"); // Redirect them to safety!
+          }
+          throw new Error("Backend rejected the request");
+        }
         const fresh = await res.json();
 
         // Only updating state if the user hasn't navigated away from the component.
@@ -77,7 +95,7 @@ const WorkshopPreview: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [data._id, token, location.key]);
+  }, [data._id, token, location.key, navigate]);
 
   // Fetches the host's profile details specifically for preview mode when data isn't yet in the database.
   useEffect(() => {
@@ -112,7 +130,8 @@ const WorkshopPreview: React.FC = () => {
   const attendees: Attendee[] = workshopData.attendees || [];
 
   // Prioritizes populated host data from the backend, falling back to the current user during preview.
-  const host: Host | null = typeof workshopData.hostedBy === "object" ? workshopData.hostedBy : currentUser;
+  const host: Host | null =
+    typeof workshopData.hostedBy === "object" ? workshopData.hostedBy : currentUser;
 
   const totalSeats = parseInt(workshopData.seats) || 0;
   const capacityPercent = totalSeats > 0 ? attendees.length / totalSeats : 0;
@@ -122,10 +141,25 @@ const WorkshopPreview: React.FC = () => {
     if (capacityPercent >= 1)
       return { label: "Closed", color: "#fee2e2", borderColor: "#ff8b8b", textColor: "#ff8b8b" };
     if (capacityPercent >= 0.9)
-      return { label: "Closing", color: "#fee2e2", borderColor: "#ff8b8b", textColor: "#ff8b8b" };
+      return {
+        label: "Nearly Full",
+        color: "#fee2e2",
+        borderColor: "#ff8b8b",
+        textColor: "#ff8b8b",
+      };
     if (capacityPercent >= 0.75)
-      return { label: "Filling", color: "#fef9c3", borderColor: "#eab308", textColor: "#a16207" };
-    return { label: "Open", color: "#dff7e2", borderColor: "var(--text-dark)", textColor: "var(--text-dark)" };
+      return {
+        label: "Filling Up",
+        color: "#fef9c3",
+        borderColor: "#eab308",
+        textColor: "#a16207",
+      };
+    return {
+      label: "Open",
+      color: "#dff7e2",
+      borderColor: "var(--text-dark)",
+      textColor: "var(--text-dark)",
+    };
   };
 
   const badge = getStatusBadge();
@@ -160,7 +194,12 @@ const WorkshopPreview: React.FC = () => {
     <div className="host-page-container" style={{ padding: "0 20px 160px 20px" }}>
       <div
         className="screen-header"
-        style={{ flexDirection: "row", alignItems: "center", paddingTop: "30px", marginBottom: "15px" }}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingTop: "30px",
+          marginBottom: "15px",
+        }}
       >
         <button
           className="back-button"
@@ -181,7 +220,14 @@ const WorkshopPreview: React.FC = () => {
         className="hero-image"
       />
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "15px",
+        }}
+      >
         <span
           style={{
             backgroundColor: badge.color,
@@ -200,10 +246,14 @@ const WorkshopPreview: React.FC = () => {
         </span>
       </div>
 
-      <h3 style={{ fontSize: "22px", margin: "0 0 20px 0", color: "var(--text-dark)" }}>{workshopData.name}</h3>
+      <h3 style={{ fontSize: "22px", margin: "0 0 20px 0", color: "var(--text-dark)" }}>
+        {workshopData.name}
+      </h3>
 
       <div style={{ marginBottom: "20px" }}>
-        <div style={{ fontSize: "16px", fontWeight: "500", marginBottom: "8px" }}>Workshop Host</div>
+        <div style={{ fontSize: "16px", fontWeight: "500", marginBottom: "8px" }}>
+          Workshop Host
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {host?.profilePicture ? (
             <img
@@ -229,11 +279,20 @@ const WorkshopPreview: React.FC = () => {
               {host?.name ? host.name[0].toUpperCase() : "?"}
             </div>
           )}
-          <span style={{ fontSize: "14px", color: "var(--text-dark)" }}>{host?.name || "Unknown Host"}</span>
+          <span style={{ fontSize: "14px", color: "var(--text-dark)" }}>
+            {host?.name || "Unknown Host"}
+          </span>
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "20px" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "15px",
+          marginBottom: "20px",
+        }}
+      >
         <div>
           <div style={{ fontSize: "16px", fontWeight: "500" }}>Workshop Date</div>
           <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.date}</div>
@@ -251,25 +310,37 @@ const WorkshopPreview: React.FC = () => {
 
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500" }}>About This Workshop</div>
-        <p style={{ fontSize: "14px", color: "var(--text-dark)", lineHeight: "1.5", margin: "5px 0 0 0" }}>
+        <p
+          style={{
+            fontSize: "14px",
+            color: "var(--text-dark)",
+            lineHeight: "1.5",
+            margin: "5px 0 0 0",
+          }}
+        >
           {workshopData.about}
         </p>
       </div>
 
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500" }}>Ticket Price</div>
-        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.ticketPrice}</div>
+        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>
+          {workshopData.ticketPrice}
+        </div>
       </div>
 
       <div style={{ marginBottom: "25px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500" }}>Application Period</div>
-        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.applicationPeriod}</div>
+        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>
+          {workshopData.applicationPeriod}
+        </div>
       </div>
 
       <div
         style={{
-          backgroundColor: isClosed ? "#fee2e2" : capacityPercent >= 0.75 ? "#fef9c3" : "#dff7e2",
-          border: `2px solid ${isClosed ? "#ff8b8b" : capacityPercent >= 0.75 ? "#eab308" : "#500aa0"}`,
+          backgroundColor:
+            capacityPercent >= 0.9 ? "#fee2e2" : capacityPercent >= 0.75 ? "#fef9c3" : "#dff7e2",
+          border: `2px solid ${capacityPercent >= 0.9 ? "#ff8b8b" : capacityPercent >= 0.75 ? "#eab308" : "#500aa0"}`,
           borderRadius: "12px",
           padding: "20px",
           marginBottom: "20px",
@@ -289,7 +360,12 @@ const WorkshopPreview: React.FC = () => {
                   <img
                     src={attendee.profilePicture}
                     alt={attendee.name}
-                    style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }}
+                    style={{
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
                   />
                 ) : (
                   <div
@@ -309,7 +385,9 @@ const WorkshopPreview: React.FC = () => {
                     {attendee.name ? attendee.name[0].toUpperCase() : "?"}
                   </div>
                 )}
-                <span style={{ fontSize: "13px", color: "var(--text-dark)" }}>@{attendee.name}</span>
+                <span style={{ fontSize: "13px", color: "var(--text-dark)" }}>
+                  @{attendee.name}
+                </span>
               </div>
             ))}
             {attendees.length > 6 && (
@@ -319,14 +397,25 @@ const WorkshopPreview: React.FC = () => {
             )}
           </div>
         ) : (
-          <p style={{ fontSize: "14px", color: "var(--text-dark)", margin: 0 }}>No attendees yet.</p>
+          <p style={{ fontSize: "14px", color: "var(--text-dark)", margin: 0 }}>
+            No attendees yet.
+          </p>
         )}
       </div>
 
       <div className="bordered-card-white">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "10px",
+          }}
+        >
           <div style={{ fontSize: "18px", fontWeight: "600" }}>Reviews ({reviews.length})</div>
-          <div style={{ fontSize: "14px", fontWeight: "600", color: "var(--dark-purple)" }}>★ {avgRating}</div>
+          <div style={{ fontSize: "14px", fontWeight: "600", color: "var(--dark-purple)" }}>
+            ★ {avgRating}
+          </div>
         </div>
         {reviews.length > 0 ? (
           visibleReviews.map((review: Review, index: number) => (
@@ -338,7 +427,9 @@ const WorkshopPreview: React.FC = () => {
                   {"☆".repeat(5 - review.rating)}
                 </span>
               </div>
-              <p style={{ fontSize: "14px", color: "var(--text-dark)", margin: 0 }}>{review.comment}</p>
+              <p style={{ fontSize: "14px", color: "var(--text-dark)", margin: 0 }}>
+                {review.comment}
+              </p>
             </div>
           ))
         ) : (
@@ -369,7 +460,11 @@ const WorkshopPreview: React.FC = () => {
             )}
           </>
         ) : isClosed ? (
-          <button className="btn-dark-purple" disabled style={{ opacity: 0.5, cursor: "not-allowed" }}>
+          <button
+            className="btn-dark-purple"
+            disabled
+            style={{ opacity: 0.5, cursor: "not-allowed" }}
+          >
             Workshop Full
           </button>
         ) : (
@@ -379,7 +474,9 @@ const WorkshopPreview: React.FC = () => {
             </button>
             <button
               className="btn-dark-purple"
-              onClick={() => navigate("/workshop/review", { state: { workshopId: workshopData._id } })}
+              onClick={() =>
+                navigate("/workshop/review", { state: { workshopId: workshopData._id } })
+              }
             >
               Leave a Review
             </button>
@@ -410,7 +507,14 @@ const WorkshopPreview: React.FC = () => {
               border: "2px solid #ccc",
             }}
           >
-            <h2 style={{ fontSize: "1.5rem", fontWeight: "800", marginBottom: "24px", color: "#1a1a1a" }}>
+            <h2
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "800",
+                marginBottom: "24px",
+                color: "#1a1a1a",
+              }}
+            >
               Ready to host this workshop?
             </h2>
             <button className="btn-dark-purple" onClick={handleHost}>
@@ -426,7 +530,7 @@ const WorkshopPreview: React.FC = () => {
           </div>
         </div>
       )}
-      <NavBar/>
+      <NavBar />
     </div>
   );
 };

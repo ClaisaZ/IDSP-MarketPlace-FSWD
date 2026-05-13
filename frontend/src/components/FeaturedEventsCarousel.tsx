@@ -2,10 +2,11 @@ import { useRef, useState } from "react";
 import FeaturedEventCard from "./FeaturedEventCard";
 
 type Event = {
-  title: string;
-  instructor: string;
+  _id?: string;
+  name?: string;
   time: string;
-  image: string;
+  image?: string;
+  imageUrl?: string;
   category: string;
   location?: string;
   date?: string;
@@ -61,10 +62,21 @@ function FeaturedEventsCarousel({ events }: { events: Event[] }) {
           const isActive = activeIndex === index;
           return (
             <div
-              key={`${event.title}-${index}`}
-              onMouseEnter={(e) => { setActiveIndex(index); centerCard(e.currentTarget); }}
-              onClick={(e) => { e.stopPropagation(); setActiveIndex(index); centerCard(e.currentTarget); }}
-              onTouchStart={(e) => { setActiveIndex(index); centerCard(e.currentTarget); }}
+              // 👇 Updated safe key handling right here!
+              key={event._id || event.name || index}
+              onMouseEnter={(e) => {
+                setActiveIndex(index);
+                centerCard(e.currentTarget);
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveIndex(index);
+                centerCard(e.currentTarget);
+              }}
+              onTouchStart={(e) => {
+                setActiveIndex(index);
+                centerCard(e.currentTarget);
+              }}
               style={{
                 minWidth: "280px",
                 transform: isActive ? "scale(1.05)" : "scale(0.9)",
