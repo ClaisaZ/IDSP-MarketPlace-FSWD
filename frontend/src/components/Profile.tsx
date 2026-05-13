@@ -40,35 +40,7 @@ export default function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const fetchAll = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setUser(null);
-      setNotLoggedIn(true);
-      return;
-    }
-
-    try {
-      const [profileRes, workshopsRes] = await Promise.all([
-        axios.get("http://localhost:3000/api/profile/me", { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get("http://localhost:3000/api/workshops/mine", { headers: { Authorization: `Bearer ${token}` } }),
-      ]);
-      setUser(profileRes.data);
-      setHostedWorkshops(workshopsRes.data);
-    } catch (error: any) {
-      console.error("Failed to fetch profile:", error);
-      if (error.response?.status === 401) {
-        setNotLoggedIn(true);
-      } else {
-        toast.error("Failed to load profile. Please try again.");
-      }
-    }
-  };
-  fetchAll();
-}, []);
-  useEffect(() => {
-  const fetchRegistered = async () => {
-    try {
+    const fetchAll = async () => {
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -76,16 +48,60 @@ export default function Profile() {
         setNotLoggedIn(true);
         return;
       }
-      const res = await axios.get("http://localhost:3000/api/workshops/attending", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setRegisteredWorkshops(res.data);
-    } catch (error) {
-      console.error("Failed to fetch registered workshops:", error);
-    }
-  };
-  fetchRegistered();
-}, []);
+
+      try {
+        const [profileRes, workshopsRes] = await Promise.all([
+          axios.get("http://localhost:3000/api/profile/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get("http://localhost:3000/api/workshops/mine", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        setUser(profileRes.data);
+        setHostedWorkshops(workshopsRes.data);
+      } catch (err: unknown) {
+        console.error("Failed to fetch profile:", err);
+
+        // Type Guard that safely checks if it's an Axios error
+        if (axios.isAxiosError(err)) {
+          if (err.response?.status === 401) {
+            setNotLoggedIn(true);
+          } else {
+            // safely accessing err.response.data
+            const message = err.response?.data?.error || "Failed to load profile.";
+            toast.error(message);
+          }
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
+      }
+    };
+
+    fetchAll();
+  }, []);
+
+  useEffect(() => {
+    const fetchRegistered = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          setUser(null);
+          setNotLoggedIn(true);
+          return;
+        }
+        const res = await axios.get("http://localhost:3000/api/workshops/attending", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setRegisteredWorkshops(res.data);
+      } catch (error) {
+        console.error("Failed to fetch registered workshops:", error);
+      }
+    };
+    fetchRegistered();
+  }, []);
 
   const handleDelete = async (workshopId: string) => {
     if (!confirm("Are you sure you want to delete this workshop?")) return;
@@ -105,7 +121,9 @@ export default function Profile() {
       <div className="profile-page">
         <div className="purple-card">
           <h4>You don't have an account yet</h4>
-          <p style={{ color: "white", marginBottom: "20px", textAlign: "center" }}>Want to sign up?</p>
+          <p style={{ color: "white", marginBottom: "20px", textAlign: "center" }}>
+            Want to sign up?
+          </p>
           <button className="primary-button" onClick={() => navigate("/signup")}>
             Yes, Sign Up
           </button>
@@ -197,99 +215,122 @@ export default function Profile() {
           </div>
         )}
 
-      <div className="workshops-section">
-        <h2 className="header-title">Workshops</h2>
-        
-        <div className="workshop-tabs">
-          <button 
-            className={`workshop-tab ${activeTab === "registered" ? "workshop-tab--active" : ""}`}
-            onClick={() => setActiveTab("registered")}
-          >
-            Registered
-          </button>
-          <button 
-            className={`workshop-tab ${activeTab === "hosting" ? "workshop-tab--active" : ""}`}
-            onClick={() => setActiveTab("hosting")}
-          >
-            Hosting
-          </button>
-        </div>
+        <div className="workshops-section">
+          <h2 className="header-title">Workshops</h2>
+
+          <div className="workshop-tabs">
+            <button
+              className={`workshop-tab ${activeTab === "registered" ? "workshop-tab--active" : ""}`}
+              onClick={() => setActiveTab("registered")}
+            >
+              Registered
+            </button>
+            <button
+              className={`workshop-tab ${activeTab === "hosting" ? "workshop-tab--active" : ""}`}
+              onClick={() => setActiveTab("hosting")}
+            >
+              Hosting
+            </button>
+          </div>
 
           <div className="workshop-list">
-            {activeTab === "hosting" && hostedWorkshops.map((workshop) => (
-              <div key={workshop._id} className="workshop-card"
-                onClick={() => navigate("/host/preview", { state: workshop })}>
-                <img
-                  src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
-                  alt={workshop.name}
-                  className="workshop-thumbnail"
-                />
-                <div className="workshop-info">
-                <p className="workshop-name">{workshop.name}</p>
-                <div className="workshop-host">
-                  <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
-                    {workshop.hostedBy?.name[0].toUpperCase()}
+            {activeTab === "hosting" &&
+              hostedWorkshops.map((workshop) => (
+                <div
+                  key={workshop._id}
+                  className="workshop-card"
+                  onClick={() => navigate("/host/preview", { state: workshop })}
+                >
+                  <img
+                    src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
+                    alt={workshop.name}
+                    className="workshop-thumbnail"
+                  />
+                  <div className="workshop-info">
+                    <p className="workshop-name">{workshop.name}</p>
+                    <div className="workshop-host">
+                      <div
+                        className="avatar-placeholder"
+                        style={{ width: "20px", height: "20px", fontSize: "10px" }}
+                      >
+                        {workshop.hostedBy?.name[0].toUpperCase()}
+                      </div>
+                      <span>{workshop.hostedBy?.name}</span>
+                    </div>
+                    <div style={{ fontSize: "12px", opacity: 0.85 }}>
+                      <p style={{ margin: 0 }}>📅 {workshop.date}</p>
+                      <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
+                    </div>
                   </div>
-                  <span>{workshop.hostedBy?.name}</span>
-                </div>
-                <div style={{ fontSize: "12px", opacity: 0.85 }}>
-                  <p style={{ margin: 0 }}>📅 {workshop.date}</p>
-                  <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
-                </div>
-              </div>
-                <button className="delete-workshop-btn"
-                    onClick={(e) => { e.stopPropagation(); handleDelete(workshop._id); }}>
+                  <button
+                    className="delete-workshop-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(workshop._id);
+                    }}
+                  >
                     🗑️
-                </button>
+                  </button>
                 </div>
               ))}
 
-            {activeTab === "registered" && (
-            registeredWorkshops.length === 0 ? (
-              <p style={{ color: "var(--text-gray)", textAlign: "center", marginTop: "20px" }}>
-                No registered workshops yet
-              </p>
-            ) : (
-              registeredWorkshops.map((workshop) => (
-            <div key={workshop._id} className="workshop-card"
-              onClick={() => navigate("/host/preview", { state: workshop })}>
-              <img
-                src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
-                alt={workshop.name}
-                className="workshop-thumbnail"
-              />
-              <div className="workshop-info">
-                <p className="workshop-name">{workshop.name}</p>
-                <div className="workshop-host">
-                  <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
-                    {workshop.hostedBy?.name[0].toUpperCase()}
+            {activeTab === "registered" &&
+              (registeredWorkshops.length === 0 ? (
+                <p style={{ color: "var(--text-gray)", textAlign: "center", marginTop: "20px" }}>
+                  No registered workshops yet
+                </p>
+              ) : (
+                registeredWorkshops.map((workshop) => (
+                  <div
+                    key={workshop._id}
+                    className="workshop-card"
+                    onClick={() => navigate("/host/preview", { state: workshop })}
+                  >
+                    <img
+                      src={workshop.imageUrl || "https://placehold.co/400x200?text=Workshop"}
+                      alt={workshop.name}
+                      className="workshop-thumbnail"
+                    />
+                    <div className="workshop-info">
+                      <p className="workshop-name">{workshop.name}</p>
+                      <div className="workshop-host">
+                        <div
+                          className="avatar-placeholder"
+                          style={{ width: "20px", height: "20px", fontSize: "10px" }}
+                        >
+                          {workshop.hostedBy?.name[0].toUpperCase()}
+                        </div>
+                        <span>{workshop.hostedBy?.name}</span>
+                      </div>
+                      <div style={{ fontSize: "12px", opacity: 0.85 }}>
+                        <p style={{ margin: 0 }}>📅 {workshop.date}</p>
+                        <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
+                      </div>
+                    </div>
+                    <button
+                      className="delete-workshop-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(workshop._id);
+                      }}
+                    >
+                      🗑️
+                    </button>
                   </div>
-                  <span>{workshop.hostedBy?.name}</span>
-                </div>
-                <div style={{ fontSize: "12px", opacity: 0.85 }}>
-                  <p style={{ margin: 0 }}>📅 {workshop.date}</p>
-                  <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
-                </div>
-              </div>
-              <button 
-                className="delete-workshop-btn"
-                onClick={(e) => { e.stopPropagation(); handleDelete(workshop._id); }}
-              >
-                🗑️
-              </button>
-            </div>
-              ))
-            )
-          )}
-        </div>
+                ))
+              ))}
+          </div>
 
-      <button className="btn-dark-purple" onClick={() => navigate("/host")}
-        style={{ marginTop: "16px", width: "100%" }}>
-        🎓 Host a Workshop
-      </button>
-    </div>
+          <button
+            className="btn-dark-purple"
+            onClick={() => navigate("/host")}
+            style={{ marginTop: "16px", width: "100%" }}
+          >
+            🎓 Host a Workshop
+          </button>
+        </div>
       </div>
-      <NavBar/>
+      <NavBar />
     </div>
   );
 }
