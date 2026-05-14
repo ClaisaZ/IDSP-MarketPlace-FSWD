@@ -12,48 +12,74 @@ function AccountCreated() {
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
+        padding: "20px",
+        boxSizing: "border-box",
       }}
     >
-      {/* Header */}
       <div
         className="screen-header"
         style={{
-          display: "flex",
-          flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
           textAlign: "center",
+          padding: "20px 0",
         }}
       >
-        <h2 className="header-title">Account Created</h2>
-        <p className="header-subtitle">
-          Your account is created and your profile is updated
+        <h2 className="header-title">Account Created!</h2>
+
+        <p
+          className="header-subtitle"
+          style={{
+            fontSize: "22px",
+            lineHeight: "26px",
+          }}
+        >
+          Your profile is ready to go.
         </p>
       </div>
 
-      {/* Card */}
       <div
         className="purple-card"
         style={{
+          minHeight: "420px",
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: "20px",
+          gap: "22px",
         }}
       >
-        <h1 style={{ fontSize: "40px" }}>NICE...yea... they dont have a flow for this so idk</h1>
+        <h1
+          style={{
+            fontSize: "36px",
+            lineHeight: "44px",
+            fontWeight: "800",
+            margin: 0,
+            color: "var(--bg-white)",
+          }}
+        >
+          You're All Set!
+        </h1>
 
-        <p>
-          You’re ready to start exploring SkillMatch.
+        <p
+          style={{
+            fontSize: "18px",
+            lineHeight: "26px",
+            margin: 0,
+            color: "var(--bg-white)",
+            maxWidth: "300px",
+          }}
+        >
+          Start exploring courses, discovering new skills, and connecting with
+          people who share your interests.
         </p>
 
         <button
           className="primary-button"
-          onClick={() => navigate("/course")}
+          onClick={() => navigate("/Home")}
           style={{
             width: "80%",
+            marginTop: "20px",
           }}
         >
           Go to Home

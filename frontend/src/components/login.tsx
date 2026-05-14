@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -44,10 +47,49 @@ function Login() {
 
   return (
     <>
-      <div className="screen-header">
-        <h2 className="header-title">Sign In</h2>
-        <p className="header-subtitle">Login to your account</p>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "800px",
+          position: "relative",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: "8px",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          style={{
+            position: "absolute",
+            left: "0",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <FiArrowLeft size={38} color="black" />
+        </button>
+
+        <h2 className="header-title" style={{ margin: 0, textAlign: "center" }}>
+          Sign In
+        </h2>
       </div>
+
+      <p
+        className="header-subtitle"
+        style={{
+          width: "100%",
+          textAlign: "center",
+          marginBottom: "30px",
+        }}
+      >
+        Login to your account
+      </p>
 
       <div className="purple-card">
         <form

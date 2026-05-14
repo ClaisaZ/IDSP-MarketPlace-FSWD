@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { protectRoute } = require("../middleware/authMiddleware");
 const Workshop = require("../models/Workshop");
+const User = require("../models/User");
 
 router.get("/", protectRoute, async (req, res) => {
   try {
@@ -16,16 +17,31 @@ router.get("/", protectRoute, async (req, res) => {
 
 router.post("/", protectRoute, async (req, res) => {
   try {
-    const { name, date, time, description, location, imageUrl } = req.body;
+    const {
+      name,
+      categories,
+      date,
+      time,
+      location,
+      about,
+      ticketPrice,
+      applicationPeriod,
+      seats,
+      imageUrl,
+    } = req.body;
 
     const newWorkshop = new Workshop({
       name,
+      categories,
       date,
       time,
-      description,
       location,
+      about,
+      ticketPrice,
+      applicationPeriod,
+      seats,
       imageUrl,
-      hostedBy: req.user._id, // Use _id here to match your /mine route
+      hostedBy: req.user._id,
       attendees: [],
     });
 
@@ -49,9 +65,54 @@ router.get("/mine", protectRoute, async (req, res) => {
   }
 });
 
+router.get("/recommended", protectRoute, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user || !user.interests || user.interests.length === 0) {
+      return res.json([]);
+    }
+
+    const recommendedWorkshops = await Workshop.find({
+      categories: { $in: user.interests },
+    })
+      .populate("hostedBy", "name profilePicture")
+      .populate("attendees", "name profilePicture");
+
+    res.json(recommendedWorkshops);
+  } catch (err) {
+    console.error("Recommendation error:", err);
+    res.status(500).json({ error: "Failed to fetch recommendations" });
+  }
+});
+
+router.post("/match", protectRoute, async (req, res) => {
+  try {
+    const { categories } = req.body;
+
+    if (!categories || categories.length === 0) {
+      return res.json([]);
+    }
+
+    const matchedWorkshops = await Workshop.find({
+      $or: [
+        { categories: { $in: categories } },
+        { category: { $in: categories } },
+      ],
+    })
+      .populate("hostedBy", "name profilePicture")
+      .populate("attendees", "name profilePicture");
+
+    res.json(matchedWorkshops);
+  } catch (err) {
+    console.error("Workshop match error:", err);
+    res.status(500).json({ error: "Failed to match workshops" });
+  }
+});
+
 router.get("/:id", protectRoute, async (req, res) => {
   try {
-    const workshop = await Workshop.findById(req.params._id)
+    const workshop = await Workshop.findById(req.params.id)
       .populate("hostedBy", "name profilePicture")
       .populate("attendees", "name profilePicture");
     if (!workshop) return res.status(404).json({ error: "Not found" });
@@ -64,7 +125,7 @@ router.get("/:id", protectRoute, async (req, res) => {
 router.delete("/:id", protectRoute, async (req, res) => {
   try {
     const workshop = await Workshop.findOneAndDelete({
-      _id: req.params._id,
+      _id: req.params.id,
       hostedBy: req.user._id,
     });
     if (!workshop) return res.status(404).json({ error: "Workshop not found" });
@@ -77,7 +138,7 @@ router.delete("/:id", protectRoute, async (req, res) => {
 // Attend a workshop
 router.post("/:id/attend", protectRoute, async (req, res) => {
   try {
-    const workshop = await Workshop.findById(req.params._id);
+    const workshop = await Workshop.findById(req.params.id);
     if (!workshop) return res.status(404).json({ error: "Not found" });
     if (workshop.hostedBy.toString() === req.user._id)
       return res.status(403).json({ error: "You cannot attend your own workshop" });
@@ -107,7 +168,7 @@ router.get("/attending", protectRoute, async (req, res) => {
 // Post a review
 router.post("/:id/review", protectRoute, async (req, res) => {
   try {
-    const workshop = await Workshop.findById(req.params._id);
+    const workshop = await Workshop.findById(req.params.id);
     if (!workshop) return res.status(404).json({ error: "Not found" });
     if (workshop.hostedBy.toString() === req.user._id)
       return res.status(403).json({ error: "You cannot review your own workshop" });

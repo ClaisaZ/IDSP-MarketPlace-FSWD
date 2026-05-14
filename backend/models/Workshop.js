@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const workshopSchema = new mongoose.Schema(
   {
     name: String,
+    categories: [String],
     date: String,
     time: String,
     location: String,

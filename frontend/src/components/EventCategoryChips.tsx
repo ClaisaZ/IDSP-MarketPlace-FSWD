@@ -8,7 +8,7 @@ function EventCategoryChips({
     onSelectCategory: (category: string | null) => void;
 }) {
     return (
-        <div style={{ display: "flex", gap: "8px", marginTop: "10px"}}>
+        <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
             {categories.map((category) => {
                 const isActive = activeCategory === category;
 
@@ -21,9 +21,11 @@ function EventCategoryChips({
                             borderRadius: "20px",
                             border: "none",
                             transition: "all 0.15s ease",
-                            background: isActive ? "#facc15" : "#46148c",
-                            color: isActive ? "#000" : "#fff",
-                            cursor:"pointer"
+                            background: isActive
+                                ? "var(--mangosteen)"
+                                : "var(--passionfruit)",
+                            color: isActive ? "black" : "white",
+                            cursor: "pointer"
                         }}
                     >
                         {category}

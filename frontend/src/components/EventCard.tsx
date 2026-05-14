@@ -8,7 +8,9 @@ type Event = {
   time: string;
   image?: string;
   imageUrl?: string;
-  category: string;
+  category?: string; 
+  categories?: string[];
+  // Need to change category to categories = string[] later just added ? to prevent errors while trying new system
   date?: string;
   hostedBy?: {
     _id: string;

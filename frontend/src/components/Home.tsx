@@ -14,7 +14,8 @@ type Workshop = {
   date?: string;
   image?: string;
   imageUrl?: string;
-  category: string;
+  category?: string;
+  categories?: string[];
   location?: string;
   about?: string;
   ticketPrice?: string;
@@ -48,7 +49,10 @@ function Home() {
     const matchesSearch = (event.name || event.title || "")
       .toLowerCase()
       .includes(search.toLowerCase());
-    const matchesCategory = !activeCategory || event.category === activeCategory;
+    const matchesCategory =
+      !activeCategory ||
+      event.category === activeCategory ||
+      event.categories?.includes(activeCategory);
     return matchesSearch && matchesCategory;
   });
 
@@ -69,6 +73,18 @@ function Home() {
       }}
     >
       <HomeSearchBar value={search} onChange={setSearch} />
+      <h3
+        style={{
+          margin: "0",
+          marginTop: "4px",
+          fontSize: "24px",
+          fontWeight: "700",
+          color: "var(--text-dark)",
+          textAlign: "left",
+        }}
+      >
+        Featured Workshops
+      </h3>
 
       {/* Carousel only renders once we have real data */}
       {featuredEvents.length > 0 && <FeaturedEventsCarousel events={featuredEvents} />}

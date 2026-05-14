@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 
 function Signup() {
   const navigate = useNavigate();
@@ -17,7 +17,10 @@ function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
@@ -37,8 +40,6 @@ function Signup() {
         headers: {
           "Content-Type": "application/json",
         },
-
-        // confirmPassword is NOT sent to backend
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
@@ -54,7 +55,6 @@ function Signup() {
       }
 
       localStorage.setItem("token", data.token);
-
       toast.success("Account created!");
 
       setTimeout(() => {
@@ -75,10 +75,56 @@ function Signup() {
 
   return (
     <>
-      <div className="screen-header">
-        <h2 className="header-title">Create Account</h2>
-        <p className="header-subtitle">Sign up to continue</p>
+      {/* Header Row */}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "800px",
+          position: "relative",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: "8px",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          style={{
+            position: "absolute",
+            left: "0",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <FiArrowLeft size={38} color="black" />
+        </button>
+
+        <h2
+          className="header-title"
+          style={{
+            margin: 0,
+            textAlign: "center",
+          }}
+        >
+          Create Account
+        </h2>
       </div>
+
+      <p
+        className="header-subtitle"
+        style={{
+          width: "100%",
+          textAlign: "center",
+          marginBottom: "30px",
+        }}
+      >
+        Sign up to continue
+      </p>
 
       <div className="purple-card">
         <form
@@ -135,7 +181,10 @@ function Signup() {
                 onChange={handleChange}
                 className="text-input"
                 placeholder="Create a password"
-                style={{ width: "100%", paddingRight: "45px" }}
+                style={{
+                  width: "100%",
+                  paddingRight: "45px",
+                }}
               />
 
               <button
@@ -177,7 +226,10 @@ function Signup() {
                 onChange={handleChange}
                 className="text-input"
                 placeholder="Confirm your password"
-                style={{ width: "100%", paddingRight: "45px" }}
+                style={{
+                  width: "100%",
+                  paddingRight: "45px",
+                }}
               />
 
               <button
@@ -198,7 +250,7 @@ function Signup() {
                   justifyContent: "center",
                 }}
               >
-                {showPassword ? <FiEyeOff /> : <FiEye />}
+                {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
               </button>
             </div>
           </div>
@@ -206,7 +258,9 @@ function Signup() {
           <button
             type="submit"
             className="primary-button"
-            style={{ marginTop: "20px" }}
+            style={{
+              marginTop: "20px",
+            }}
           >
             Sign Up
           </button>
