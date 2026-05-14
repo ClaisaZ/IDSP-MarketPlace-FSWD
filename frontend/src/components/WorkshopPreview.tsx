@@ -450,7 +450,10 @@ const WorkshopPreview: React.FC = () => {
       <div className="floating-btn-stack">
         {isOwner ? (
           <>
-            <button className="btn-dark-purple" onClick={() => navigate(-1)}>
+            <button
+              className="btn-dark-purple"
+              onClick={() => navigate("/host", { state: workshopData })}
+            >
               Edit Workshop
             </button>
             {!workshopData._id && (
