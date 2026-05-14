@@ -50,13 +50,13 @@ const generateAttendeesAndReviews = (count: number) => {
   return { attendees, reviews };
 };
 
-// Workshop records (6 per category: Design, UI/UX, Marketing, Coding)
+// Workshop records (6 per categories: Design, UI/UX, Marketing, Coding)
 const workshops = [
   // 🎨 DESIGN CATEGORY
   {
     _id: new ObjectId(),
     name: "Design Fundamentals Workshop",
-    category: "Design",
+    categories: ["Design"],
     date: "June 5, 2026",
     time: "10:00AM – 12:00PM",
     location: "123 Granville St, Vancouver",
@@ -73,7 +73,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Mastering Color Theory",
-    category: "Design",
+    categories: ["Design"],
     date: "June 15, 2026",
     time: "1:00PM – 4:00PM",
     location: "Online (Zoom)",
@@ -90,7 +90,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Logo & Brand Identity Creation",
-    category: "Design",
+    categories: ["Design"],
     date: "July 2, 2026",
     time: "9:00AM – 3:00PM",
     location: "456 Robson St, Vancouver",
@@ -107,7 +107,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Typography for the Web",
-    category: "Design",
+    categories: ["Design"],
     date: "July 18, 2026",
     time: "10:00AM – 12:30PM",
     location: "88 Pacific Blvd, Vancouver",
@@ -124,7 +124,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Digital Illustration Basics",
-    category: "Design",
+    categories: ["Design"],
     date: "August 5, 2026",
     time: "2:00PM – 5:00PM",
     location: "Gastown Art Hub, Vancouver",
@@ -141,7 +141,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Packaging Design Workshop",
-    category: "Design",
+    categories: ["Design"],
     date: "August 20, 2026",
     time: "10:00AM – 4:00PM",
     location: "33 W 8th Ave, Vancouver",
@@ -160,7 +160,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "UI/UX Design Sprint",
-    category: "UI/UX",
+    categories: ["UI/UX"],
     date: "July 3, 2026",
     time: "10:00AM – 4:00PM",
     location: "555 Seymour St, Vancouver",
@@ -177,7 +177,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Figma Component Architecture",
-    category: "UI/UX",
+    categories: ["UI/UX"],
     date: "July 10, 2026",
     time: "1:00PM – 4:00PM",
     location: "Online (Discord)",
@@ -193,7 +193,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "UX Research Methods",
-    category: "UI/UX",
+    categories: ["UI/UX"],
     date: "July 22, 2026",
     time: "9:00AM – 1:00PM",
     location: "Burnaby Tech Hub",
@@ -210,7 +210,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Accessibility in UI Design (WCAG)",
-    category: "UI/UX",
+    categories: ["UI/UX"],
     date: "August 1, 2026",
     time: "10:00AM – 12:00PM",
     location: "Online (Zoom)",
@@ -227,7 +227,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Advanced Prototyping",
-    category: "UI/UX",
+    categories: ["UI/UX"],
     date: "August 15, 2026",
     time: "2:00PM – 5:00PM",
     location: "150 W Hastings St, Vancouver",
@@ -244,7 +244,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Designing for Mobile Apps",
-    category: "UI/UX",
+    categories: ["UI/UX"],
     date: "September 5, 2026",
     time: "10:00AM – 3:00PM",
     location: "Downtown Vancouver Workspace",
@@ -263,7 +263,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Marketing Strategy Masterclass",
-    category: "Marketing",
+    categories: ["Marketing"],
     date: "June 12, 2026",
     time: "1:00PM – 3:30PM",
     location: "456 Robson St, Vancouver",
@@ -280,7 +280,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Social Media Growth Hacks",
-    category: "Marketing",
+    categories: ["Marketing"],
     date: "June 20, 2026",
     time: "10:00AM – 12:00PM",
     location: "200 Burrard St, Vancouver",
@@ -297,7 +297,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Email Marketing That Converts",
-    category: "Marketing",
+    categories: ["Marketing"],
     date: "July 8, 2026",
     time: "2:00PM – 4:00PM",
     location: "300 Granville St, Vancouver",
@@ -314,7 +314,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "SEO Fundamentals for Startups",
-    category: "Marketing",
+    categories: ["Marketing"],
     date: "July 25, 2026",
     time: "10:00AM – 1:00PM",
     location: "Online (Zoom)",
@@ -331,7 +331,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Paid Ads Bootcamp (Google & Meta)",
-    category: "Marketing",
+    categories: ["Marketing"],
     date: "August 12, 2026",
     time: "9:00AM – 3:00PM",
     location: "Gastown Innovation Lab",
@@ -348,7 +348,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Content Marketing & Storytelling",
-    category: "Marketing",
+    categories: ["Marketing"],
     date: "August 28, 2026",
     time: "1:00PM – 4:00PM",
     location: "Vancouver Public Library",
@@ -367,7 +367,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Intro to Web Development",
-    category: "Coding",
+    categories: ["Coding"],
     date: "June 18, 2026",
     time: "9:00AM – 12:00PM",
     location: "789 Burrard St, Vancouver",
@@ -383,7 +383,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Advanced React Patterns",
-    category: "Coding",
+    categories: ["Coding"],
     date: "June 25, 2026",
     time: "2:00PM – 5:00PM",
     location: "321 West Georgia St, Vancouver",
@@ -400,7 +400,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "API Design with Node & Express",
-    category: "Coding",
+    categories: ["Coding"],
     date: "July 12, 2026",
     time: "10:00AM – 2:00PM",
     location: "Online (Discord)",
@@ -416,7 +416,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Python for Data Analysis",
-    category: "Coding",
+    categories: ["Coding"],
     date: "July 15, 2026",
     time: "10:00AM – 1:00PM",
     location: "600 Hastings St, Vancouver",
@@ -432,7 +432,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Full-Stack Next.js App Router",
-    category: "Coding",
+    categories: ["Coding"],
     date: "August 8, 2026",
     time: "9:00AM – 4:00PM",
     location: "Burnaby Tech Hub",
@@ -449,7 +449,7 @@ const workshops = [
   {
     _id: new ObjectId(),
     name: "Cloud Deployment & Docker",
-    category: "Coding",
+    categories: ["Coding"],
     date: "August 22, 2026",
     time: "1:00PM – 5:00PM",
     location: "Online (Zoom)",

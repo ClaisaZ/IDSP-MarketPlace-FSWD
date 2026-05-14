@@ -98,6 +98,7 @@ function SkillMatching() {
       <div
         className="purple-card-2"
         style={{
+          backgroundColor: "var(--coconut-milk)",
           height: "75vh",
           maxHeight: "720px",
           margin: "0 10px",
@@ -137,7 +138,7 @@ function SkillMatching() {
                     fontSize: "16px",
                     cursor: "pointer",
                     textAlign: "center",
-                    background: isSelected ? "var(--dark-purple)" : "var(--primary-purple)",
+                    background: isSelected ? "var(--passionfruit)" : "var(--mangosteen)",
                     color: isSelected ? "white" : "black",
                     transition: "0.2s",
                   }}

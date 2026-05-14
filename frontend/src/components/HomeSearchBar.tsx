@@ -10,17 +10,29 @@ function HomeSearchBar({
   return (
     <div
       style={{
-        background: "#08000e",
+        background: "var(--passionfruit)",
         borderRadius: "20px",
-        padding: "10px 14px",
+        padding: "12px 16px",
         display: "flex",
         alignItems: "center",
-        gap: "8px",
+        gap: "10px",
       }}
     >
-      <span style={{ color: "white"}}><IoSearch /></span>
+      <span
+        style={{
+          color: "var(--coconut-milk)",
+          fontSize: "24px",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <IoSearch />
+      </span>
 
       <input
+        id="search"
+        name="search"
+        type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search..."
@@ -29,7 +41,9 @@ function HomeSearchBar({
           background: "transparent",
           border: "none",
           outline: "none",
-          color: "white",
+          color: "var(--coconut-milk)",
+          fontSize: "18px",
+          opacity: 1,
         }}
       />
 
@@ -39,8 +53,8 @@ function HomeSearchBar({
           style={{
             background: "transparent",
             border: "none",
-            color: "white",
-            fontSize: "16px",
+            color: "var(--coconut-milk)",
+            fontSize: "18px",
             cursor: "pointer",
           }}
         >
@@ -51,4 +65,4 @@ function HomeSearchBar({
   );
 }
 
-export default HomeSearchBar
+export default HomeSearchBar;

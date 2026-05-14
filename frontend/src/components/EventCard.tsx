@@ -8,7 +8,9 @@ type Event = {
   time: string;
   image?: string;
   imageUrl?: string;
-  category: string;
+  category?: string; 
+  categories?: string[];
+  // Need to change category to categories = string[] later just added ? to prevent errors while trying new system
   date?: string;
   hostedBy?: {
     _id: string;
@@ -24,7 +26,7 @@ function EventCard({ event }: { event: Event }) {
     const token = localStorage.getItem("token");
     let currentUserId = null;
 
-    // 👇 Safe token parsing added here!
+    // Safe token parsing added here!
     if (token) {
       try {
         currentUserId = JSON.parse(atob(token.split(".")[1])).id;

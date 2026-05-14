@@ -20,6 +20,7 @@ const Signup = lazy(() => import("./components/Signup"));
 const SkillMatching = lazy(() => import("./components/SkillMatching"));
 const Welcome = lazy(() => import("./components/Welcome"));
 const AccountCreated = lazy(() => import("./components/AccountCreated"));
+const SkillMatchingFeature = lazy(() => import("./components/SkillMatchingFeature"));
 
 const preloadRoutes = () => {
   import("./components/Home");
@@ -147,6 +148,7 @@ function App() {
             <Route path="/workshop/preview" element={<WorkshopPreview />} />
             <Route path="/workshop/review" element={<ReviewForm />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/skill-matching-feature" element={<SkillMatchingFeature />} />
 
             <Route path="/course" element={<CourseLayout />}>
               <Route index element={<WorkshopDetails />} />

@@ -5,6 +5,7 @@ import NavBar from "./navbar";
 
 type WorkshopFormData = {
   name: string;
+  categories: string[];
   date: string;
   time: string;
   location: string;
@@ -16,17 +17,51 @@ type WorkshopFormData = {
   hostedBy?: string;
 };
 
+const categories = [
+  "AI",
+  "Coding",
+  "Tech",
+  "UI/UX",
+  "Design",
+  "Data Science",
+  "Marketing",
+  "Entrepreneurship",
+  "Photography",
+  "Music",
+  "Video Editing",
+  "Game Dev",
+  "Fitness",
+  "Leadership",
+  "Public Speaking",
+  "Finance",
+  "Creativity",
+  "Animation",
+  "Writing",
+  "Teaching",
+  "Research",
+  "Fashion",
+  "Cooking",
+  "Languages",
+  "Math",
+  "Nutrition",
+  "Sales",
+  "Fine Art",
+  "Pottery",
+  "Hair",
+];
+
 const HostWorkshopForm: React.FC = () => {
   const navigate = useNavigate();
-
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [imageName, setImageName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [showAllCategories, setShowAllCategories] = useState(false);
 
   const [formData, setFormData] = useState<WorkshopFormData>({
     name: "",
+    categories: [],
     date: "",
     time: "",
     location: "",
@@ -37,7 +72,13 @@ const HostWorkshopForm: React.FC = () => {
     imageUrl: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const visibleCategories = showAllCategories
+    ? categories
+    : categories.slice(0, 8);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
@@ -46,10 +87,17 @@ const HostWorkshopForm: React.FC = () => {
     }));
   };
 
+  const toggleCategory = (category: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      categories: prev.categories.includes(category)
+        ? prev.categories.filter((item) => item !== category)
+        : [...prev.categories, category],
+    }));
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) {
-      return;
-    }
+    if (!e.target.files || e.target.files.length === 0) return;
 
     const file = e.target.files[0];
 
@@ -66,15 +114,11 @@ const HostWorkshopForm: React.FC = () => {
         body: formPayload,
       });
 
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
+      if (!response.ok) throw new Error("Upload failed");
 
       const data = await response.json();
 
-      if (!data.imageUrl) {
-        throw new Error("No image URL returned");
-      }
+      if (!data.imageUrl) throw new Error("No image URL returned");
 
       setFormData((prev) => ({
         ...prev,
@@ -84,11 +128,8 @@ const HostWorkshopForm: React.FC = () => {
       toast.success("Image uploaded successfully!");
     } catch (error) {
       console.error(error);
-
       setUploadError("Image upload failed. Please try again.");
-
       toast.error("Image upload failed. Please try again.");
-
       setImageName("");
 
       setFormData((prev) => ({
@@ -102,6 +143,11 @@ const HostWorkshopForm: React.FC = () => {
 
   const handlePreview = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (formData.categories.length === 0) {
+      toast.error("Please select at least one category.");
+      return;
+    }
 
     const token = localStorage.getItem("token");
 
@@ -137,7 +183,6 @@ const HostWorkshopForm: React.FC = () => {
       <h1 className="host-title">Host Workshop</h1>
 
       <form onSubmit={handlePreview} className="host-form-card">
-        {/* Workshop Name */}
         <div className="bordered-input-group">
           <label className="bordered-input-label">Workshop Name</label>
 
@@ -152,7 +197,61 @@ const HostWorkshopForm: React.FC = () => {
           />
         </div>
 
-        {/* Workshop Date */}
+        <div className="bordered-input-group">
+          <label className="bordered-input-label">Workshop Categories</label>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "10px",
+            }}
+          >
+            {visibleCategories.map((category) => {
+              const isSelected = formData.categories.includes(category);
+
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => toggleCategory(category)}
+                  style={{
+                    padding: "10px",
+                    borderRadius: "20px",
+                    border: "2px solid var(--passionfruit)",
+                    background: isSelected
+                      ? "var(--passionfruit)"
+                      : "var(--coconut-milk)",
+                    color: isSelected
+                      ? "var(--coconut-milk)"
+                      : "var(--text-dark)",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                  }}
+                >
+                  {category}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowAllCategories(!showAllCategories)}
+            style={{
+              marginTop: "12px",
+              background: "none",
+              border: "none",
+              color: "var(--coconut-milk)",
+              fontWeight: "700",
+              cursor: "pointer",
+              alignSelf: "center",
+            }}
+          >
+            {showAllCategories ? "Show Less" : "Show More"}
+          </button>
+        </div>
+
         <div className="bordered-input-group">
           <label className="bordered-input-label">Workshop Date</label>
 
@@ -167,7 +266,6 @@ const HostWorkshopForm: React.FC = () => {
           />
         </div>
 
-        {/* Workshop Time */}
         <div className="bordered-input-group">
           <label className="bordered-input-label">Workshop Time</label>
 
@@ -182,7 +280,6 @@ const HostWorkshopForm: React.FC = () => {
           />
         </div>
 
-        {/* Workshop Location */}
         <div className="bordered-input-group">
           <label className="bordered-input-label">Workshop Location</label>
 
@@ -197,7 +294,6 @@ const HostWorkshopForm: React.FC = () => {
           />
         </div>
 
-        {/* About Workshop */}
         <div className="bordered-input-group">
           <label className="bordered-input-label">About This Workshop</label>
 
@@ -212,7 +308,6 @@ const HostWorkshopForm: React.FC = () => {
           />
         </div>
 
-        {/* Ticket Price */}
         <div className="bordered-input-group">
           <label className="bordered-input-label">Ticket Price</label>
 
@@ -227,7 +322,6 @@ const HostWorkshopForm: React.FC = () => {
           />
         </div>
 
-        {/* Application Period */}
         <div className="bordered-input-group">
           <label className="bordered-input-label">Application Period</label>
 
@@ -242,7 +336,6 @@ const HostWorkshopForm: React.FC = () => {
           />
         </div>
 
-        {/* Seats */}
         <div className="bordered-input-group">
           <label className="bordered-input-label">Seats Available</label>
 
@@ -257,7 +350,6 @@ const HostWorkshopForm: React.FC = () => {
           />
         </div>
 
-        {/* Workshop Image */}
         <div className="bordered-input-group" style={{ marginTop: "10px" }}>
           <label className="bordered-input-label">Workshop Image</label>
 
@@ -270,19 +362,12 @@ const HostWorkshopForm: React.FC = () => {
           />
 
           {uploadError && (
-            <p
-              style={{
-                color: "red",
-                fontSize: "0.85rem",
-                marginTop: "4px",
-              }}
-            >
+            <p style={{ color: "red", fontSize: "0.85rem", marginTop: "4px" }}>
               {uploadError}
             </p>
           )}
         </div>
 
-        {/* Hidden File Input */}
         <input
           type="file"
           accept=".jpg,.jpeg,.png"
@@ -291,7 +376,6 @@ const HostWorkshopForm: React.FC = () => {
           onChange={handleFileChange}
         />
 
-        {/* Upload Button */}
         <button
           type="button"
           className="btn-upload"
@@ -301,12 +385,17 @@ const HostWorkshopForm: React.FC = () => {
           {isUploading ? "Uploading..." : "Upload Workshop Image"}
         </button>
 
-        {/* Preview Button */}
-        <button type="submit" className="btn-preview" style={{ marginTop: "20px" }} disabled={isUploading}>
+        <button
+          type="submit"
+          className="btn-preview"
+          style={{ marginTop: "20px" }}
+          disabled={isUploading}
+        >
           View Preview
         </button>
       </form>
-      <NavBar/>
+
+      <NavBar />
     </div>
   );
 };

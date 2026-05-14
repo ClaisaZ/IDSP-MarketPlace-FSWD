@@ -22,8 +22,11 @@ export default function NavBar() {
         <span>Workshops</span>
       </button>
 
-      <button className="nav-item nav-item--center"
-        onClick={() => navigate("/skill-matching")}>
+      <button
+        className={`nav-item nav-item--center ${isActive("/skill-matching-feature") ? "nav-item--active" : ""
+          }`}
+        onClick={() => navigate("/skill-matching-feature")}
+      >
         <FontAwesomeIcon icon={faBullseye} />
         <span>SkillMatch</span>
       </button>

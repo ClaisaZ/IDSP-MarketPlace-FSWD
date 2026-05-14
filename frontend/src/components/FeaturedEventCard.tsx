@@ -6,7 +6,8 @@ type Event = {
   time: string;
   image?: string;
   imageUrl?: string;
-  category: string;
+  category?: string;
+  categories?: string[];
   location?: string;
   date?: string;
   hostedBy?: {
