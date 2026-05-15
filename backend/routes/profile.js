@@ -31,7 +31,7 @@ router.post("/update", protectRoute, async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
-      { name, bio, position, interests, social, enablePosts, profilePicture },
+      { name, bio, position, interests, social, profilePicture },
       { returnDocument: 'after' }
     );
 
