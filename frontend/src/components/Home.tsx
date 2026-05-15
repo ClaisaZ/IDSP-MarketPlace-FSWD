@@ -34,8 +34,11 @@ function Home() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     fetch("http://localhost:3000/api/workshops", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: token
+        ? { Authorization: `Bearer ${token}` }
+        : undefined,
     })
       .then((res) => res.json())
       .then((data) => {
