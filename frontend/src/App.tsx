@@ -60,7 +60,7 @@ function App() {
   return (
     <div className="app-container">
       <Toaster position="top-right" richColors />
-      <BrowserRouter>
+      <BrowserRouter basename="/IDSP-MarketPlace-FSWD">
         <Suspense fallback={<LoadingScreen />}>
           <Routes>
             <Route path="/" element={<Welcome />} />
