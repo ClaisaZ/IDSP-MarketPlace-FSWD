@@ -49,7 +49,7 @@ const Receipt: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
       if (receiptData.workshopId) {
-        await fetch(`http://localhost:3000/api/workshops/${receiptData.workshopId}/attend`, {
+        await fetch(`${import.meta.env.VITE_API_URL}/api/workshops/${receiptData.workshopId}/attend`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
         });

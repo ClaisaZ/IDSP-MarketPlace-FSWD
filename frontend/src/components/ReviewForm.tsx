@@ -18,7 +18,7 @@ const ReviewForm: React.FC = () => {
     if (rating === 0) return setError("Please select a rating.");
     try {
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:3000/api/workshops/${workshopId}/review`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/workshops/${workshopId}/review`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

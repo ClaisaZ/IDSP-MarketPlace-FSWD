@@ -76,7 +76,7 @@ function SkillMatchingFeature() {
         const token = localStorage.getItem("token");
 
         try {
-            const res = await fetch("http://localhost:3000/api/workshops/match", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/workshops/match`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

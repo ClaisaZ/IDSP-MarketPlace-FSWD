@@ -62,7 +62,7 @@ export default function EditProfile() {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:3000/api/profile/me", {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/profile/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -91,7 +91,7 @@ export default function EditProfile() {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "http://localhost:3000/api/profile/update",
+        `${import.meta.env.VITE_API_URL}/api/profile/update`,
         {
           name: formData.name,
           bio: formData.bio,

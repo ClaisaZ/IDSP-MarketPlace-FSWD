@@ -70,7 +70,7 @@ const WorkshopPreview: React.FC = () => {
     const fetchWorkshop = async () => {
       if (!data._id) return;
       try {
-        const res = await fetch(`http://localhost:3000/api/workshops/${data._id}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/workshops/${data._id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) {
@@ -103,7 +103,7 @@ const WorkshopPreview: React.FC = () => {
 
     const fetchCurrentUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/profile/me", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const user = await res.json();
@@ -168,7 +168,7 @@ const WorkshopPreview: React.FC = () => {
   // Submits the new workshop data to the server and redirects the user upon success.
   const handleHost = async () => {
     try {
-      await fetch("http://localhost:3000/api/workshops", {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/workshops`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -34,7 +34,7 @@ function Home() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:3000/api/workshops", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/workshops`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
