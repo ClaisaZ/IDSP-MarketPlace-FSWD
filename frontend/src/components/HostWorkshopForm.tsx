@@ -1,3 +1,5 @@
+import { Card } from "@/components/ui/card";
+import { ImagePlus, Loader2, Trash2 } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -386,64 +388,175 @@ const HostWorkshopForm: React.FC = () => {
             onChange={handleFileChange}
           />
 
-          <div
-            className={`upload-zone${imagePreview ? " upload-zone--filled" : ""}`}
-            onClick={() => !isUploading && fileInputRef.current?.click()}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}
-          >
-            {imagePreview ? (
-              <>
+          {imagePreview ? (
+            <div
+              style={{
+                width: "100%",
+                borderRadius: "10px",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Card
+                className="relative overflow-hidden border-0"
+                style={{
+                  height: "200px",
+                  borderRadius: "10px 10px 0 0",
+                  width: "100%",
+                  padding: 0,
+                  margin: 0,
+                }}
+                onClick={() => !isUploading && fileInputRef.current?.click()}
+                onDragOver={(e: React.DragEvent<HTMLDivElement>) => e.preventDefault()}
+                onDrop={handleDrop}
+              >
                 <img
                   src={imagePreview}
                   alt="Workshop cover preview"
-                  className="upload-zone__preview"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                 />
-                {!isUploading && (
-                  <div className="upload-zone__overlay">
-                    <span className="upload-zone__overlay-icon">📷</span>
-                    <span className="upload-zone__overlay-label">Change image</span>
+
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "rgba(8, 0, 14, 0.5)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px",
+                    opacity: 0,
+                    transition: "opacity 0.2s",
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) =>
+                    (e.currentTarget.style.opacity = "1")
+                  }
+                  onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) =>
+                    (e.currentTarget.style.opacity = "0")
+                  }
+                >
+                  <ImagePlus size={26} color="#fffff9" />
+                  <span style={{ color: "#fffff9", fontSize: "13px", fontWeight: 600 }}>
+                    Change image
+                  </span>
+                </div>
+
+                {isUploading && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: "rgba(255,255,249,0.85)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <Loader2
+                      size={18}
+                      className="animate-spin"
+                      style={{ color: "var(--passionfruit)" }}
+                    />
+                    <span
+                      style={{ fontSize: "13px", fontWeight: 600, color: "var(--passionfruit)" }}
+                    >
+                      Uploading…
+                    </span>
                   </div>
                 )}
-              </>
-            ) : (
-              <>
-                <div className="upload-zone__icon-wrap">
-                  <span style={{ fontSize: "24px" }}>🖼️</span>
-                </div>
-                <p className="upload-zone__title">Click to upload</p>
-                <p className="upload-zone__subtitle">or drag and drop your file here</p>
-                <span className="upload-zone__pill">Browse files</span>
-              </>
-            )}
+              </Card>
 
-            {isUploading && <div className="upload-zone__uploading">Uploading…</div>}
-          </div>
-
-          <p className="upload-zone__hint">JPG, PNG or WEBP</p>
-
-          {imagePreview && !isUploading && (
-            <button
-              type="button"
-              className="upload-zone__remove"
-              onClick={() => {
-                setImagePreview("");
-                setFormData((prev) => ({ ...prev, imageUrl: "" }));
+              {!isUploading && (
+                <button
+                  type="button"
+                  className="btn-preview"
+                  style={{
+                    width: "100%",
+                    marginTop: 0,
+                    borderRadius: "0 0 10px 10px", // Rounded only at the bottom
+                    backgroundColor: "#b91c1c",
+                    color: "#fffff9",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px",
+                    cursor: "pointer",
+                    border: "none",
+                    padding: "16px",
+                  }}
+                  onClick={() => {
+                    setImagePreview("");
+                    setFormData((prev) => ({ ...prev, imageUrl: "" }));
+                  }}
+                >
+                  <Trash2 size={22} />
+                  Remove image
+                </button>
+              )}
+            </div>
+          ) : (
+            <Card
+              style={{
+                background: "#fffff9",
+                border: "2px dashed var(--passionfruit)",
+                borderRadius: "10px",
+                minHeight: "160px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                cursor: "pointer",
+                transition: "background 0.15s",
+                boxShadow: "none",
               }}
+              onClick={() => !isUploading && fileInputRef.current?.click()}
+              onDragOver={(e: React.DragEvent<HTMLDivElement>) => e.preventDefault()}
+              onDrop={handleDrop}
+              onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) =>
+                (e.currentTarget.style.background = "#f0eeff")
+              }
+              onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) =>
+                (e.currentTarget.style.background = "#fffff9")
+              }
             >
-              Remove image
-            </button>
+              <ImagePlus size={28} color="var(--passionfruit)" strokeWidth={1.5} />
+              <p
+                style={{
+                  margin: 0,
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  color: "var(--passionfruit)",
+                }}
+              >
+                Click to upload
+              </p>
+              <p style={{ margin: 0, fontSize: "12px", color: "#666666" }}>JPEG, PNG</p>
+            </Card>
           )}
 
           {uploadError && (
-            <p style={{ color: "red", fontSize: "0.85rem", marginTop: "4px" }}>{uploadError}</p>
+            <p
+              style={{
+                color: "#FDE047",
+                fontSize: "0.9rem",
+                marginTop: "10px",
+                textAlign: "center",
+              }}
+            >
+              {uploadError}
+            </p>
           )}
         </div>
 
         <button
           type="submit"
           className="btn-preview"
-          style={{ marginTop: "20px" }}
+          style={{ marginTop: "15px" }}
           disabled={isUploading}
         >
           View Preview
@@ -451,120 +564,6 @@ const HostWorkshopForm: React.FC = () => {
       </form>
 
       <NavBar />
-
-      <style>{`
-        .upload-zone {
-          border: 1.5px dashed var(--passionfruit);
-          border-radius: 14px;
-          background: var(--coconut-milk);
-          cursor: pointer;
-          position: relative;
-          overflow: hidden;
-          min-height: 180px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          transition: border-color 0.2s, background 0.2s;
-        }
-        .upload-zone:hover {
-          border-color: var(--dark-purple);
-          background: #f0ebff;
-        }
-        .upload-zone--filled {
-          border-style: solid;
-          background: transparent;
-          padding: 0;
-        }
-        .upload-zone--filled:hover .upload-zone__overlay {
-          opacity: 1;
-        }
-        .upload-zone__preview {
-          width: 100%;
-          height: 220px;
-          object-fit: cover;
-          display: block;
-          border-radius: 12px;
-        }
-        .upload-zone__overlay {
-          position: absolute;
-          inset: 0;
-          background: rgba(38, 33, 92, 0.55);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          border-radius: 12px;
-          opacity: 0;
-          transition: opacity 0.2s;
-        }
-        .upload-zone__overlay-icon { font-size: 28px; }
-        .upload-zone__overlay-label {
-          color: white;
-          font-weight: 600;
-          font-size: 14px;
-        }
-        .upload-zone__icon-wrap {
-          width: 58px;
-          height: 58px;
-          border-radius: 50%;
-          background: #ede8ff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .upload-zone__title {
-          margin: 0;
-          font-weight: 700;
-          font-size: 15px;
-          color: var(--passionfruit);
-        }
-        .upload-zone__subtitle {
-          margin: 0;
-          font-size: 13px;
-          color: var(--text-gray);
-        }
-        .upload-zone__pill {
-          margin-top: 4px;
-          padding: 6px 18px;
-          border-radius: 99px;
-          border: 1.5px solid var(--passionfruit);
-          background: white;
-          font-size: 13px;
-          font-weight: 600;
-          color: var(--passionfruit);
-        }
-        .upload-zone__uploading {
-          position: absolute;
-          inset: 0;
-          background: rgba(255, 255, 255, 0.85);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 12px;
-          font-weight: 600;
-          font-size: 14px;
-          color: var(--passionfruit);
-        }
-        .upload-zone__hint {
-          margin: 6px 0 0;
-          font-size: 14px;
-          color: black;
-        }
-        .upload-zone__remove {
-          margin-top: 6px;
-          background: none;
-          border: none;
-          color: #c0392b;
-          font-size: 16px;
-          font-weight: 500;
-          cursor: pointer;
-          padding: 0;
-        }
-        .upload-zone__remove:hover { text-decoration: underline; }
-      `}</style>
     </div>
   );
 };

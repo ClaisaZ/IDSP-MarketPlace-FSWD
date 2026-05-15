@@ -1,3 +1,4 @@
+@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;800&display=swap");
 :root {
   /* Core palette  */
@@ -809,6 +810,7 @@ textarea.bordered-input {
   align-self: center;
   margin-top: -10px;
   z-index: 2;
+  width: 100%;
 }
 
 /* Upload Button Component */
