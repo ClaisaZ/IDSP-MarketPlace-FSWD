@@ -4,7 +4,7 @@ const { protectRoute } = require("../middleware/authMiddleware");
 const Workshop = require("../models/Workshop");
 const User = require("../models/User");
 
-router.get("/", protectRoute, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const workshops = await Workshop.find()
       .populate("hostedBy", "name profilePicture")

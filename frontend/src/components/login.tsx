@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 
 function Login() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/home");
+    }
+  }, [navigate]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,7 +42,7 @@ function Login() {
       localStorage.setItem("token", data.token);
 
       setTimeout(() => {
-        window.location.href = "/course";
+        window.location.href = "/home";
       }, 1000);
 
       console.log("Logged in user:", data.user);

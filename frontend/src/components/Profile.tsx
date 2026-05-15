@@ -151,6 +151,12 @@ export default function Profile() {
             className="signout-btn"
             onClick={() => {
               localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              setUser(null);
+              setHostedWorkshops([]);
+              setRegisteredWorkshops([]);
+              setNotLoggedIn(true);
+              toast.success("You have been logged out");
               navigate("/login");
             }}
           >
