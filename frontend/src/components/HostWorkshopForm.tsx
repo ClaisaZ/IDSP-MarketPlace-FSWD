@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import NavBar from "./navbar";
 
@@ -8,6 +8,7 @@ type WorkshopFormData = {
   categories: string[];
   date: string;
   time: string;
+  endTime: string;
   location: string;
   about: string;
   ticketPrice: string;
@@ -52,33 +53,35 @@ const categories = [
 
 const HostWorkshopForm: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [imageName, setImageName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [showAllCategories, setShowAllCategories] = useState(false);
 
+  // Pre-filling the form if user returns from preview to edit
+  const incoming = location.state as WorkshopFormData | null;
   const [formData, setFormData] = useState<WorkshopFormData>({
-    name: "",
-    categories: [],
-    date: "",
-    time: "",
-    location: "",
-    about: "",
-    ticketPrice: "",
-    applicationPeriod: "",
-    seats: "",
-    imageUrl: "",
+    name: incoming?.name || "",
+    categories: incoming?.categories || [],
+    date: incoming?.date || "",
+    time: incoming?.time || "",
+    endTime: incoming?.endTime || "",
+    location: incoming?.location || "",
+    about: incoming?.about || "",
+    ticketPrice: incoming?.ticketPrice || "",
+    applicationPeriod: incoming?.applicationPeriod || "",
+    seats: incoming?.seats || "",
+    imageUrl: incoming?.imageUrl || "",
   });
 
-  const visibleCategories = showAllCategories
-    ? categories
-    : categories.slice(0, 8);
+  // restoring the img name display if an image was already uploaded
+  const [imageName, setImageName] = useState(incoming?.imageUrl ? "Previously uploaded" : "");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const visibleCategories = showAllCategories ? categories : categories.slice(0, 8);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
@@ -219,12 +222,8 @@ const HostWorkshopForm: React.FC = () => {
                     padding: "10px",
                     borderRadius: "20px",
                     border: "2px solid var(--passionfruit)",
-                    background: isSelected
-                      ? "var(--passionfruit)"
-                      : "var(--coconut-milk)",
-                    color: isSelected
-                      ? "var(--coconut-milk)"
-                      : "var(--text-dark)",
+                    background: isSelected ? "var(--passionfruit)" : "var(--coconut-milk)",
+                    color: isSelected ? "var(--coconut-milk)" : "var(--text-dark)",
                     fontWeight: "600",
                     cursor: "pointer",
                   }}
@@ -257,25 +256,36 @@ const HostWorkshopForm: React.FC = () => {
 
           <input
             required
-            type="text"
+            type="date"
             name="date"
             className="bordered-input"
-            placeholder="Enter Date"
             value={formData.date}
             onChange={handleChange}
           />
         </div>
 
         <div className="bordered-input-group">
-          <label className="bordered-input-label">Workshop Time</label>
+          <label className="bordered-input-label">Workshop Start Time</label>
 
           <input
             required
-            type="text"
+            type="time"
             name="time"
             className="bordered-input"
-            placeholder="Enter Start and End Time"
             value={formData.time}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="bordered-input-group">
+          <label className="bordered-input-label">Workshop End Time</label>
+
+          <input
+            required
+            type="time"
+            name="endTime"
+            className="bordered-input"
+            value={formData.endTime}
             onChange={handleChange}
           />
         </div>
@@ -313,7 +323,8 @@ const HostWorkshopForm: React.FC = () => {
 
           <input
             required
-            type="text"
+            type="number"
+            min="0"
             name="ticketPrice"
             className="bordered-input"
             placeholder="Enter Price"
@@ -362,9 +373,7 @@ const HostWorkshopForm: React.FC = () => {
           />
 
           {uploadError && (
-            <p style={{ color: "red", fontSize: "0.85rem", marginTop: "4px" }}>
-              {uploadError}
-            </p>
+            <p style={{ color: "red", fontSize: "0.85rem", marginTop: "4px" }}>{uploadError}</p>
           )}
         </div>
 
