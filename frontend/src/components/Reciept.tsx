@@ -11,10 +11,21 @@ type InfoBoxProps = {
   wordBreak?: "break-all" | "normal";
 };
 
-const InfoBox: React.FC<InfoBoxProps> = ({ label, value, fontSize = "14px", wordBreak = "normal" }) => (
+const InfoBox: React.FC<InfoBoxProps> = ({
+  label,
+  value,
+  fontSize = "14px",
+  wordBreak = "normal",
+}) => (
   <div
     className="info-box"
-    style={{ margin: 0, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center" }}
+    style={{
+      margin: 0,
+      textAlign: "center",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+    }}
   >
     <span className="info-label">{label}</span>
     <span className="info-value" style={{ fontSize, wordBreak }}>
@@ -40,7 +51,6 @@ const Receipt: React.FC = () => {
   const email = state.registration?.email || "myemail@bcit.ca";
   const phone = state.registration?.phone || "+1 577 656 6789";
   const ticketAmount = state.registration?.ticketAmount || 1;
-  // TODO: totalPayment is hardcoded at $24/ticket -->  we will update when dynamic pricing is added
   const totalPayment = ticketAmount * 24;
 
   // If user came from a workshop, we are going to register them as an attendee after payment
@@ -69,7 +79,11 @@ const Receipt: React.FC = () => {
     <>
       <div className="screen-header">
         <h2 className="header-title">
-          <button className="back-button" onClick={() => navigate("/course/purchase")} type="button">
+          <button
+            className="back-button"
+            onClick={() => navigate("/course/purchase")}
+            type="button"
+          >
             ←
           </button>
           Receipt
@@ -114,7 +128,13 @@ const Receipt: React.FC = () => {
         </div>
 
         <h3
-          style={{ textAlign: "center", marginTop: "30px", marginBottom: "15px", fontSize: "28px", fontWeight: "600" }}
+          style={{
+            textAlign: "center",
+            marginTop: "30px",
+            marginBottom: "15px",
+            fontSize: "28px",
+            fontWeight: "600",
+          }}
         >
           Payment Success!
         </h3>
@@ -130,12 +150,25 @@ const Receipt: React.FC = () => {
             marginBottom: "20px",
           }}
         >
-          <img src={receiptQR} alt="QR Code" style={{ width: "180px", height: "180px", marginBottom: "10px" }} />
-          <p style={{ fontSize: "16px", margin: 0, fontWeight: 500, color: "#333" }}>Download QR CODE</p>
+          <img
+            src={receiptQR}
+            alt="QR Code"
+            style={{ width: "180px", height: "180px", marginBottom: "10px" }}
+          />
+          <p style={{ fontSize: "16px", margin: 0, fontWeight: 500, color: "#333" }}>
+            Download QR CODE
+          </p>
         </div>
 
         {/* 2x2 Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "20px" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "12px",
+            marginBottom: "20px",
+          }}
+        >
           <InfoBox label="Ref Number" value={refNum} fontSize="13px" />
           <InfoBox label="Ticket Amount" value={`x${ticketAmount}`} />
           <InfoBox label="Email Address" value={email} fontSize="12px" wordBreak="break-all" />
