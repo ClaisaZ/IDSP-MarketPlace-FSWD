@@ -144,7 +144,7 @@ const HostWorkshopForm: React.FC = () => {
     }
   };
 
-  const handlePreview = (e: React.FormEvent) => {
+  const handlePreview = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (formData.categories.length === 0) {

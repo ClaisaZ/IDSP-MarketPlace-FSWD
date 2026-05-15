@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { FiArrowLeft, FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 
 function Signup() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ function Signup() {
     });
   };
 
-  async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSignup(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -241,9 +241,7 @@ function Signup() {
 
               <button
                 type="button"
-                onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 style={{
                   position: "absolute",
                   right: "12px",

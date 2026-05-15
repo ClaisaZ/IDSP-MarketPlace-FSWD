@@ -12,7 +12,7 @@ const ReviewForm: React.FC = () => {
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!workshopId) return toast.error("Workshop ID missing. Go back and try again.");
     if (rating === 0) return setError("Please select a rating.");
@@ -44,7 +44,10 @@ const ReviewForm: React.FC = () => {
         </h2>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+      >
         <div>
           <p style={{ fontWeight: "600", marginBottom: "8px" }}>Workshop Rating</p>
           <div style={{ display: "flex", gap: "8px", fontSize: "2rem" }}>
@@ -74,7 +77,7 @@ const ReviewForm: React.FC = () => {
           Submit Review
         </button>
       </form>
-      <NavBar/>
+      <NavBar />
     </div>
   );
 };

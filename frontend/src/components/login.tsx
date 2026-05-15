@@ -17,7 +17,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+  async function handleLogin(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
 
     try {
@@ -166,11 +166,7 @@ function Login() {
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="primary-button"
-            style={{ marginTop: "20px" }}
-          >
+          <button type="submit" className="primary-button" style={{ marginTop: "20px" }}>
             Login
           </button>
         </form>

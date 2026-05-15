@@ -46,7 +46,7 @@ const PaymentDetails: React.FC = () => {
     }
   }, [state.registration, navigate]);
 
-  const handlePurchase = async (e: React.FormEvent) => {
+  const handlePurchase = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!state.registration) {
@@ -75,10 +75,14 @@ const PaymentDetails: React.FC = () => {
 
       if (axios.isAxiosError(err) && err.response) {
         const serverMessage =
-          err.response.data?.message || err.response.data?.error || "Please check your details and try again.";
+          err.response.data?.message ||
+          err.response.data?.error ||
+          "Please check your details and try again.";
         setError(`Server rejected: ${serverMessage}`);
       } else {
-        setError("We couldn't connect to the payment system. Please check your internet connection and try again.");
+        setError(
+          "We couldn't connect to the payment system. Please check your internet connection and try again.",
+        );
       }
     } finally {
       setLoading(false);
@@ -94,7 +98,11 @@ const PaymentDetails: React.FC = () => {
     <>
       <div className="screen-header">
         <h2 className="header-title">
-          <button className="back-button" onClick={() => navigate("/course/payments")} type="button">
+          <button
+            className="back-button"
+            onClick={() => navigate("/course/payments")}
+            type="button"
+          >
             ←
           </button>
           Purchase
@@ -103,12 +111,20 @@ const PaymentDetails: React.FC = () => {
       </div>
 
       <div className="purple-card">
-        <form onSubmit={handlePurchase} style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+        <form
+          onSubmit={handlePurchase}
+          style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}
+        >
           {/* Dynamic UI: Visa shows card fields, PayPal shows login simulation */}
           {paymentMethod === "Visa" && (
             <>
               <FormField label="Card Number">
-                <input required type="text" className="text-input" placeholder="XXXX XXXX XXXX XXXX" />
+                <input
+                  required
+                  type="text"
+                  className="text-input"
+                  placeholder="XXXX XXXX XXXX XXXX"
+                />
               </FormField>
               <FormField label="Expiry Date">
                 <input required type="text" className="text-input" placeholder="MM/YY" />
@@ -165,7 +181,12 @@ const PaymentDetails: React.FC = () => {
             </p>
           )}
 
-          <button type="submit" disabled={loading} className="primary-button" style={{ marginTop: "20px" }}>
+          <button
+            type="submit"
+            disabled={loading}
+            className="primary-button"
+            style={{ marginTop: "20px" }}
+          >
             {loading ? "Processing..." : "Purchase"}
           </button>
         </form>
