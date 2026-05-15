@@ -7,12 +7,14 @@ type Review = {
   name: string;
   comment: string;
   rating: number;
+  createdAt?: string;
 };
 
 type Attendee = {
   _id: string;
   name: string;
   profilePicture: string | null;
+  joinedAt?: string;
 };
 
 type Host = {
@@ -26,9 +28,9 @@ const WorkshopPreview: React.FC = () => {
   const location = useLocation();
   const [showModal, setShowModal] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const [showAllAttendees, setShowAllAttendees] = useState(false);
   const [currentUser, setCurrentUser] = useState<Host | null>(null);
 
-  // Initialize data from navigation state.
   const data = location.state || {
     name: "Pottery and Sculpting Basics",
     date: "May 20, 2026",
@@ -37,25 +39,23 @@ const WorkshopPreview: React.FC = () => {
     about:
       "This workshop will cover the fundamental techniques of pottery and sculpting. Participants will learn hand-building methods such as pinch pots, coiling, and slab construction...",
     ticketPrice: "$50",
-    applicationPeriod: "March 20, 2026 - April 27, 2026",
+    applicationPeriodStart: "March 20, 2026",
+    applicationPeriodEnd: "April 27, 2026",
     seats: "35",
   };
 
   const [workshopData, setWorkshopData] = useState(data);
   const token = localStorage.getItem("token");
 
-  // Decodes the JWT safely to prevent crashes from malformed tokens
   let currentUserId = null;
   if (token) {
     try {
       currentUserId = JSON.parse(atob(token.split(".")[1])).id;
     } catch {
-      // If the token is gibberish, we leave currentUserId as null.
       console.warn("Invalid token structure detected.");
     }
   }
 
-  // Verifies if the current user is the host by comparing IDs, handling both string and object formats.
   const isOwner =
     workshopData.hostedBy &&
     currentUserId &&
@@ -64,7 +64,6 @@ const WorkshopPreview: React.FC = () => {
       : workshopData.hostedBy
     ).toString() === currentUserId;
 
-  // Synchronizes the component with the backend to ensure reviews and attendee lists are current.
   useEffect(() => {
     let isMounted = true;
     const fetchWorkshop = async () => {
@@ -75,15 +74,13 @@ const WorkshopPreview: React.FC = () => {
         });
         if (!res.ok) {
           if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem("token"); // Destroy the corrupted token
+            localStorage.removeItem("token");
             toast.error("Session expired or invalid. Please log in again.");
-            navigate("/login"); // Redirect them to safety!
+            navigate("/login");
           }
           throw new Error("Backend rejected the request");
         }
         const fresh = await res.json();
-
-        // Only updating state if the user hasn't navigated away from the component.
         if (isMounted) setWorkshopData(fresh);
       } catch (err) {
         console.error("Workshop fetch failed", err);
@@ -91,13 +88,11 @@ const WorkshopPreview: React.FC = () => {
     };
 
     fetchWorkshop();
-    // Cleanup - prevents memory leaks by stopping state updates on unmounted components.
     return () => {
       isMounted = false;
     };
   }, [data._id, token, location.key, navigate]);
 
-  // Fetches the host's profile details specifically for preview mode when data isn't yet in the database.
   useEffect(() => {
     if (typeof workshopData.hostedBy !== "string" || !token) return;
 
@@ -120,23 +115,37 @@ const WorkshopPreview: React.FC = () => {
     fetchCurrentUser();
   }, [workshopData.hostedBy, token]);
 
-  const reviews: Review[] = workshopData.reviews || [];
+  // Sort reviews newest first.
+  // If any review has a createdAt timestamp, sort descending by date.
+  // Otherwise falls back to reversing insertion order — the backend appends new reviews
+  // to the end of the array, so reversing puts the newest one at the top.
+  const rawReviews: Review[] = workshopData.reviews || [];
+  const hasTimestamps = rawReviews.some((r: Review) => r.createdAt);
+  const sortedReviews: Review[] = hasTimestamps
+    ? [...rawReviews].sort(
+        (a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime(),
+      )
+    : [...rawReviews].reverse();
+
   const avgRating =
-    reviews.length > 0
-      ? (reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    sortedReviews.length > 0
+      ? (
+          sortedReviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / sortedReviews.length
+        ).toFixed(1)
       : "0.0";
 
-  const visibleReviews = showAllReviews ? reviews : reviews.slice(0, 3);
-  const attendees: Attendee[] = workshopData.attendees || [];
+  const visibleReviews = showAllReviews ? sortedReviews : sortedReviews.slice(0, 3);
 
-  // Prioritizes populated host data from the backend, falling back to the current user during preview.
+  // Sort attendees newest first (most recently joined = last in array, so reverse)
+  const attendees: Attendee[] = [...(workshopData.attendees || [])].reverse();
+  const visibleAttendees = showAllAttendees ? attendees : attendees.slice(0, 5);
+
   const host: Host | null =
     typeof workshopData.hostedBy === "object" ? workshopData.hostedBy : currentUser;
 
   const totalSeats = parseInt(workshopData.seats) || 0;
   const capacityPercent = totalSeats > 0 ? attendees.length / totalSeats : 0;
 
-  // Determines the visual status badge based on how many seats are remaining.
   const getStatusBadge = () => {
     if (capacityPercent >= 1)
       return { label: "Closed", color: "#fee2e2", borderColor: "#ff8b8b", textColor: "#ff8b8b" };
@@ -165,7 +174,14 @@ const WorkshopPreview: React.FC = () => {
   const badge = getStatusBadge();
   const isClosed = capacityPercent >= 1;
 
-  // Submits the new workshop data to the server and redirects the user upon success.
+  // Build a readable application period string from either the legacy combined field or the new split fields
+  const applicationPeriodDisplay = (() => {
+    if (workshopData.applicationPeriodStart && workshopData.applicationPeriodEnd) {
+      return `${workshopData.applicationPeriodStart} – ${workshopData.applicationPeriodEnd}`;
+    }
+    return workshopData.applicationPeriod || "—";
+  })();
+
   const handleHost = async () => {
     try {
       await fetch("http://localhost:3000/api/workshops", {
@@ -214,10 +230,12 @@ const WorkshopPreview: React.FC = () => {
         </h2>
       </div>
 
+      {/* Workshop image — show the uploaded/fetched image directly */}
       <img
         src={workshopData.imageUrl || "https://placehold.co/800x400?text=Workshop+Image"}
         alt={workshopData.name || "Workshop"}
         className="hero-image"
+        style={{ borderRadius: "12px", marginBottom: "16px", width: "100%", objectFit: "cover" }}
       />
 
       <div
@@ -242,7 +260,7 @@ const WorkshopPreview: React.FC = () => {
           {badge.label}
         </span>
         <span style={{ fontWeight: "600", fontSize: "16px" }}>
-          ★ {avgRating} ({reviews.length} {reviews.length === 1 ? "review" : "reviews"})
+          ★ {avgRating} ({sortedReviews.length} {sortedReviews.length === 1 ? "review" : "reviews"})
         </span>
       </div>
 
@@ -250,6 +268,7 @@ const WorkshopPreview: React.FC = () => {
         {workshopData.name}
       </h3>
 
+      {/* Workshop Host */}
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500", marginBottom: "8px" }}>
           Workshop Host
@@ -329,13 +348,35 @@ const WorkshopPreview: React.FC = () => {
         </div>
       </div>
 
+      {/* Application Period — rendered from split start/end or legacy combined string */}
       <div style={{ marginBottom: "25px" }}>
         <div style={{ fontSize: "16px", fontWeight: "500" }}>Application Period</div>
-        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>
-          {workshopData.applicationPeriod}
+        <div style={{ fontSize: "14px", color: "var(--text-dark)", marginTop: "4px" }}>
+          {applicationPeriodDisplay}
         </div>
+        {workshopData.applicationPeriodStart && workshopData.applicationPeriodEnd && (
+          <div style={{ display: "flex", gap: "20px", marginTop: "8px" }}>
+            <div>
+              <div style={{ fontSize: "12px", color: "var(--text-gray)", fontWeight: "500" }}>
+                Opens
+              </div>
+              <div style={{ fontSize: "13px", color: "var(--text-dark)" }}>
+                {workshopData.applicationPeriodStart}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: "12px", color: "var(--text-gray)", fontWeight: "500" }}>
+                Closes
+              </div>
+              <div style={{ fontSize: "13px", color: "var(--text-dark)" }}>
+                {workshopData.applicationPeriodEnd}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
+      {/* Attendees — expandable, newest registrant on top */}
       <div
         style={{
           backgroundColor:
@@ -349,53 +390,77 @@ const WorkshopPreview: React.FC = () => {
         <div style={{ fontSize: "18px", fontWeight: "600", marginBottom: "10px" }}>
           Who is attending? ({attendees.length}/{workshopData.seats} Seats)
         </div>
+
         {attendees.length > 0 ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {attendees.slice(0, 6).map((attendee) => (
-              <div
-                key={attendee._id}
-                style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}
+          <>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              {visibleAttendees.map((attendee) => (
+                <div
+                  key={attendee._id}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}
+                >
+                  {attendee.profilePicture ? (
+                    <img
+                      src={attendee.profilePicture}
+                      alt={attendee.name}
+                      style={{
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "50%",
+                        backgroundColor: "var(--dark-purple)",
+                        color: "white",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {attendee.name ? attendee.name[0].toUpperCase() : "?"}
+                    </div>
+                  )}
+                  <span style={{ fontSize: "13px", color: "var(--text-dark)" }}>
+                    @{attendee.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Expand / collapse instead of "+N more" */}
+            {attendees.length > 5 && (
+              <button
+                onClick={() => setShowAllAttendees(!showAllAttendees)}
+                style={{
+                  marginTop: "12px",
+                  background: "none",
+                  border: "none",
+                  color: "var(--primary-purple)",
+                  fontWeight: "600",
+                  fontSize: "13px",
+                  cursor: "pointer",
+                  padding: 0,
+                  textDecoration: "underline",
+                }}
               >
-                {attendee.profilePicture ? (
-                  <img
-                    src={attendee.profilePicture}
-                    alt={attendee.name}
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "50%",
-                      backgroundColor: "var(--dark-purple)",
-                      color: "white",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {attendee.name ? attendee.name[0].toUpperCase() : "?"}
-                  </div>
-                )}
-                <span style={{ fontSize: "13px", color: "var(--text-dark)" }}>
-                  @{attendee.name}
-                </span>
-              </div>
-            ))}
-            {attendees.length > 6 && (
-              <div style={{ fontSize: "13px", color: "var(--text-gray)", alignSelf: "center" }}>
-                +{attendees.length - 6} more
-              </div>
+                {showAllAttendees ? "Show less" : `Show all ${attendees.length} attendees`}
+              </button>
             )}
-          </div>
+          </>
         ) : (
           <p style={{ fontSize: "14px", color: "var(--text-dark)", margin: 0 }}>
             No attendees yet.
@@ -403,6 +468,7 @@ const WorkshopPreview: React.FC = () => {
         )}
       </div>
 
+      {/* Reviews — newest first */}
       <div className="bordered-card-white">
         <div
           style={{
@@ -412,12 +478,15 @@ const WorkshopPreview: React.FC = () => {
             marginBottom: "10px",
           }}
         >
-          <div style={{ fontSize: "18px", fontWeight: "600" }}>Reviews ({reviews.length})</div>
+          <div style={{ fontSize: "18px", fontWeight: "600" }}>
+            Reviews ({sortedReviews.length})
+          </div>
           <div style={{ fontSize: "14px", fontWeight: "600", color: "var(--dark-purple)" }}>
             ★ {avgRating}
           </div>
         </div>
-        {reviews.length > 0 ? (
+
+        {sortedReviews.length > 0 ? (
           visibleReviews.map((review: Review, index: number) => (
             <div key={index} className="review-card">
               <div className="review-header">
@@ -437,13 +506,13 @@ const WorkshopPreview: React.FC = () => {
         )}
       </div>
 
-      {reviews.length > 3 && (
+      {sortedReviews.length > 3 && (
         <button
           className="btn-dark-purple"
           style={{ marginBottom: "20px", marginTop: "10px" }}
           onClick={() => setShowAllReviews(!showAllReviews)}
         >
-          {showAllReviews ? "Show Less" : `View All ${reviews.length} Reviews`}
+          {showAllReviews ? "Show Less" : `View All ${sortedReviews.length} Reviews`}
         </button>
       )}
 
