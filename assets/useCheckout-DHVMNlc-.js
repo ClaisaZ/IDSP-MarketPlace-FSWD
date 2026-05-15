@@ -1,0 +1,1 @@
+import{r as e}from"./rolldown-runtime-S-ySWqyJ.js";import{w as t}from"./react-DE60DKZ4.js";import{t as n}from"./index-XxraHQVr.js";var r=e(t(),1);function i(){let e=(0,r.useContext)(n);if(!e)throw Error(`useCheckout must be used within a CheckoutProvider`);return e}export{i as t};
