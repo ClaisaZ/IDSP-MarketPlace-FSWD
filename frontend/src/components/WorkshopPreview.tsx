@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import NavBar from "./navbar";
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import NavBar from './navbar';
 
 type Review = {
   name: string;
@@ -32,38 +32,40 @@ const WorkshopPreview: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<Host | null>(null);
 
   const data = location.state || {
-    name: "Pottery and Sculpting Basics",
-    date: "May 20, 2026",
-    time: "10:00 AM - 11:35 AM",
-    location: "33 W 8th Ave, Vancouver",
+    name: 'Pottery and Sculpting Basics',
+    date: 'May 20, 2026',
+    time: '10:00 AM - 11:35 AM',
+    location: '33 W 8th Ave, Vancouver',
     about:
-      "This workshop will cover the fundamental techniques of pottery and sculpting. Participants will learn hand-building methods such as pinch pots, coiling, and slab construction...",
-    ticketPrice: "$50",
-    applicationPeriodStart: "March 20, 2026",
-    applicationPeriodEnd: "April 27, 2026",
-    seats: "35",
+      'This workshop will cover the fundamental techniques of pottery and sculpting. Participants will learn hand-building methods such as pinch pots, coiling, and slab construction...',
+    ticketPrice: '$50',
+    applicationPeriodStart: 'March 20, 2026',
+    applicationPeriodEnd: 'April 27, 2026',
+    seats: '35',
   };
 
   const [workshopData, setWorkshopData] = useState(data);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
 
   let currentUserId = null;
   if (token) {
     try {
-      currentUserId = JSON.parse(atob(token.split(".")[1])).id;
+      currentUserId = JSON.parse(atob(token.split('.')[1])).id;
     } catch {
-      console.warn("Invalid token structure detected.");
+      console.warn('Invalid token structure detected.');
     }
   }
 
+  // Determining whether the current user owns the workshop
   const isOwner =
     workshopData.hostedBy &&
     currentUserId &&
-    (typeof workshopData.hostedBy === "object"
+    (typeof workshopData.hostedBy === 'object'
       ? workshopData.hostedBy._id
       : workshopData.hostedBy
     ).toString() === currentUserId;
 
+  // Fetching fresh workshop data when dependencies change
   useEffect(() => {
     let isMounted = true;
     const fetchWorkshop = async () => {
@@ -74,16 +76,16 @@ const WorkshopPreview: React.FC = () => {
         });
         if (!res.ok) {
           if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem("token");
-            toast.error("Session expired or invalid. Please log in again.");
-            navigate("/login");
+            localStorage.removeItem('token');
+            toast.error('Session expired or invalid. Please log in again.');
+            navigate('/login');
           }
-          throw new Error("Backend rejected the request");
+          throw new Error('Backend rejected the request');
         }
         const fresh = await res.json();
         if (isMounted) setWorkshopData(fresh);
       } catch (err) {
-        console.error("Workshop fetch failed", err);
+        console.error('Workshop fetch failed', err);
       }
     };
 
@@ -93,27 +95,36 @@ const WorkshopPreview: React.FC = () => {
     };
   }, [data._id, token, location.key, navigate]);
 
+  // Fetches the logged-in user's profile and stores it in state, re-running whenever the token changes
   useEffect(() => {
-    if (typeof workshopData.hostedBy !== "string" || !token) return;
+    if (!token) return;
+    let isMounted = true;
 
     const fetchCurrentUser = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/profile/me", {
+        const res = await fetch('http://localhost:3000/api/profile/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        if (!res.ok) throw new Error('Request failed');
+
         const user = await res.json();
-        setCurrentUser({
-          _id: user._id,
-          name: user.name,
-          profilePicture: user.profilePicture ?? null,
-        });
+        if (isMounted)
+          setCurrentUser({
+            _id: user._id,
+            name: user.name,
+            profilePicture: user.profilePicture ?? null,
+          });
       } catch {
-        console.error("Failed to fetch current user");
+        console.error('Failed to fetch current user');
       }
     };
 
     fetchCurrentUser();
-  }, [workshopData.hostedBy, token]);
+    return () => {
+      isMounted = false;
+    };
+  }, [token]);
 
   // Sort reviews newest first.
   // If any review has a createdAt timestamp, sort descending by date.
@@ -123,7 +134,7 @@ const WorkshopPreview: React.FC = () => {
   const hasTimestamps = rawReviews.some((r: Review) => r.createdAt);
   const sortedReviews: Review[] = hasTimestamps
     ? [...rawReviews].sort(
-        (a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime(),
+        (a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
       )
     : [...rawReviews].reverse();
 
@@ -132,7 +143,7 @@ const WorkshopPreview: React.FC = () => {
       ? (
           sortedReviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / sortedReviews.length
         ).toFixed(1)
-      : "0.0";
+      : '0.0';
 
   const visibleReviews = showAllReviews ? sortedReviews : sortedReviews.slice(0, 3);
 
@@ -141,234 +152,234 @@ const WorkshopPreview: React.FC = () => {
   const visibleAttendees = showAllAttendees ? attendees : attendees.slice(0, 5);
 
   const host: Host | null =
-    typeof workshopData.hostedBy === "object" ? workshopData.hostedBy : currentUser;
+    typeof workshopData.hostedBy === 'object' ? workshopData.hostedBy : currentUser;
 
   const totalSeats = parseInt(workshopData.seats) || 0;
   const capacityPercent = totalSeats > 0 ? attendees.length / totalSeats : 0;
 
   const getStatusBadge = () => {
     if (capacityPercent >= 1)
-      return { label: "Closed", color: "#fee2e2", borderColor: "#ff8b8b", textColor: "#ff8b8b" };
+      return { label: 'Closed', color: '#fee2e2', borderColor: '#ff8b8b', textColor: '#ff8b8b' };
     if (capacityPercent >= 0.9)
       return {
-        label: "Nearly Full",
-        color: "#fee2e2",
-        borderColor: "#ff8b8b",
-        textColor: "#ff8b8b",
+        label: 'Nearly Full',
+        color: '#fee2e2',
+        borderColor: '#ff8b8b',
+        textColor: '#ff8b8b',
       };
     if (capacityPercent >= 0.75)
       return {
-        label: "Filling Up",
-        color: "#fef9c3",
-        borderColor: "#eab308",
-        textColor: "#a16207",
+        label: 'Filling Up',
+        color: '#fef9c3',
+        borderColor: '#eab308',
+        textColor: '#a16207',
       };
     return {
-      label: "Open",
-      color: "#dff7e2",
-      borderColor: "var(--text-dark)",
-      textColor: "var(--text-dark)",
+      label: 'Open',
+      color: '#dff7e2',
+      borderColor: 'var(--text-dark)',
+      textColor: 'var(--text-dark)',
     };
   };
 
   const badge = getStatusBadge();
   const isClosed = capacityPercent >= 1;
 
-  // Build a readable application period string from either the legacy combined field or the new split fields
+  // Show "start – end" if both dates exist, otherwise fall back to the old single date field (or "—" if nothing)
   const applicationPeriodDisplay = (() => {
     if (workshopData.applicationPeriodStart && workshopData.applicationPeriodEnd) {
       return `${workshopData.applicationPeriodStart} – ${workshopData.applicationPeriodEnd}`;
     }
-    return workshopData.applicationPeriod || "—";
+    return workshopData.applicationPeriod || '—';
   })();
 
   const handleHost = async () => {
     try {
-      await fetch("http://localhost:3000/api/workshops", {
-        method: "POST",
+      await fetch('http://localhost:3000/api/workshops', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });
       setShowModal(false);
-      toast.success("Workshop hosted successfully!");
+      toast.success('Workshop hosted successfully!');
       setTimeout(() => {
-        navigate("/course/profile");
+        navigate('/course/profile');
       }, 1000);
     } catch {
-      toast.error("Failed to host workshop. Try again.");
+      toast.error('Failed to host workshop. Try again.');
     }
   };
 
   const handleAttend = () => {
-    navigate("/course/register", { state: { workshopId: workshopData._id } });
+    navigate('/course/register', { state: { workshopId: workshopData._id } });
   };
 
   return (
-    <div className="host-page-container" style={{ padding: "0 20px 160px 20px" }}>
+    <div className="host-page-container" style={{ padding: '0 20px 160px 20px' }}>
       <div
         className="screen-header"
         style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingTop: "30px",
-          marginBottom: "15px",
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingTop: '30px',
+          marginBottom: '15px',
         }}
       >
         <button
           className="back-button"
           onClick={() => navigate(-1)}
           type="button"
-          style={{ color: "var(--text-dark)" }}
+          style={{ color: 'var(--text-dark)' }}
         >
           ←
         </button>
-        <h2 className="header-title" style={{ margin: 0, fontSize: "2rem" }}>
+        <h2 className="header-title" style={{ margin: 0, fontSize: '2rem' }}>
           Workshop Info
         </h2>
       </div>
 
       {/* Workshop image — show the uploaded/fetched image directly */}
       <img
-        src={workshopData.imageUrl || "https://placehold.co/800x400?text=Workshop+Image"}
-        alt={workshopData.name || "Workshop"}
+        src={workshopData.imageUrl || 'https://placehold.co/800x400?text=Workshop+Image'}
+        alt={workshopData.name || 'Workshop'}
         className="hero-image"
-        style={{ borderRadius: "12px", marginBottom: "16px", width: "100%", objectFit: "cover" }}
+        style={{ borderRadius: '12px', marginBottom: '16px', width: '100%', objectFit: 'cover' }}
       />
 
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "15px",
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '15px',
         }}
       >
         <span
           style={{
             backgroundColor: badge.color,
             color: badge.textColor,
-            padding: "6px 20px",
-            borderRadius: "20px",
+            padding: '6px 20px',
+            borderRadius: '20px',
             border: `1px solid ${badge.borderColor}`,
-            fontSize: "14px",
-            fontWeight: "600",
+            fontSize: '14px',
+            fontWeight: '600',
           }}
         >
           {badge.label}
         </span>
-        <span style={{ fontWeight: "600", fontSize: "16px" }}>
-          ★ {avgRating} ({sortedReviews.length} {sortedReviews.length === 1 ? "review" : "reviews"})
+        <span style={{ fontWeight: '600', fontSize: '16px' }}>
+          ★ {avgRating} ({sortedReviews.length} {sortedReviews.length === 1 ? 'review' : 'reviews'})
         </span>
       </div>
 
-      <h3 style={{ fontSize: "22px", margin: "0 0 20px 0", color: "var(--text-dark)" }}>
+      <h3 style={{ fontSize: '22px', margin: '0 0 20px 0', color: 'var(--text-dark)' }}>
         {workshopData.name}
       </h3>
 
       {/* Workshop Host */}
-      <div style={{ marginBottom: "20px" }}>
-        <div style={{ fontSize: "16px", fontWeight: "500", marginBottom: "8px" }}>
+      <div style={{ marginBottom: '20px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '500', marginBottom: '8px' }}>
           Workshop Host
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {host?.profilePicture ? (
             <img
               src={host.profilePicture}
               alt={host.name}
-              style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }}
+              style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }}
             />
           ) : (
             <div
               style={{
-                width: "30px",
-                height: "30px",
-                borderRadius: "50%",
-                backgroundColor: "var(--primary-purple)",
-                color: "white",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "14px",
-                fontWeight: "600",
+                width: '30px',
+                height: '30px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--primary-purple)',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '14px',
+                fontWeight: '600',
               }}
             >
-              {host?.name ? host.name[0].toUpperCase() : "?"}
+              {host?.name ? host.name[0].toUpperCase() : '?'}
             </div>
           )}
-          <span style={{ fontSize: "14px", color: "var(--text-dark)" }}>
-            {host?.name || "Unknown Host"}
+          <span style={{ fontSize: '14px', color: 'var(--text-dark)' }}>
+            {host?.name || 'Unknown Host'}
           </span>
         </div>
       </div>
 
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "15px",
-          marginBottom: "20px",
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '15px',
+          marginBottom: '20px',
         }}
       >
         <div>
-          <div style={{ fontSize: "16px", fontWeight: "500" }}>Workshop Date</div>
-          <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.date}</div>
+          <div style={{ fontSize: '16px', fontWeight: '500' }}>Workshop Date</div>
+          <div style={{ fontSize: '14px', color: 'var(--text-dark)' }}>{workshopData.date}</div>
         </div>
         <div>
-          <div style={{ fontSize: "16px", fontWeight: "500" }}>Workshop Time</div>
-          <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.time}</div>
+          <div style={{ fontSize: '16px', fontWeight: '500' }}>Workshop Time</div>
+          <div style={{ fontSize: '14px', color: 'var(--text-dark)' }}>{workshopData.time}</div>
         </div>
       </div>
 
-      <div style={{ marginBottom: "20px" }}>
-        <div style={{ fontSize: "16px", fontWeight: "500" }}>Workshop Location</div>
-        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>{workshopData.location}</div>
+      <div style={{ marginBottom: '20px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '500' }}>Workshop Location</div>
+        <div style={{ fontSize: '14px', color: 'var(--text-dark)' }}>{workshopData.location}</div>
       </div>
 
-      <div style={{ marginBottom: "20px" }}>
-        <div style={{ fontSize: "16px", fontWeight: "500" }}>About This Workshop</div>
+      <div style={{ marginBottom: '20px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '500' }}>About This Workshop</div>
         <p
           style={{
-            fontSize: "14px",
-            color: "var(--text-dark)",
-            lineHeight: "1.5",
-            margin: "5px 0 0 0",
+            fontSize: '14px',
+            color: 'var(--text-dark)',
+            lineHeight: '1.5',
+            margin: '5px 0 0 0',
           }}
         >
           {workshopData.about}
         </p>
       </div>
 
-      <div style={{ marginBottom: "20px" }}>
-        <div style={{ fontSize: "16px", fontWeight: "500" }}>Ticket Price</div>
-        <div style={{ fontSize: "14px", color: "var(--text-dark)" }}>
+      <div style={{ marginBottom: '20px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '500' }}>Ticket Price</div>
+        <div style={{ fontSize: '14px', color: 'var(--text-dark)' }}>
           {workshopData.ticketPrice}
         </div>
       </div>
 
       {/* Application Period — rendered from split start/end or legacy combined string */}
-      <div style={{ marginBottom: "25px" }}>
-        <div style={{ fontSize: "16px", fontWeight: "500" }}>Application Period</div>
-        <div style={{ fontSize: "14px", color: "var(--text-dark)", marginTop: "4px" }}>
+      <div style={{ marginBottom: '25px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '500' }}>Application Period</div>
+        <div style={{ fontSize: '14px', color: 'var(--text-dark)', marginTop: '4px' }}>
           {applicationPeriodDisplay}
         </div>
         {workshopData.applicationPeriodStart && workshopData.applicationPeriodEnd && (
-          <div style={{ display: "flex", gap: "20px", marginTop: "8px" }}>
+          <div style={{ display: 'flex', gap: '20px', marginTop: '8px' }}>
             <div>
-              <div style={{ fontSize: "12px", color: "var(--text-gray)", fontWeight: "500" }}>
+              <div style={{ fontSize: '12px', color: 'var(--text-gray)', fontWeight: '500' }}>
                 Opens
               </div>
-              <div style={{ fontSize: "13px", color: "var(--text-dark)" }}>
+              <div style={{ fontSize: '13px', color: 'var(--text-dark)' }}>
                 {workshopData.applicationPeriodStart}
               </div>
             </div>
             <div>
-              <div style={{ fontSize: "12px", color: "var(--text-gray)", fontWeight: "500" }}>
+              <div style={{ fontSize: '12px', color: 'var(--text-gray)', fontWeight: '500' }}>
                 Closes
               </div>
-              <div style={{ fontSize: "13px", color: "var(--text-dark)" }}>
+              <div style={{ fontSize: '13px', color: 'var(--text-dark)' }}>
                 {workshopData.applicationPeriodEnd}
               </div>
             </div>
@@ -380,28 +391,28 @@ const WorkshopPreview: React.FC = () => {
       <div
         style={{
           backgroundColor:
-            capacityPercent >= 0.9 ? "#fee2e2" : capacityPercent >= 0.75 ? "#fef9c3" : "#dff7e2",
-          border: `2px solid ${capacityPercent >= 0.9 ? "#ff8b8b" : capacityPercent >= 0.75 ? "#eab308" : "#500aa0"}`,
-          borderRadius: "12px",
-          padding: "20px",
-          marginBottom: "20px",
+            capacityPercent >= 0.9 ? '#fee2e2' : capacityPercent >= 0.75 ? '#fef9c3' : '#dff7e2',
+          border: `2px solid ${capacityPercent >= 0.9 ? '#ff8b8b' : capacityPercent >= 0.75 ? '#eab308' : '#500aa0'}`,
+          borderRadius: '12px',
+          padding: '20px',
+          marginBottom: '20px',
         }}
       >
-        <div style={{ fontSize: "18px", fontWeight: "600", marginBottom: "10px" }}>
+        <div style={{ fontSize: '18px', fontWeight: '600', marginBottom: '10px' }}>
           Who is attending? ({attendees.length}/{workshopData.seats} Seats)
         </div>
 
         {attendees.length > 0 ? (
           <>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {visibleAttendees.map((attendee) => (
                 <div
                   key={attendee._id}
                   style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: "10px",
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: '10px',
                   }}
                 >
                   {attendee.profilePicture ? (
@@ -409,32 +420,32 @@ const WorkshopPreview: React.FC = () => {
                       src={attendee.profilePicture}
                       alt={attendee.name}
                       style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
                       }}
                     />
                   ) : (
                     <div
                       style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "50%",
-                        backgroundColor: "var(--dark-purple)",
-                        color: "white",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "14px",
-                        fontWeight: "600",
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--dark-purple)',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '14px',
+                        fontWeight: '600',
                         flexShrink: 0,
                       }}
                     >
-                      {attendee.name ? attendee.name[0].toUpperCase() : "?"}
+                      {attendee.name ? attendee.name[0].toUpperCase() : '?'}
                     </div>
                   )}
-                  <span style={{ fontSize: "13px", color: "var(--text-dark)" }}>
+                  <span style={{ fontSize: '13px', color: 'var(--text-dark)' }}>
                     @{attendee.name}
                   </span>
                 </div>
@@ -446,23 +457,23 @@ const WorkshopPreview: React.FC = () => {
               <button
                 onClick={() => setShowAllAttendees(!showAllAttendees)}
                 style={{
-                  marginTop: "12px",
-                  background: "none",
-                  border: "none",
-                  color: "var(--primary-purple)",
-                  fontWeight: "600",
-                  fontSize: "13px",
-                  cursor: "pointer",
+                  marginTop: '12px',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--primary-purple)',
+                  fontWeight: '600',
+                  fontSize: '13px',
+                  cursor: 'pointer',
                   padding: 0,
-                  textDecoration: "underline",
+                  textDecoration: 'underline',
                 }}
               >
-                {showAllAttendees ? "Show less" : `Show all ${attendees.length} attendees`}
+                {showAllAttendees ? 'Show less' : `Show all ${attendees.length} attendees`}
               </button>
             )}
           </>
         ) : (
-          <p style={{ fontSize: "14px", color: "var(--text-dark)", margin: 0 }}>
+          <p style={{ fontSize: '14px', color: 'var(--text-dark)', margin: 0 }}>
             No attendees yet.
           </p>
         )}
@@ -472,16 +483,16 @@ const WorkshopPreview: React.FC = () => {
       <div className="bordered-card-white">
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "10px",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '10px',
           }}
         >
-          <div style={{ fontSize: "18px", fontWeight: "600" }}>
+          <div style={{ fontSize: '18px', fontWeight: '600' }}>
             Reviews ({sortedReviews.length})
           </div>
-          <div style={{ fontSize: "14px", fontWeight: "600", color: "var(--dark-purple)" }}>
+          <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--dark-purple)' }}>
             ★ {avgRating}
           </div>
         </div>
@@ -490,29 +501,29 @@ const WorkshopPreview: React.FC = () => {
           visibleReviews.map((review: Review, index: number) => (
             <div key={index} className="review-card">
               <div className="review-header">
-                <span style={{ fontWeight: "600", fontSize: "14px" }}>{review.name}</span>
-                <span style={{ fontSize: "14px", color: "var(--text-gray)" }}>
-                  {"★".repeat(review.rating)}
-                  {"☆".repeat(5 - review.rating)}
+                <span style={{ fontWeight: '600', fontSize: '14px' }}>{review.name}</span>
+                <span style={{ fontSize: '14px', color: 'var(--text-gray)' }}>
+                  {'★'.repeat(review.rating)}
+                  {'☆'.repeat(5 - review.rating)}
                 </span>
               </div>
-              <p style={{ fontSize: "14px", color: "var(--text-dark)", margin: 0 }}>
+              <p style={{ fontSize: '14px', color: 'var(--text-dark)', margin: 0 }}>
                 {review.comment}
               </p>
             </div>
           ))
         ) : (
-          <p style={{ fontSize: "14px", color: "var(--text-gray)" }}>No reviews yet.</p>
+          <p style={{ fontSize: '14px', color: 'var(--text-gray)' }}>No reviews yet.</p>
         )}
       </div>
 
       {sortedReviews.length > 3 && (
         <button
           className="btn-dark-purple"
-          style={{ marginBottom: "20px", marginTop: "10px" }}
+          style={{ marginBottom: '20px', marginTop: '10px' }}
           onClick={() => setShowAllReviews(!showAllReviews)}
         >
-          {showAllReviews ? "Show Less" : `View All ${sortedReviews.length} Reviews`}
+          {showAllReviews ? 'Show Less' : `View All ${sortedReviews.length} Reviews`}
         </button>
       )}
 
@@ -521,7 +532,7 @@ const WorkshopPreview: React.FC = () => {
           <>
             <button
               className="btn-dark-purple"
-              onClick={() => navigate("/host", { state: workshopData })}
+              onClick={() => navigate('/host', { state: workshopData })}
             >
               Edit Workshop
             </button>
@@ -535,7 +546,7 @@ const WorkshopPreview: React.FC = () => {
           <button
             className="btn-dark-purple"
             disabled
-            style={{ opacity: 0.5, cursor: "not-allowed" }}
+            style={{ opacity: 0.5, cursor: 'not-allowed' }}
           >
             Workshop Full
           </button>
@@ -547,7 +558,7 @@ const WorkshopPreview: React.FC = () => {
             <button
               className="btn-dark-purple"
               onClick={() =>
-                navigate("/workshop/review", { state: { workshopId: workshopData._id } })
+                navigate('/workshop/review', { state: { workshopId: workshopData._id } })
               }
             >
               Leave a Review
@@ -559,32 +570,32 @@ const WorkshopPreview: React.FC = () => {
       {showModal && (
         <div
           style={{
-            position: "fixed",
+            position: 'fixed',
             inset: 0,
-            backgroundColor: "rgba(0,0,0,0.4)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             zIndex: 200,
           }}
         >
           <div
             style={{
-              backgroundColor: "#fbe9a2",
-              borderRadius: "16px",
-              padding: "32px 24px",
-              width: "80%",
-              maxWidth: "320px",
-              textAlign: "center",
-              border: "2px solid #ccc",
+              backgroundColor: '#fbe9a2',
+              borderRadius: '16px',
+              padding: '32px 24px',
+              width: '80%',
+              maxWidth: '320px',
+              textAlign: 'center',
+              border: '2px solid #ccc',
             }}
           >
             <h2
               style={{
-                fontSize: "1.5rem",
-                fontWeight: "800",
-                marginBottom: "24px",
-                color: "#1a1a1a",
+                fontSize: '1.5rem',
+                fontWeight: '800',
+                marginBottom: '24px',
+                color: '#1a1a1a',
               }}
             >
               Ready to host this workshop?
@@ -594,7 +605,7 @@ const WorkshopPreview: React.FC = () => {
             </button>
             <button
               className="btn-dark-purple"
-              style={{ marginTop: "12px", backgroundColor: "#3d0878" }}
+              style={{ marginTop: '12px', backgroundColor: '#3d0878' }}
               onClick={() => setShowModal(false)}
             >
               No

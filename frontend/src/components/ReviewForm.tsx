@@ -39,7 +39,7 @@ const ReviewForm: React.FC = () => {
       if (!res.ok) throw new Error("Server error");
 
       toast.success("Review submitted!");
-      setTimeout(() => navigate(-1), 1000);
+      setTimeout(() => navigate(-1), 1000); // waits 1 sec, then goes back 1 page.
     } catch {
       toast.error("Failed to submit review. Try again.");
     } finally {
