@@ -4,6 +4,7 @@ import EventCategoryChips from "./EventCategoryChips";
 import FeaturedEventsCarousel from "./FeaturedEventsCarousel";
 import HomeSearchBar from "./HomeSearchBar";
 import NavBar from "./navbar";
+import FilterModal from "./FilterModal";
 
 type Workshop = {
   _id: string;
@@ -31,6 +32,13 @@ function Home() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [events, setEvents] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showFilter, setShowFilter] = useState(false);
+  const [filters, setFilters] = useState({
+    location: "",
+    date: "",
+    minPrice: 0,
+    maxPrice: 200,
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -46,19 +54,38 @@ function Home() {
   }, []);
 
   const filteredEvents = events.filter((event) => {
-    const matchesSearch = (event.name || event.title || "")
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesCategory =
-      !activeCategory ||
-      event.category === activeCategory ||
-      event.categories?.includes(activeCategory);
-    return matchesSearch && matchesCategory;
-  });
+  const matchesSearch = (event.name || "").toLowerCase().includes(search.toLowerCase());
 
+  const matchesCategory = !activeCategory || 
+    event.category === activeCategory || 
+    event.categories?.includes(activeCategory);
+
+  const matchesLocation = !filters.location || 
+    (event.location || "").toLowerCase().includes(filters.location.toLowerCase());
+  
+  const matchesDate = !filters.date || (() => {
+  if (!event.date) return false;
+  
+  // Split the date string to avoid timezone issues
+  const [year, month, day] = filters.date.split("-").map(Number);
+  const filterDate = new Date(year, month - 1, day); // month is 0-indexed
+  const filterFormatted = filterDate.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+  
+  return event.date === filterFormatted;
+  })();
+  
+  const price = parseFloat((event.ticketPrice || "0").replace(/[^0-9.]/g, ""));
+  const matchesPrice = price >= filters.minPrice && price <= filters.maxPrice;
+  return matchesSearch && matchesCategory && matchesLocation && matchesDate && matchesPrice;
+});
+  
   // Use first 5 events for the featured carousel
   const featuredEvents = events.slice(0, 5);
-
+  
   return (
     <div
       style={{
@@ -72,7 +99,7 @@ function Home() {
         gap: "16px",
       }}
     >
-      <HomeSearchBar value={search} onChange={setSearch} />
+      <HomeSearchBar value={search} onChange={setSearch} onFilterClick={() => setShowFilter(true)} />
       <h3
         style={{
           margin: "0",
@@ -106,7 +133,13 @@ function Home() {
           filteredEvents.map((event, index) => <EventCard key={event._id || index} event={event} />)
         )}
       </div>
-
+      {showFilter && (
+      <FilterModal
+        onClose={() => setShowFilter(false)}
+        onApply={(f) => setFilters(f)}
+        initialValues={filters}
+      />
+      )}
       <NavBar />
     </div>
   );
