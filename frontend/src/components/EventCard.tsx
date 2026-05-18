@@ -8,7 +8,7 @@ type Event = {
   time: string;
   image?: string;
   imageUrl?: string;
-  category?: string; 
+  category?: string;
   categories?: string[];
   // Need to change category to categories = string[] later just added ? to prevent errors while trying new system
   date?: string;
@@ -26,7 +26,6 @@ function EventCard({ event }: { event: Event }) {
     const token = localStorage.getItem("token");
     let currentUserId = null;
 
-    // Safe token parsing added here!
     if (token) {
       try {
         currentUserId = JSON.parse(atob(token.split(".")[1])).id;
@@ -64,7 +63,6 @@ function EventCard({ event }: { event: Event }) {
         src={event.imageUrl || event.image}
         alt={event.name}
         onError={(e) => {
-          // Made this 120x120 so it fits your grid perfectly
           e.currentTarget.src = "https://placehold.co/120x120/3d0878/ffffff?text=Workshop";
         }}
         style={{
