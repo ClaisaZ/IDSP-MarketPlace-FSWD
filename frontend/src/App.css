@@ -1,5 +1,6 @@
-@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;800&display=swap");
+@import "tailwindcss";
+
 :root {
   /* Core palette  */
   --passionfruit: #51174e;
@@ -13,7 +14,7 @@
   --pandan: #dffceb;
 
   /* ── Semantic aliases */
-  --primary-dark-blue:#1a237e;
+  --primary-dark-blue: #1a237e;
   --primary-purple: var(--passionfruit);
   --secondary-purple: var(--mangosteen);
   --bg-light: var(--coconut);
@@ -186,18 +187,18 @@ h3 {
 
 /* Buttons inside Purple Card */
 .white-button {
-  background-color: var(--bg-white);
-  color: var(--text-dark);
+  background-color: var(--passionfruit);
+  color: var(--coconut-milk);
   border: none;
-  border-radius: 12px;
+  border-radius: 25px;
   padding: 16px;
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 400;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 4px;
+  margin-bottom: 2px;
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: transform 0.1s;
@@ -281,6 +282,7 @@ h3 {
 .text-input:focus {
   outline: 2px solid var(--primary-purple);
 }
+
 /* PROFILE PAGE */
 .profile-page {
   width: 100%;
@@ -290,12 +292,14 @@ h3 {
   padding: 0 20px 100px 20px;
   box-sizing: border-box;
 }
+
 .profile-page .screen-header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
+
 .edit-btn {
   background: var(--primary-purple);
   color: var(--bg-white);
@@ -306,6 +310,7 @@ h3 {
   font-weight: 600;
   cursor: pointer;
 }
+
 .signout-btn {
   background-color: var(--primary-purple);
   color: var(--bg-white);
@@ -315,17 +320,20 @@ h3 {
   font-weight: 600;
   cursor: pointer;
 }
+
 .header-actions {
   display: flex;
   gap: 8px;
   align-items: center;
 }
+
 .profile-info {
   display: flex;
   align-items: center;
   gap: 16px;
   margin-bottom: 20px;
 }
+
 .avatar-placeholder {
   width: 80px;
   height: 80px;
@@ -338,28 +346,33 @@ h3 {
   font-size: 2rem;
   font-weight: 600;
 }
+
 .avatar {
   width: 80px;
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
 }
+
 .profile-username {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-dark);
   margin: 0;
 }
+
 .profile-role {
   font-size: 1rem;
   color: var(--text-gray);
   margin: 0;
 }
+
 .stats-row {
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
 }
+
 .stat-card {
   flex: 1;
   background: var(--primary-purple);
@@ -370,27 +383,32 @@ h3 {
   gap: 12px;
   color: var(--bg-white);
 }
+
 .stat-number {
   font-size: 2rem;
   font-weight: 700;
 }
+
 .stat-label {
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.3;
 }
+
 .about-bio {
   font-size: 1rem;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.85);
   margin: 0 0 18px;
 }
+
 .interests-title {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--bg-white);
   margin: 0 0 10px;
 }
+
 .interests-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -398,6 +416,7 @@ h3 {
   max-height: 300px;
   overflow-y: auto;
 }
+
 .interest-tag {
   background: var(--text-dark);
   color: var(--bg-white);
@@ -407,38 +426,46 @@ h3 {
   font-weight: 500;
   text-align: center;
 }
+
 .contact-section {
   margin-top: 24px;
 }
+
 .social-links {
   display: flex;
   gap: 16px;
   align-items: center;
 }
+
 .social-icon {
   width: 40px;
   height: 40px;
 }
+
 .posts-section {
   margin-top: 24px;
 }
+
 .posts-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
+
 .post-card {
   border-radius: 16px;
   overflow: hidden;
   position: relative;
   cursor: pointer;
 }
+
 .post-image {
   width: 100%;
   height: 140px;
   object-fit: cover;
   display: block;
 }
+
 .post-overlay {
   position: absolute;
   top: 8px;
@@ -450,6 +477,7 @@ h3 {
   font-size: 12px;
   font-weight: 500;
 }
+
 .post-caption {
   margin: 0;
   padding: 8px 10px;
@@ -460,6 +488,7 @@ h3 {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 /* Edit Profile */
 .edit-avatar {
   display: flex;
@@ -467,22 +496,26 @@ h3 {
   align-items: center;
   margin-bottom: 20px;
 }
+
 .edit-avatar img {
   width: 90px;
   height: 90px;
   border-radius: 50%;
   object-fit: cover;
 }
+
 .edit-avatar-circle {
   width: 90px;
   height: 90px;
   font-size: 40px;
 }
+
 .edit-avatar-label {
   color: var(--bg-white);
   font-size: 14px;
   margin-top: 8px;
 }
+
 .interest-tag--selected {
   background: var(--bg-white);
   color: var(--primary-purple);
@@ -553,7 +586,8 @@ h3 {
   border-radius: 12px;
   padding: 16px;
   margin-top: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds slight depth */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Adds slight depth */
 }
 
 .review-header {
@@ -569,7 +603,8 @@ h3 {
   bottom: 90px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: var(--accent-yellow); /* Yellow from mockup */
+  background-color: var(--accent-yellow);
+  /* Yellow from mockup */
   color: #1a1a1a;
   border: none;
   border-radius: 30px;
@@ -668,6 +703,7 @@ h3 {
 .workshops-section {
   margin-top: 24px;
 }
+
 .workshop-tabs {
   display: flex;
   width: 100%;
@@ -676,10 +712,11 @@ h3 {
   padding: 4px;
   margin-bottom: 16px;
 }
+
 .workshop-tab {
   padding: 8px 24px;
   border: none;
-  flex:1;
+  flex: 1;
   text-align: center;
   border-radius: 16px;
   font-size: 14px;
@@ -689,15 +726,18 @@ h3 {
   color: var(--bg-white);
   transition: background 0.2s;
 }
+
 .workshop-tab--active {
   background: var(--bg-white);
   color: var(--primary-purple);
 }
+
 .workshop-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
+
 .workshop-card {
   display: flex;
   align-items: center;
@@ -709,6 +749,7 @@ h3 {
   color: var(--bg-white);
   position: relative;
 }
+
 .workshop-thumbnail {
   width: 90px;
   height: 80px;
@@ -716,12 +757,14 @@ h3 {
   object-fit: cover;
   flex-shrink: 0;
 }
+
 .workshop-info {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .workshop-name {
   font-size: 14px;
   font-weight: 700;
@@ -729,12 +772,14 @@ h3 {
   line-height: 1.3;
   padding-right: 24px;
 }
+
 .workshop-host {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 12px;
 }
+
 .delete-workshop-btn {
   position: absolute;
   top: 8px;
@@ -747,6 +792,7 @@ h3 {
   cursor: pointer;
   font-size: 14px;
 }
+
 .btn-dark-purple {
   background: var(--primary-purple);
   color: var(--bg-white);
@@ -762,8 +808,9 @@ h3 {
 .host-form-card {
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Gap: 16pt */
-  background-color: #897df0;
+  gap: 16px;
+  /* Gap: 16pt */
+  background-color: var(--mangosteen);
   border-radius: 12px;
   border: 3px solid var(--primary-purple);
   padding: 20px;
@@ -829,6 +876,7 @@ textarea.bordered-input {
   width: 100%;
   margin-top: 10px;
 }
+
 /*  HOST WORKSHOP PREVIEW SPECIFIC  */
 
 .badge-open {
@@ -904,6 +952,7 @@ textarea.bordered-input {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 /* Nav Bar */
 .bottom-nav {
   position: fixed;
@@ -911,14 +960,17 @@ textarea.bordered-input {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 800px;
+  max-width: 480px;
   background: var(--text-dark);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 10px 0 20px;
+  padding: 10px 0 10px;
   z-index: 100;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
+
 .nav-item {
   display: flex;
   flex-direction: column;
@@ -930,11 +982,13 @@ textarea.bordered-input {
   font-size: 13px;
   font-family: inherit;
   cursor: pointer;
-  padding: 0 8px;
+  padding-top: 6px;
 }
+
 .nav-item--active {
   color: var(--bg-white);
 }
+
 /* Filter Button */
 .filter-overlay {
   position: fixed;
@@ -948,6 +1002,7 @@ textarea.bordered-input {
   align-items: center;
   justify-content: center;
 }
+
 .filter-modal {
   background: white;
   border-radius: 20px;
@@ -958,17 +1013,20 @@ textarea.bordered-input {
   flex-direction: column;
   gap: 20px;
 }
+
 .filter-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .filter-title {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-dark);
   margin: 0;
 }
+
 .filter-close {
   background: none;
   border: none;
@@ -976,16 +1034,19 @@ textarea.bordered-input {
   cursor: pointer;
   color: var(--text-dark);
 }
+
 .filter-field {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+
 .filter-label {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-dark);
 }
+
 .filter-input {
   padding: 12px;
   border-radius: 10px;
@@ -995,9 +1056,11 @@ textarea.bordered-input {
   color: var(--text-dark);
   outline: none;
 }
+
 .filter-input:focus {
   border-color: var(--primary-purple);
 }
+
 .filter-price-row {
   display: flex;
   justify-content: space-between;
@@ -1005,6 +1068,7 @@ textarea.bordered-input {
   font-weight: 600;
   color: var(--text-dark);
 }
+
 .filter-range {
   width: 100%;
   accent-color: var(--primary-purple);

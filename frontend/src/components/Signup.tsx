@@ -260,15 +260,47 @@ function Signup() {
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="primary-button"
+          <div
             style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
               marginTop: '20px',
             }}
           >
-            Sign Up
-          </button>
+            <button
+              type="submit"
+              className="white-button"
+            >
+              Sign Up
+            </button>
+
+            <button
+              type="button"
+              className="white-button"
+              onClick={() => navigate('/login')}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  lineHeight: "1.4",
+                }}
+              >
+                <span>Already have an account?</span>
+
+                <span
+                  style={{
+                    fontWeight: "400",
+                    color: "var(--coconut-milk)",
+                  }}
+                >
+                  Login Here
+                </span>
+              </div>
+            </button>
+          </div>
         </form>
       </div>
     </>
