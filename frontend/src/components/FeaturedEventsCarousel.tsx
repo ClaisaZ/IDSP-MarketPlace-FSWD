@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FeaturedEventCard from "./FeaturedEventCard";
 
 type Event = {
@@ -19,7 +19,10 @@ type Event = {
 };
 
 function FeaturedEventsCarousel({ events }: { events: Event[] }) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const middleIndex = Math.floor(events.length / 2);
+
+  const [activeIndex, setActiveIndex] = useState(middleIndex);
+
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const scrollTimeoutRef = useRef<number | null>(null);
 
@@ -29,10 +32,27 @@ function FeaturedEventsCarousel({ events }: { events: Event[] }) {
     const container = scrollRef.current;
 
     container.scrollTo({
-      left: card.offsetLeft - container.clientWidth / 2 + card.clientWidth / 2,
+      left:
+        card.offsetLeft -
+        container.clientWidth / 2 +
+        card.clientWidth / 2,
       behavior: "smooth",
     });
   };
+
+  useEffect(() => {
+    if (!scrollRef.current) return;
+
+    const container = scrollRef.current;
+
+    const middleCard = container.children[
+      middleIndex
+    ] as HTMLDivElement;
+
+    if (middleCard) {
+      centerCard(middleCard);
+    }
+  }, []);
 
   const snapToClosestCard = () => {
     if (!scrollRef.current) return;
@@ -44,9 +64,15 @@ function FeaturedEventsCarousel({ events }: { events: Event[] }) {
     let closestDistance = Infinity;
 
     cards.forEach((card) => {
-      const cardCenter = card.offsetLeft + card.clientWidth / 2;
-      const containerCenter = container.scrollLeft + container.clientWidth / 2;
-      const distance = Math.abs(cardCenter - containerCenter);
+      const cardCenter =
+        card.offsetLeft + card.clientWidth / 2;
+
+      const containerCenter =
+        container.scrollLeft + container.clientWidth / 2;
+
+      const distance = Math.abs(
+        cardCenter - containerCenter
+      );
 
       if (distance < closestDistance) {
         closestDistance = distance;
@@ -55,12 +81,20 @@ function FeaturedEventsCarousel({ events }: { events: Event[] }) {
     });
 
     const closestIndex = cards.indexOf(closestCard);
+
     setActiveIndex(closestIndex);
+
     centerCard(closestCard);
   };
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", width: "100%" }}>
+    <div
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        width: "100%",
+      }}
+    >
       <div
         ref={scrollRef}
         className="hide-scrollbar"
@@ -106,7 +140,9 @@ function FeaturedEventsCarousel({ events }: { events: Event[] }) {
               }}
               style={{
                 minWidth: "300px",
-                transform: isActive ? "scale(1.05)" : "scale(0.9)",
+                transform: isActive
+                  ? "scale(1.05)"
+                  : "scale(0.9)",
                 opacity: isActive ? 1 : 0.7,
                 zIndex: isActive ? 5 : 1,
                 transition: "all 0.3s ease",
