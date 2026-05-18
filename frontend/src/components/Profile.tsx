@@ -254,13 +254,19 @@ export default function Profile() {
                   />
                   <div className="workshop-info">
                     <p className="workshop-name">{workshop.name}</p>
-                    <div className="workshop-host">
-                      <div
-                        className="avatar-placeholder"
-                        style={{ width: "20px", height: "20px", fontSize: "10px" }}
-                      >
-                        {workshop.hostedBy?.name[0].toUpperCase()}
-                      </div>
+                      <div className="workshop-host">
+                      {workshop.hostedBy?.profilePicture ? (
+                        <img
+                          src={workshop.hostedBy.profilePicture}
+                          alt={workshop.hostedBy?.name}
+                          className="avatar"
+                          style={{ width: "20px", height: "20px" }}
+                        />
+                      ) : (
+                        <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
+                          {workshop.hostedBy?.name[0].toUpperCase()}
+                        </div>
+                      )}
                       <span>{workshop.hostedBy?.name}</span>
                     </div>
                     <div style={{ fontSize: "12px", opacity: 0.85 }}>
@@ -300,14 +306,20 @@ export default function Profile() {
                     <div className="workshop-info">
                       <p className="workshop-name">{workshop.name}</p>
                       <div className="workshop-host">
-                        <div
-                          className="avatar-placeholder"
-                          style={{ width: "20px", height: "20px", fontSize: "10px" }}
-                        >
-                          {workshop.hostedBy?.name[0].toUpperCase()}
+                          {workshop.hostedBy?.profilePicture ? (
+                            <img
+                              src={workshop.hostedBy.profilePicture}
+                              alt={workshop.hostedBy?.name}
+                              className="avatar"
+                              style={{ width: "20px", height: "20px" }}
+                            />
+                          ) : (
+                            <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
+                              {workshop.hostedBy?.name[0].toUpperCase()}
+                            </div>
+                          )}
+                          <span>{workshop.hostedBy?.name}</span>
                         </div>
-                        <span>{workshop.hostedBy?.name}</span>
-                      </div>
                       <div style={{ fontSize: "12px", opacity: 0.85 }}>
                         <p style={{ margin: 0 }}>📅 {workshop.date}</p>
                         <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
