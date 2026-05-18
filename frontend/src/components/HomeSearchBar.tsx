@@ -1,11 +1,14 @@
 import { IoSearch } from "react-icons/io5";
+import { HiAdjustmentsHorizontal } from "react-icons/hi2";
 
 function HomeSearchBar({
   value,
   onChange,
+  onFilterClick,
 }: {
   value: string;
   onChange: (val: string) => void;
+  onFilterClick: () => void;
 }) {
   return (
     <div
@@ -18,14 +21,7 @@ function HomeSearchBar({
         gap: "10px",
       }}
     >
-      <span
-        style={{
-          color: "var(--coconut-milk)",
-          fontSize: "24px",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
+      <span style={{ color: "var(--coconut-milk)", fontSize: "24px", display: "flex", alignItems: "center" }}>
         <IoSearch />
       </span>
 
@@ -43,24 +39,20 @@ function HomeSearchBar({
           outline: "none",
           color: "var(--coconut-milk)",
           fontSize: "18px",
-          opacity: 1,
         }}
       />
 
       {value.length > 0 && (
-        <button
-          onClick={() => onChange("")}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "var(--coconut-milk)",
-            fontSize: "18px",
-            cursor: "pointer",
-          }}
-        >
+        <button onClick={() => onChange("")}
+          style={{ background: "transparent", border: "none", color: "var(--coconut-milk)", fontSize: "18px", cursor: "pointer" }}>
           ✕
         </button>
       )}
+
+      <button onClick={onFilterClick}
+        style={{ background: "transparent", border: "none", color: "var(--coconut-milk)", fontSize: "24px", cursor: "pointer", display: "flex", alignItems: "center" }}>
+        <HiAdjustmentsHorizontal />
+      </button>
     </div>
   );
 }
