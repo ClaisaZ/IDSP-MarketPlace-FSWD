@@ -16,12 +16,6 @@ export default function NavBar() {
         <span>Home</span>
       </button>
 
-      <button className={`nav-item ${isActive("/Course") ? "nav-item--active" : ""}`}
-        onClick={() => navigate("/Course")}>
-        <FontAwesomeIcon icon={faCalendar} />
-        <span>Workshops</span>
-      </button>
-
       <button
         className={`nav-item nav-item--center ${isActive("/skill-matching-feature") ? "nav-item--active" : ""
           }`}

@@ -21,49 +21,76 @@ type Event = {
 function FeaturedEventsCarousel({ events }: { events: Event[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const scrollTimeoutRef = useRef<number | null>(null);
 
   const centerCard = (card: HTMLDivElement) => {
     if (!scrollRef.current) return;
+
     const container = scrollRef.current;
+
     container.scrollTo({
       left: card.offsetLeft - container.clientWidth / 2 + card.clientWidth / 2,
       behavior: "smooth",
     });
   };
 
+  const snapToClosestCard = () => {
+    if (!scrollRef.current) return;
+
+    const container = scrollRef.current;
+    const cards = Array.from(container.children) as HTMLDivElement[];
+
+    let closestCard = cards[0];
+    let closestDistance = Infinity;
+
+    cards.forEach((card) => {
+      const cardCenter = card.offsetLeft + card.clientWidth / 2;
+      const containerCenter = container.scrollLeft + container.clientWidth / 2;
+      const distance = Math.abs(cardCenter - containerCenter);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestCard = card;
+      }
+    });
+
+    const closestIndex = cards.indexOf(closestCard);
+    setActiveIndex(closestIndex);
+    centerCard(closestCard);
+  };
+
   return (
-    <div
-      style={{ position: "relative", overflow: "hidden", width: "100%" }}
-      onClick={(e) => {
-        if (!scrollRef.current) return;
-        const rect = e.currentTarget.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const isLeftSide = clickX < rect.width / 2;
-        scrollRef.current.scrollBy({
-          left: isLeftSide ? -120 : 120,
-          behavior: "smooth",
-        });
-      }}
-    >
+    <div style={{ position: "relative", overflow: "hidden", width: "100%" }}>
       <div
         ref={scrollRef}
         className="hide-scrollbar"
+        onScroll={() => {
+          if (scrollTimeoutRef.current) {
+            window.clearTimeout(scrollTimeoutRef.current);
+          }
+
+          scrollTimeoutRef.current = window.setTimeout(() => {
+            snapToClosestCard();
+          }, 120);
+        }}
         style={{
           display: "flex",
           gap: "15px",
           overflowX: "auto",
           overflowY: "hidden",
-          padding: "12px 45px",
+          padding: "12px 80px",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
           scrollBehavior: "smooth",
+          touchAction: "pan-x",
+          WebkitOverflowScrolling: "touch",
         }}
       >
         {events.map((event, index) => {
           const isActive = activeIndex === index;
+
           return (
             <div
-              // 👇 Updated safe key handling right here!
               key={event._id || event.name || index}
               onMouseEnter={(e) => {
                 setActiveIndex(index);
@@ -74,12 +101,11 @@ function FeaturedEventsCarousel({ events }: { events: Event[] }) {
                 setActiveIndex(index);
                 centerCard(e.currentTarget);
               }}
-              onTouchStart={(e) => {
+              onTouchStart={() => {
                 setActiveIndex(index);
-                centerCard(e.currentTarget);
               }}
               style={{
-                minWidth: "280px",
+                minWidth: "300px",
                 transform: isActive ? "scale(1.05)" : "scale(0.9)",
                 opacity: isActive ? 1 : 0.7,
                 zIndex: isActive ? 5 : 1,

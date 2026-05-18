@@ -156,6 +156,7 @@ export default function Profile() {
             onClick={() => {
               localStorage.removeItem("token");
               localStorage.removeItem("user");
+              localStorage.removeItem("skills")
               setUser(null);
               setHostedWorkshops([]);
               setRegisteredWorkshops([]);

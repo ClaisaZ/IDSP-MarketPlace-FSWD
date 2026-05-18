@@ -166,9 +166,29 @@ function Login() {
             </div>
           </div>
 
-          <button type="submit" className="primary-button" style={{ marginTop: '20px' }}>
-            Login
-          </button>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+              marginTop: '20px',
+            }}
+          >
+            <button
+              type="submit"
+              className="white-button"
+            >
+              Login
+            </button>
+
+            <button
+              type="button"
+              className="white-button"
+              onClick={() => navigate('/signup')}
+            >
+              Create Account
+            </button>
+          </div>
         </form>
       </div>
     </>

@@ -80,37 +80,6 @@ function App() {
                   }}
                 >
                   <Login />
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "10px",
-                      width: "100%",
-                      marginTop: "15px",
-                      padding: "0 20px",
-                    }}
-                  >
-                    <Link to="/signup" style={{ textDecoration: "none" }}>
-                      <button className="white-button" style={{ justifyContent: "center", width: "100%" }}>
-                        Create an account
-                      </button>
-                    </Link>
-                    <Link to="/course" style={{ textDecoration: "none" }}>
-                      <button className="primary-button" style={{ width: "100%" }}>
-                        Continue to app
-                      </button>
-                    </Link>
-                    <Link to="/skill-matching" style={{ textDecoration: "none" }}>
-                      <button className="primary-button" style={{ width: "100%" }}>
-                        Test: Skill match page after register
-                      </button>
-                    </Link>
-                    <Link to="/home" style={{ textDecoration: "none" }}>
-                      <button className="primary-button" style={{ width: "100%" }}>
-                        Test: home page
-                      </button>
-                    </Link>
-                  </div>
                 </div>
               }
             />
@@ -130,13 +99,6 @@ function App() {
                   }}
                 >
                   <Signup />
-                  <div style={{ width: "100%", marginTop: "15px", padding: "0 20px" }}>
-                    <Link to="/login" style={{ textDecoration: "none" }}>
-                      <button className="white-button" style={{ justifyContent: "center", width: "100%" }}>
-                        Already have an account? Login
-                      </button>
-                    </Link>
-                  </div>
                 </div>
               }
             />
