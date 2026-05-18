@@ -110,6 +110,19 @@ router.post("/match", protectRoute, async (req, res) => {
   }
 });
 
+// GET workshops user has registered for
+router.get("/attending", protectRoute, async (req, res) => {
+  try {
+    const workshops = await Workshop.find({ attendees: req.user._id }).populate(
+      "hostedBy",
+      "name profilePicture",
+    );
+    res.json(workshops);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch workshops" });
+  }
+});
+
 router.get("/:id", protectRoute, async (req, res) => {
   try {
     const workshop = await Workshop.findById(req.params.id)
@@ -135,6 +148,7 @@ router.delete("/:id", protectRoute, async (req, res) => {
   }
 });
 
+
 // Attend a workshop
 router.post("/:id/attend", protectRoute, async (req, res) => {
   try {
@@ -152,18 +166,6 @@ router.post("/:id/attend", protectRoute, async (req, res) => {
   }
 });
 
-// GET workshops user has registered for
-router.get("/attending", protectRoute, async (req, res) => {
-  try {
-    const workshops = await Workshop.find({ attendees: req.user._id }).populate(
-      "hostedBy",
-      "name profilePicture",
-    );
-    res.json(workshops);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch workshops" });
-  }
-});
 
 // Post a review
 router.post("/:id/review", protectRoute, async (req, res) => {
