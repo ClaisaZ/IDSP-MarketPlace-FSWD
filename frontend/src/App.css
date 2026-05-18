@@ -297,7 +297,7 @@ h3 {
   align-items: center;
 }
 .edit-btn {
-  background: #7c3aed;
+  background: var(--primary-purple);
   color: var(--bg-white);
   border: none;
   border-radius: 20px;
@@ -307,7 +307,7 @@ h3 {
   cursor: pointer;
 }
 .signout-btn {
-  background-color: #7c3aed;
+  background-color: var(--primary-purple);
   color: var(--bg-white);
   border-radius: 20px;
   padding: 8px 18px;
@@ -664,21 +664,23 @@ h3 {
   color: black;
 }
 
-/* Workshops section in Profiel */
+/* Workshops section in Profile */
 .workshops-section {
   margin-top: 24px;
 }
 .workshop-tabs {
   display: flex;
+  width: 100%;
   background: var(--primary-purple);
   border-radius: 20px;
   padding: 4px;
   margin-bottom: 16px;
-  width: fit-content;
 }
 .workshop-tab {
   padding: 8px 24px;
   border: none;
+  flex:1;
+  text-align: center;
   border-radius: 16px;
   font-size: 14px;
   font-weight: 600;
