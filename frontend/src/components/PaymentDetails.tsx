@@ -1,8 +1,8 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { useCheckout } from "../context/useCheckout";
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useCheckout } from '../context/useCheckout';
 
 // Reusable field — same pattern as Registration.tsx
 type FormFieldProps = {
@@ -18,10 +18,10 @@ const FormField: React.FC<FormFieldProps> = ({ label, children }) => (
 );
 
 const SHIPPING_FIELDS: { label: string; placeholder?: string }[] = [
-  { label: "Street address" },
-  { label: "City" },
-  { label: "Province / State" },
-  { label: "Postal code" },
+  { label: 'Street address' },
+  { label: 'City' },
+  { label: 'Province / State' },
+  { label: 'Postal code' },
 ];
 
 const PaymentDetails: React.FC = () => {
@@ -41,16 +41,16 @@ const PaymentDetails: React.FC = () => {
   // Redirect back to registration if state is wiped/missing (e.g., on page refresh)
   useEffect(() => {
     if (!state.registration) {
-      console.warn("Registration state missing. Redirecting to start.");
-      navigate("/course", { replace: true });
+      console.warn('Registration state missing. Redirecting to start.');
+      navigate('/course', { replace: true });
     }
   }, [state.registration, navigate]);
 
-  const handlePurchase = async (e: React.FormEvent) => {
+  const handlePurchase = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
     if (!state.registration) {
-      setError("Registration data is missing. Please restart the process.");
+      setError('Registration data is missing. Please restart the process.');
       return;
     }
 
@@ -58,7 +58,7 @@ const PaymentDetails: React.FC = () => {
     setError(null);
 
     try {
-      const response = await axios.post("http://localhost:3000/api/course", {
+      const response = await axios.post('http://localhost:3000/api/course', {
         name: state.registration.name,
         email: state.registration.email,
         age: state.registration.age,
@@ -68,17 +68,21 @@ const PaymentDetails: React.FC = () => {
       });
 
       // Passing workshopId alongside data so Receipt.tsx can call
-      navigate("/course/receipt", { state: { ...response.data, workshopId } });
+      navigate('/course/receipt', { state: { ...response.data, workshopId } });
     } catch (err) {
-      console.error("Payment submission failed:", err);
-      toast.error("Payment failed. Please try again.");
+      console.error('Payment submission failed:', err);
+      toast.error('Payment failed. Please try again.');
 
       if (axios.isAxiosError(err) && err.response) {
         const serverMessage =
-          err.response.data?.message || err.response.data?.error || "Please check your details and try again.";
+          err.response.data?.message ||
+          err.response.data?.error ||
+          'Please check your details and try again.';
         setError(`Server rejected: ${serverMessage}`);
       } else {
-        setError("We couldn't connect to the payment system. Please check your internet connection and try again.");
+        setError(
+          "We couldn't connect to the payment system. Please check your internet connection and try again."
+        );
       }
     } finally {
       setLoading(false);
@@ -94,7 +98,11 @@ const PaymentDetails: React.FC = () => {
     <>
       <div className="screen-header">
         <h2 className="header-title">
-          <button className="back-button" onClick={() => navigate("/course/payments")} type="button">
+          <button
+            className="back-button"
+            onClick={() => navigate('/course/payments')}
+            type="button"
+          >
             ←
           </button>
           Purchase
@@ -103,12 +111,20 @@ const PaymentDetails: React.FC = () => {
       </div>
 
       <div className="purple-card">
-        <form onSubmit={handlePurchase} style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+        <form
+          onSubmit={handlePurchase}
+          style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}
+        >
           {/* Dynamic UI: Visa shows card fields, PayPal shows login simulation */}
-          {paymentMethod === "Visa" && (
+          {paymentMethod === 'Visa' && (
             <>
               <FormField label="Card Number">
-                <input required type="text" className="text-input" placeholder="XXXX XXXX XXXX XXXX" />
+                <input
+                  required
+                  type="text"
+                  className="text-input"
+                  placeholder="XXXX XXXX XXXX XXXX"
+                />
               </FormField>
               <FormField label="Expiry Date">
                 <input required type="text" className="text-input" placeholder="MM/YY" />
@@ -119,7 +135,7 @@ const PaymentDetails: React.FC = () => {
             </>
           )}
 
-          {paymentMethod === "PayPal" && (
+          {paymentMethod === 'PayPal' && (
             <>
               <FormField label="PayPal Email">
                 <input required type="email" className="text-input" placeholder="you@paypal.com" />
@@ -127,7 +143,7 @@ const PaymentDetails: React.FC = () => {
               <FormField label="PayPal Password">
                 <input required type="password" className="text-input" placeholder="••••••••" />
               </FormField>
-              <p style={{ fontSize: "14px", color: "#ccc", marginTop: "4px" }}>
+              <p style={{ fontSize: '14px', color: '#ccc', marginTop: '4px' }}>
                 This is a login simulation — no real PayPal connection.
               </p>
             </>
@@ -135,11 +151,11 @@ const PaymentDetails: React.FC = () => {
 
           <h4
             style={{
-              margin: "15px 0 10px 0",
-              textAlign: "left",
-              fontSize: "24px",
-              marginTop: "2rem",
-              marginBottom: "1rem",
+              margin: '15px 0 10px 0',
+              textAlign: 'left',
+              fontSize: '24px',
+              marginTop: '2rem',
+              marginBottom: '1rem',
             }}
           >
             Shipping Address
@@ -154,19 +170,24 @@ const PaymentDetails: React.FC = () => {
           {error && (
             <p
               style={{
-                color: "#FFcccc",
-                background: "rgba(255,0,0,0.2)",
-                padding: "10px",
-                borderRadius: "8px",
-                marginTop: "10px",
+                color: '#FFcccc',
+                background: 'rgba(255,0,0,0.2)',
+                padding: '10px',
+                borderRadius: '8px',
+                marginTop: '10px',
               }}
             >
               {error}
             </p>
           )}
 
-          <button type="submit" disabled={loading} className="primary-button" style={{ marginTop: "20px" }}>
-            {loading ? "Processing..." : "Purchase"}
+          <button
+            type="submit"
+            disabled={loading}
+            className="primary-button"
+            style={{ marginTop: '20px' }}
+          >
+            {loading ? 'Processing...' : 'Purchase'}
           </button>
         </form>
       </div>
