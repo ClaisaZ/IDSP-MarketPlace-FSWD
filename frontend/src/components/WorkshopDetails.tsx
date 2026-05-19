@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import NavBar from "./navbar";
 
 const WorkshopDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -197,7 +196,6 @@ const WorkshopDetails: React.FC = () => {
       <button className="floating-register-btn" onClick={() => navigate("/course/register")}>
         Register
       </button>
-      <NavBar/>
     </div>
   );
 };

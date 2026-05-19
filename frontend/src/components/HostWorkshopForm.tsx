@@ -3,7 +3,6 @@ import { ImagePlus, Loader2, Trash2 } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Read current route info and Chnage/navigate to another route
 import { toast } from 'sonner';
-import NavBar from './navbar';
 
 // data collected by the form, passed to preview and eventually the backend.
 type WorkshopFormData = {
@@ -567,7 +566,6 @@ const HostWorkshopForm: React.FC = () => {
         </button>
       </form>
 
-      <NavBar />
     </div>
   );
 };
