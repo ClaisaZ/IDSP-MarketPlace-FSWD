@@ -60,6 +60,7 @@ export default function Profile() {
         ]);
 
         setUser(profileRes.data);
+        localStorage.setItem("skills", JSON.stringify(profileRes.data.interests || []));
         setHostedWorkshops(workshopsRes.data);
       } catch (err: unknown) {
         console.error("Failed to fetch profile:", err);
@@ -120,16 +121,16 @@ export default function Profile() {
     return (
       <div className="profile-page">
         <div className="purple-card">
-          <h4 style={{textAlign:"center"}}>You are not logged in yet.</h4>
-          <p style={{ color: "white", marginBottom: "20px", textAlign: "center", marginTop:"1.5rem" }}>
+          <h4 style={{ textAlign: "center" }}>You are not logged in yet.</h4>
+          <p style={{ color: "white", marginBottom: "20px", textAlign: "center", marginTop: "1.5rem" }}>
             Want to sign up or log in?
           </p>
           <button className="primary-button" onClick={() => navigate("/signup")}>
             Yes, Sign Up
           </button>
           <button className="primary-button" onClick={() => navigate("/login")}
-          style={{ marginTop: "10px" }}>
-          Already have an account? Login
+            style={{ marginTop: "10px" }}>
+            Already have an account? Login
           </button>
           <button
             className="primary-button"
@@ -151,6 +152,9 @@ export default function Profile() {
       <div className="screen-header">
         <h2 className="header-title">Profile</h2>
         <div className="header-actions">
+          <button className="edit-btn" onClick={() => navigate("/course/profile/edit")}>
+            ✏️ Edit
+          </button>
           <button
             className="signout-btn"
             onClick={() => {
@@ -166,9 +170,6 @@ export default function Profile() {
             }}
           >
             🚪 Sign Out
-          </button>
-          <button className="edit-btn" onClick={() => navigate("/course/profile/edit")}>
-            ✏️ Edit
           </button>
         </div>
       </div>
@@ -195,8 +196,8 @@ export default function Profile() {
           <span className="stat-label">Friends</span>
         </div>
       </div>
-      <div className="purple-card" style={{ 
-        background: "var(--bg-white)", 
+      <div className="purple-card" style={{
+        background: "var(--bg-white)",
         border: "2px solid var(--primary-purple)",
         color: "var(--text-dark)",
       }}>
@@ -205,7 +206,7 @@ export default function Profile() {
         <p className="interests-title" style={{ color: "var(--text-dark)" }}>Interests</p>
         <div className="interests-list">
           {user.interests.map((interest) => (
-            <span key={interest} className="interest-tag" style={{ 
+            <span key={interest} className="interest-tag" style={{
               background: "var(--primary-purple)",
               color: "var(--bg-white)"
             }}>
@@ -266,7 +267,7 @@ export default function Profile() {
                   />
                   <div className="workshop-info">
                     <p className="workshop-name">{workshop.name}</p>
-                      <div className="workshop-host">
+                    <div className="workshop-host">
                       {workshop.hostedBy?.profilePicture ? (
                         <img
                           src={workshop.hostedBy.profilePicture}
@@ -318,20 +319,20 @@ export default function Profile() {
                     <div className="workshop-info">
                       <p className="workshop-name">{workshop.name}</p>
                       <div className="workshop-host">
-                          {workshop.hostedBy?.profilePicture ? (
-                            <img
-                              src={workshop.hostedBy.profilePicture}
-                              alt={workshop.hostedBy?.name}
-                              className="avatar"
-                              style={{ width: "20px", height: "20px" }}
-                            />
-                          ) : (
-                            <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
-                              {workshop.hostedBy?.name[0].toUpperCase()}
-                            </div>
-                          )}
-                          <span>{workshop.hostedBy?.name}</span>
-                        </div>
+                        {workshop.hostedBy?.profilePicture ? (
+                          <img
+                            src={workshop.hostedBy.profilePicture}
+                            alt={workshop.hostedBy?.name}
+                            className="avatar"
+                            style={{ width: "20px", height: "20px" }}
+                          />
+                        ) : (
+                          <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
+                            {workshop.hostedBy?.name[0].toUpperCase()}
+                          </div>
+                        )}
+                        <span>{workshop.hostedBy?.name}</span>
+                      </div>
                       <div style={{ fontSize: "12px", opacity: 0.85 }}>
                         <p style={{ margin: 0 }}>📅 {workshop.date}</p>
                         <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
