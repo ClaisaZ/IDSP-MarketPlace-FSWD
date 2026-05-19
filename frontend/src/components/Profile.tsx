@@ -352,7 +352,7 @@ export default function Profile() {
           </div>
 
           <button
-            className="btn-dark-purple"
+            className="primary-button"
             onClick={() => navigate("/host")}
             style={{ marginTop: "16px", width: "100%" }}
           >

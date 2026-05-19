@@ -5,10 +5,12 @@ function HomeSearchBar({
   value,
   onChange,
   onFilterClick,
+  onSearch,
 }: {
   value: string;
   onChange: (val: string) => void;
   onFilterClick: () => void;
+  onSearch: () => void;
 }) {
   return (
     <div
@@ -31,6 +33,9 @@ function HomeSearchBar({
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onSearch();
+        }}
         placeholder="Search..."
         style={{
           flex: 1,
