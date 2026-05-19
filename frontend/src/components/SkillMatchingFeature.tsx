@@ -1,6 +1,5 @@
 import { useState } from "react";
 import HomeSearchBar from "./HomeSearchBar";
-import NavBar from "./navbar";
 import EventCard from "./EventCard";
 
 const skillsList = [
