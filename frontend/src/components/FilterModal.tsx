@@ -61,21 +61,27 @@ export default function FilterModal({ onClose, onApply, initialValues }: Props) 
             <span>${maxPrice}</span>
           </div>
           <input
-            type="range"
-            min={0}
-            max={200}
-            value={minPrice}
-            onChange={(e) => setMinPrice(Number(e.target.value))}
-            className="filter-range"
-          />
-          <input
-            type="range"
-            min={0}
-            max={200}
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(Number(e.target.value))}
-            className="filter-range"
-          />
+          type="range"
+          min={0}
+          max={200}
+          value={minPrice}
+          onChange={(e) => {
+            const val = Number(e.target.value);
+            if (val < maxPrice) setMinPrice(val); // ← cant go above maxPrice
+          }}
+          className="filter-range"
+        />
+        <input
+          type="range"
+          min={0}
+          max={200}
+          value={maxPrice}
+          onChange={(e) => {
+            const val = Number(e.target.value);
+            if (val > minPrice) setMaxPrice(val); // ← cant go below minPrice
+          }}
+          className="filter-range"
+        />
         </div>
 
         <button className="primary-button" onClick={handleApply}>
