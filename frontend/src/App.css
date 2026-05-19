@@ -117,7 +117,7 @@ h3 {
 /* Screen Headers */
 .screen-header {
   width: 100%;
-  max-width: 800px;
+  max-width: 430px;
   padding: 20px 0;
   display: flex;
   flex-direction: column;
@@ -158,7 +158,7 @@ h3 {
   padding: 40px;
   color: var(--bg-white);
   width: 100%;
-  max-width: 800px;
+  max-width: 430px;
   box-sizing: border-box;
   flex-direction: column;
   gap: 20px;
@@ -286,7 +286,7 @@ h3 {
 /* PROFILE PAGE */
 .profile-page {
   width: 100%;
-  max-width: 800px;
+  max-width: 430px;
   display: flex;
   flex-direction: column;
   padding: 0 20px 100px 20px;
