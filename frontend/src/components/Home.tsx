@@ -5,6 +5,7 @@ import FeaturedEventsCarousel from "./FeaturedEventsCarousel";
 import HomeSearchBar from "./HomeSearchBar";
 import NavBar from "./navbar";
 import FilterModal from "./FilterModal";
+import SearchResults from "./SearchResults";
 
 type Workshop = {
   _id: string;
@@ -34,6 +35,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
   const [visibleCount, setVisibleCount] = useState(6);
+  const [showResults, setShowResults] = useState(false);
 
   const [filters, setFilters] = useState({
     location: "",
@@ -115,7 +117,17 @@ function Home() {
   useEffect(() => {
     setVisibleCount(6);
   }, [search, activeCategory, filters]);
-
+  if (showResults) {
+  return <SearchResults
+    events={filteredEvents}
+    filters={filters}
+    search={search}
+    onClearFilter={(key) => setFilters({...filters, [key]: key === "minPrice" ? 0 : key === "maxPrice" ? 200 : ""})}
+    onClearPrice={() => setFilters({...filters, minPrice: 0, maxPrice: 200})}
+    onClearSearch={() => setSearch("")} 
+    onBack={() => { setShowResults(false); setSearch(""); setFilters({ location: "", date: "", minPrice: 0, maxPrice: 200 }); }}
+  />;
+  }
   return (
     <div
       style={{
@@ -133,6 +145,7 @@ function Home() {
         value={search}
         onChange={setSearch}
         onFilterClick={() => setShowFilter(true)}
+        onSearch={() => { if (search) setShowResults(true); }}
       />
 
       <h3
@@ -197,7 +210,7 @@ function Home() {
       {showFilter && (
         <FilterModal
           onClose={() => setShowFilter(false)}
-          onApply={(f) => setFilters(f)}
+          onApply={(f) => { setFilters(f); setShowResults(true); }}
           initialValues={filters}
         />
       )}
