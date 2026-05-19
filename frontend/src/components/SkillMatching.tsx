@@ -73,7 +73,7 @@ function SkillMatching() {
     <div
       style={{
         width: "100%",
-        maxWidth: "390px",
+        maxWidth: "440px",
         margin: "0 auto",
         minHeight: "100vh",
         display: "flex",
@@ -132,7 +132,7 @@ function SkillMatching() {
                   key={skill}
                   onClick={() => toggleSkill(skill)}
                   style={{
-                    width: "80%",
+                    width: "90%",
                     padding: "10px",
                     borderRadius: "20px",
                     fontSize: "16px",
