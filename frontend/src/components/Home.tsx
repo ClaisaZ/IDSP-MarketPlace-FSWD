@@ -4,6 +4,7 @@ import EventCategoryChips from "./EventCategoryChips";
 import FeaturedEventsCarousel from "./FeaturedEventsCarousel";
 import HomeSearchBar from "./HomeSearchBar";
 import NavBar from "./navbar";
+import FilterModal from "./FilterModal";
 
 type Workshop = {
   _id: string;
@@ -31,36 +32,89 @@ function Home() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [events, setEvents] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showFilter, setShowFilter] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(6);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    fetch("http://localhost:3000/api/workshops", {
-      headers: token
-        ? { Authorization: `Bearer ${token}` }
-        : undefined,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setEvents(Array.isArray(data) ? data : []);
-      })
-      .catch(() => console.error("Failed to fetch workshops"))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const filteredEvents = events.filter((event) => {
-    const matchesSearch = (event.name || event.title || "")
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesCategory =
-      !activeCategory ||
-      event.category === activeCategory ||
-      event.categories?.includes(activeCategory);
-    return matchesSearch && matchesCategory;
+  const [filters, setFilters] = useState({
+    location: "",
+    date: "",
+    minPrice: 0,
+    maxPrice: 200,
   });
 
-  // Use first 5 events for the featured carousel
-  const featuredEvents = events.slice(0, 5);
+  const defaultCategories = ["Design", "Coding", "Marketing", "UI/UX"];
+
+  const token = localStorage.getItem("token");
+  const savedSkills = JSON.parse(localStorage.getItem("skills") || "[]");
+
+  const visibleCategories =
+    token && Array.isArray(savedSkills) && savedSkills.length > 0
+      ? savedSkills.slice(0, 4)
+      : defaultCategories;
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/workshops", {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    })
+      .then((res) => res.json())
+      .then((data) => setEvents(Array.isArray(data) ? data : []))
+      .catch(() => console.error("Failed to fetch workshops"))
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  const filteredEvents = events.filter((event) => {
+    const searchText = search.toLowerCase();
+
+    const matchesSearch =
+      (event.name || "").toLowerCase().includes(searchText) ||
+      (event.location || "").toLowerCase().includes(searchText) ||
+      (event.about || "").toLowerCase().includes(searchText) ||
+      (event.hostedBy?.name || "").toLowerCase().includes(searchText) ||
+      (event.categories || []).some((category) =>
+        category.toLowerCase().includes(searchText)
+      );
+
+    const matchesCategory =
+      !activeCategory ||
+      event.category?.toLowerCase() === activeCategory.toLowerCase() ||
+      event.categories?.some(
+        (category) => category.toLowerCase() === activeCategory.toLowerCase()
+      );
+
+    const matchesLocation =
+      !filters.location ||
+      (event.location || "")
+        .toLowerCase()
+        .includes(filters.location.toLowerCase());
+
+    const matchesDate =
+      !filters.date ||
+      (() => {
+        if (!event.date) return false;
+
+        const [year, month, day] = filters.date.split("-").map(Number);
+        const filterDate = new Date(year, month - 1, day);
+        const filterFormatted = filterDate.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        });
+
+        return event.date === filterFormatted || event.date === filters.date;
+      })();
+
+    const price = parseFloat((event.ticketPrice || "0").replace(/[^0-9.]/g, ""));
+    const matchesPrice = price >= filters.minPrice && price <= filters.maxPrice;
+
+    return matchesSearch && matchesCategory && matchesLocation && matchesDate && matchesPrice;
+  });
+
+  const visibleEvents = filteredEvents.slice(0, visibleCount);
+  const featuredEvents = events.slice(0, 10);
+
+  useEffect(() => {
+    setVisibleCount(6);
+  }, [search, activeCategory, filters]);
 
   return (
     <div
@@ -75,7 +129,12 @@ function Home() {
         gap: "16px",
       }}
     >
-      <HomeSearchBar value={search} onChange={setSearch} />
+      <HomeSearchBar
+        value={search}
+        onChange={setSearch}
+        onFilterClick={() => setShowFilter(true)}
+      />
+
       <h3
         style={{
           margin: "0",
@@ -89,26 +148,59 @@ function Home() {
         Featured Workshops
       </h3>
 
-      {/* Carousel only renders once we have real data */}
       {featuredEvents.length > 0 && <FeaturedEventsCarousel events={featuredEvents} />}
 
       <div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <h3>Event Categories</h3>
-          <span style={{ fontSize: "12px" }}>View All</span>
+          <h3>Recommended Categories</h3>
         </div>
-        <EventCategoryChips activeCategory={activeCategory} onSelectCategory={setActiveCategory} />
+
+        <EventCategoryChips
+          categories={visibleCategories}
+          activeCategory={activeCategory}
+          onSelectCategory={setActiveCategory}
+        />
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {loading ? (
           <p style={{ textAlign: "center", marginTop: "20px" }}>Loading events...</p>
         ) : filteredEvents.length === 0 ? (
-          <p style={{ textAlign: "center", marginTop: "20px" }}>No events match your search</p>
+          <p style={{ textAlign: "center", marginTop: "20px" }}>
+            No events match your search
+          </p>
         ) : (
-          filteredEvents.map((event, index) => <EventCard key={event._id || index} event={event} />)
+          <>
+            {visibleEvents.map((event, index) => (
+              <EventCard key={event._id || index} event={event} />
+            ))}
+
+            {visibleCount < filteredEvents.length && (
+              <button
+                className="primary-button"
+                onClick={() =>
+                  setVisibleCount((prev) => Math.min(prev + 6, filteredEvents.length))
+                }
+                style={{
+                  width: "70%",
+                  alignSelf: "center",
+                  marginTop: "10px",
+                }}
+              >
+                See More
+              </button>
+            )}
+          </>
         )}
       </div>
+
+      {showFilter && (
+        <FilterModal
+          onClose={() => setShowFilter(false)}
+          onApply={(f) => setFilters(f)}
+          initialValues={filters}
+        />
+      )}
 
       <NavBar />
     </div>

@@ -120,12 +120,16 @@ export default function Profile() {
     return (
       <div className="profile-page">
         <div className="purple-card">
-          <h4>You don't have an account yet</h4>
-          <p style={{ color: "white", marginBottom: "20px", textAlign: "center" }}>
-            Want to sign up?
+          <h4 style={{textAlign:"center"}}>You are not logged in yet.</h4>
+          <p style={{ color: "white", marginBottom: "20px", textAlign: "center", marginTop:"1.5rem" }}>
+            Want to sign up or log in?
           </p>
           <button className="primary-button" onClick={() => navigate("/signup")}>
             Yes, Sign Up
+          </button>
+          <button className="primary-button" onClick={() => navigate("/login")}
+          style={{ marginTop: "10px" }}>
+          Already have an account? Login
           </button>
           <button
             className="primary-button"
@@ -152,6 +156,7 @@ export default function Profile() {
             onClick={() => {
               localStorage.removeItem("token");
               localStorage.removeItem("user");
+              localStorage.removeItem("skills")
               setUser(null);
               setHostedWorkshops([]);
               setRegisteredWorkshops([]);
@@ -190,13 +195,20 @@ export default function Profile() {
           <span className="stat-label">Friends</span>
         </div>
       </div>
-      <div className="purple-card">
-        <h4>About me</h4>
-        <p className="about-bio">{user.bio}</p>
-        <p className="interests-title">Interests</p>
+      <div className="purple-card" style={{ 
+        background: "var(--bg-white)", 
+        border: "2px solid var(--primary-purple)",
+        color: "var(--text-dark)",
+      }}>
+        <h4 style={{ color: "var(--text-dark)" }}>About me</h4>
+        <p className="about-bio" style={{ color: "var(--text-dark)" }}>{user.bio}</p>
+        <p className="interests-title" style={{ color: "var(--text-dark)" }}>Interests</p>
         <div className="interests-list">
           {user.interests.map((interest) => (
-            <span key={interest} className="interest-tag">
+            <span key={interest} className="interest-tag" style={{ 
+              background: "var(--primary-purple)",
+              color: "var(--bg-white)"
+            }}>
               {interest}
             </span>
           ))}
@@ -254,13 +266,19 @@ export default function Profile() {
                   />
                   <div className="workshop-info">
                     <p className="workshop-name">{workshop.name}</p>
-                    <div className="workshop-host">
-                      <div
-                        className="avatar-placeholder"
-                        style={{ width: "20px", height: "20px", fontSize: "10px" }}
-                      >
-                        {workshop.hostedBy?.name[0].toUpperCase()}
-                      </div>
+                      <div className="workshop-host">
+                      {workshop.hostedBy?.profilePicture ? (
+                        <img
+                          src={workshop.hostedBy.profilePicture}
+                          alt={workshop.hostedBy?.name}
+                          className="avatar"
+                          style={{ width: "20px", height: "20px" }}
+                        />
+                      ) : (
+                        <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
+                          {workshop.hostedBy?.name[0].toUpperCase()}
+                        </div>
+                      )}
                       <span>{workshop.hostedBy?.name}</span>
                     </div>
                     <div style={{ fontSize: "12px", opacity: 0.85 }}>
@@ -300,14 +318,20 @@ export default function Profile() {
                     <div className="workshop-info">
                       <p className="workshop-name">{workshop.name}</p>
                       <div className="workshop-host">
-                        <div
-                          className="avatar-placeholder"
-                          style={{ width: "20px", height: "20px", fontSize: "10px" }}
-                        >
-                          {workshop.hostedBy?.name[0].toUpperCase()}
+                          {workshop.hostedBy?.profilePicture ? (
+                            <img
+                              src={workshop.hostedBy.profilePicture}
+                              alt={workshop.hostedBy?.name}
+                              className="avatar"
+                              style={{ width: "20px", height: "20px" }}
+                            />
+                          ) : (
+                            <div className="avatar-placeholder" style={{ width: "20px", height: "20px", fontSize: "10px" }}>
+                              {workshop.hostedBy?.name[0].toUpperCase()}
+                            </div>
+                          )}
+                          <span>{workshop.hostedBy?.name}</span>
                         </div>
-                        <span>{workshop.hostedBy?.name}</span>
-                      </div>
                       <div style={{ fontSize: "12px", opacity: 0.85 }}>
                         <p style={{ margin: 0 }}>📅 {workshop.date}</p>
                         <p style={{ margin: 0 }}>🕐 {workshop.time}</p>

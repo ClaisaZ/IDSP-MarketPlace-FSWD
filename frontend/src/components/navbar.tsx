@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse, faCalendar, faBullseye, faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faBullseye, faPlus, faUser } from "@fortawesome/free-solid-svg-icons";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -14,12 +14,6 @@ export default function NavBar() {
         onClick={() => navigate("/home")}>
         <FontAwesomeIcon icon={faHouse} />
         <span>Home</span>
-      </button>
-
-      <button className={`nav-item ${isActive("/Course") ? "nav-item--active" : ""}`}
-        onClick={() => navigate("/Course")}>
-        <FontAwesomeIcon icon={faCalendar} />
-        <span>Workshops</span>
       </button>
 
       <button
