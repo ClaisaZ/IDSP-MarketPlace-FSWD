@@ -198,7 +198,15 @@ export default function EditProfile() {
 
         <div className="input-group">
           <label className="input-label">Choose Interests</label>
-          <div className="interests-list">
+          <div
+          className="interests-list"
+          style={{
+            maxHeight: "300px",
+            overflowY: "auto",
+            scrollbarWidth: "thin",
+            scrollbarColor: "var(--primary-purple) transparent"
+          }}
+          >
             {INTERESTS.map((interest) => (
               <span
                 key={interest}

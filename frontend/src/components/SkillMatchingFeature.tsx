@@ -132,7 +132,7 @@ function SkillMatchingFeature() {
                 Match your skills to workshops made by professionals.
             </p>
 
-            <HomeSearchBar value={search} onChange={setSearch} />
+            <HomeSearchBar value={search} onChange={setSearch} onFilterClick={() => {}} onSearch={() => {}} />
 
             <div style={{ marginTop: "24px" }}>
                 <p
@@ -210,6 +210,8 @@ function SkillMatchingFeature() {
                         height: "260px",
                         overflowY: "auto",
                         paddingRight: "6px",
+                        padding: "10px",
+                        fontSize:"0.9rem"
                     }}
                 >
                     <div
@@ -239,6 +241,7 @@ function SkillMatchingFeature() {
                                             : "var(--text-dark)",
                                         fontWeight: "700",
                                         cursor: "pointer",
+                                        boxShadow: "0 3px 8px rgba(81, 23, 78, 0.3)"
                                     }}
                                 >
                                     {skill}
