@@ -197,7 +197,6 @@ const WorkshopDetails: React.FC = () => {
       <button className="floating-register-btn" onClick={() => navigate("/course/register")}>
         Register
       </button>
-      <NavBar/>
     </div>
   );
 };

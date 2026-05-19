@@ -146,7 +146,6 @@ const ReviewForm: React.FC = () => {
           {submitting ? "Submitting…" : "Submit Review"}
         </button>
       </form>
-      <NavBar />
     </div>
   );
 };

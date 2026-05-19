@@ -315,8 +315,6 @@ function SkillMatchingFeature() {
                     </p>
                 )}
             </div>
-
-            <NavBar />
         </div>
     );
 }

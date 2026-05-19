@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
-import { BrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Link, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import NavBar from "./components/navbar";
 import { Toaster } from "sonner";
 import "./App.css";
 import { CheckoutProvider } from "./context/CheckoutProvider";
@@ -51,6 +52,28 @@ function CourseLayout() {
       <Outlet />
     </CheckoutProvider>
   );
+}
+
+function AppContent() {
+  const location = useLocation();
+  
+  const hideNavOn = [
+    "/",
+    "/login",
+    "/signup",
+    "/skill-matching",
+    "/account-created",
+    "/course/register",
+    "/course/payments",
+    "/course/purchase",
+    "/course/receipt",
+    "/course/profile/edit",
+    "/workshop/review",
+  ];
+  
+  const showNav = !hideNavOn.includes(location.pathname);
+
+  return <>{showNav && <NavBar />}</>;
 }
 
 function App() {
@@ -123,6 +146,7 @@ function App() {
             </Route>
           </Routes>
         </Suspense>
+        <AppContent/>
       </BrowserRouter>
     </div>
   );

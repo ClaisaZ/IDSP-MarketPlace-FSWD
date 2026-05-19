@@ -215,7 +215,6 @@ function Home() {
         />
       )}
 
-      <NavBar />
     </div>
   );
 }

@@ -613,7 +613,6 @@ const WorkshopPreview: React.FC = () => {
           </div>
         </div>
       )}
-      <NavBar />
     </div>
   );
 };

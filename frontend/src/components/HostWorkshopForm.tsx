@@ -567,7 +567,6 @@ const HostWorkshopForm: React.FC = () => {
         </button>
       </form>
 
-      <NavBar />
     </div>
   );
 };

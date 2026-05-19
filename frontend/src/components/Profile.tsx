@@ -361,7 +361,6 @@ export default function Profile() {
           </button>
         </div>
       </div>
-      <NavBar />
     </div>
   );
 }
