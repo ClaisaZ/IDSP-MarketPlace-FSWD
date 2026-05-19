@@ -223,7 +223,7 @@ h3 {
   width: 100%;
   cursor: pointer;
   margin-top: 10px;
-  box-shadow: 0 4px 10px rgba(70, 20, 140, 0.3);
+  box-shadow: 0 4px 10px rgba(70, 20, 140, 0.5);
 }
 
 .primary-button:disabled {
@@ -521,6 +521,18 @@ h3 {
   color: var(--primary-purple);
 }
 
+.interests-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.interests-list::-webkit-scrollbar-thumb {
+  background: var(--primary-purple);
+  border-radius: 10px;
+}
+
+.interests-list::-webkit-scrollbar-track {
+  background: transparent;
+}
 /* WORKSHOP DETAILS SPECIFIC */
 
 .hero-image {
