@@ -100,7 +100,7 @@ function SkillMatchingFeature() {
         <div
             style={{
                 width: "100%",
-                maxWidth: "390px",
+                maxWidth: "440px",
                 margin: "0 auto",
                 minHeight: "100vh",
                 display: "flex",
