@@ -2,7 +2,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import NavBar from "./navbar";
 
 type User = {
   name: string;
@@ -135,7 +134,7 @@ export default function Profile() {
           <button
             className="primary-button"
             style={{ marginTop: "10px", background: "var(--dark-purple)" }}
-            onClick={() => navigate("/course")}
+            onClick={() => navigate("/home")}
           >
             No, Go Back
           </button>
@@ -254,6 +253,11 @@ export default function Profile() {
 
           <div className="workshop-list">
             {activeTab === "hosting" &&
+            hostedWorkshops.length === 0 ? (
+              <p style={{ color: "var(--text-gray)", textAlign: "center", marginTop: "20px",marginBottom:"30px" }}>
+                No current hosted workshops
+              </p>
+              ) :
               hostedWorkshops.map((workshop) => (
                 <div
                   key={workshop._id}
@@ -301,7 +305,7 @@ export default function Profile() {
 
             {activeTab === "registered" &&
               (registeredWorkshops.length === 0 ? (
-                <p style={{ color: "var(--text-gray)", textAlign: "center", marginTop: "20px" }}>
+                <p style={{ color: "var(--text-gray)", textAlign: "center", marginTop: "20px", marginBottom:"30px" }}>
                   No registered workshops yet
                 </p>
               ) : (
@@ -338,15 +342,6 @@ export default function Profile() {
                         <p style={{ margin: 0 }}>🕐 {workshop.time}</p>
                       </div>
                     </div>
-                    <button
-                      className="delete-workshop-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(workshop._id);
-                      }}
-                    >
-                      🗑️
-                    </button>
                   </div>
                 ))
               ))}
@@ -361,7 +356,6 @@ export default function Profile() {
           </button>
         </div>
       </div>
-      <NavBar />
     </div>
   );
 }

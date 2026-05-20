@@ -3,7 +3,6 @@ import EventCard from "./EventCard";
 import EventCategoryChips from "./EventCategoryChips";
 import FeaturedEventsCarousel from "./FeaturedEventsCarousel";
 import HomeSearchBar from "./HomeSearchBar";
-import NavBar from "./navbar";
 import FilterModal from "./FilterModal";
 import SearchResults from "./SearchResults";
 
@@ -215,7 +214,6 @@ function Home() {
         />
       )}
 
-      <NavBar />
     </div>
   );
 }

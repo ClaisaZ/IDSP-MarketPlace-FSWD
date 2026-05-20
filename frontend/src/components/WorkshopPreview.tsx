@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import NavBar from './navbar';
 
 type Review = {
   name: string;
@@ -184,6 +183,7 @@ const WorkshopPreview: React.FC = () => {
 
   const badge = getStatusBadge();
   const isClosed = capacityPercent >= 1;
+  const isAttending = attendees.some((a) => a._id === currentUserId);
 
   // Show "start – end" if both dates exist, otherwise fall back to the old single date field (or "—" if nothing)
   const applicationPeriodDisplay = (() => {
@@ -552,8 +552,13 @@ const WorkshopPreview: React.FC = () => {
           </button>
         ) : (
           <>
-            <button className="btn-dark-purple" onClick={handleAttend}>
-              Attend Workshop
+            <button
+              className="btn-dark-purple"
+              onClick={handleAttend}
+              disabled={isAttending}
+              style={isAttending ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+            >
+              {isAttending ? 'Already Attending' : 'Attend Workshop'}
             </button>
             <button
               className="btn-dark-purple"
@@ -613,7 +618,6 @@ const WorkshopPreview: React.FC = () => {
           </div>
         </div>
       )}
-      <NavBar />
     </div>
   );
 };
