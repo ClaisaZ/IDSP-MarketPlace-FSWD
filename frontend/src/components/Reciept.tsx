@@ -3,7 +3,7 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCheckout } from '../context/useCheckout';
 
-// Reusable info box — eliminates the repeated grid cell pattern
+// Reusable info box
 type InfoBoxProps = {
   label: string;
   value: string | number;
@@ -41,34 +41,55 @@ const Receipt: React.FC = () => {
 
   const receiptData = location.state;
 
-  // Redirects to start if receipt data is missing
   if (!receiptData) {
     return <Navigate to="/home" replace />;
   }
 
-  const { refNum, receiptQR } = receiptData;
+  const { refNum, receiptQR, isViewOnly } = receiptData;
 
-  const email = state.registration?.email || 'myemail@bcit.ca';
-  const phone = state.registration?.phone || '+1 577 656 6789';
-  const ticketAmount = state.registration?.ticketAmount || 1;
-  const ticketPrice = state.registration?.ticketPrice || 0;
+  // Step 1: Try to grab the saved contact info from the database.
+  // Step 2: If empty, grab the contact info they just typed into the checkout form.
+  // Step 3: If both are completely empty, display 'Not Provided' on the receipt.
+  const email = receiptData.email || state.registration?.email || 'Not Provided';
+  const phone = receiptData.phone || state.registration?.phone || 'Not Provided';
+
+  // Grabing raw price/amount
+  const rawAmount = receiptData.ticketAmount || state.registration?.ticketAmount || 1;
+  const rawPrice = receiptData.ticketPrice || state.registration?.ticketPrice || 0;
+  const ticketAmount = Number(String(rawAmount).replace(/[^0-9.]/g, '')) || 1;
+  const ticketPrice = Number(String(rawPrice).replace(/[^0-9.]/g, '')) || 0;
+
+  // calculation
   const totalPayment = ticketAmount * ticketPrice;
+  const workshopName = receiptData.workshopName || 'Workshop Session';
 
-  // If user came from a workshop, we are going to register them as an attendee after payment
-  // workshopId is passed through the entire checkout flow from WorkshopPreview
   const handleComplete = async () => {
+    // If the user is just looking at a past receipt from their profile --> don't try to register them in the database again. Just send them back to the profile.
+    if (isViewOnly) {
+      navigate('/course/profile');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
       if (receiptData.workshopId) {
         await fetch(`http://localhost:3000/api/workshops/${receiptData.workshopId}/attend`, {
           method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            phone: phone,
+            email: email,
+          }),
         });
       }
     } catch {
       console.error('Failed to register attendance');
       toast.error('Failed to register attendance. Please try again.');
     }
+
     if (receiptData.workshopId) {
       navigate('/workshop/preview', { state: { _id: receiptData.workshopId } });
     } else {
@@ -82,18 +103,19 @@ const Receipt: React.FC = () => {
         <h2 className="header-title">
           <button
             className="back-button"
-            onClick={() => navigate('/course/purchase')}
+            onClick={() => navigate(isViewOnly ? '/course/profile' : '/course/purchase')}
             type="button"
           >
             ←
           </button>
           Receipt
         </h2>
-        <p className="header-subtitle">Your Registration has been Confirmed</p>
+        <p className="header-subtitle">
+          {isViewOnly ? workshopName : 'Your Registration has been Confirmed'}
+        </p>
       </div>
 
       <div className="purple-card" style={{ position: 'relative', marginTop: '40px' }}>
-        {/* Floating Checkmark */}
         <div
           style={{
             position: 'absolute',
@@ -137,10 +159,9 @@ const Receipt: React.FC = () => {
             fontWeight: '600',
           }}
         >
-          Payment Success!
+          {isViewOnly ? 'Registration Entry' : 'Payment Success!'}
         </h3>
 
-        {/* QR Code */}
         <div
           style={{
             backgroundColor: 'white',
@@ -164,7 +185,6 @@ const Receipt: React.FC = () => {
           </p>
         </div>
 
-        {/* 2x2 Grid */}
         <div
           style={{
             display: 'grid',
@@ -179,7 +199,6 @@ const Receipt: React.FC = () => {
           <InfoBox label="Phone Number" value={phone} fontSize="12px" />
         </div>
 
-        {/* Total */}
         <div
           style={{
             display: 'flex',
@@ -204,7 +223,7 @@ const Receipt: React.FC = () => {
         </div>
 
         <button className="primary-button" onClick={handleComplete}>
-          Complete
+          {isViewOnly ? 'Back to Profile' : 'Complete'}
         </button>
       </div>
     </>
