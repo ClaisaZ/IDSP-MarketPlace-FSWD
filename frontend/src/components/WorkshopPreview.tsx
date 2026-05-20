@@ -156,6 +156,7 @@ const WorkshopPreview: React.FC = () => {
   const totalSeats = parseInt(workshopData.seats) || 0;
   const capacityPercent = totalSeats > 0 ? attendees.length / totalSeats : 0;
 
+  // Status of workshops
   const getStatusBadge = () => {
     if (capacityPercent >= 1)
       return { label: 'Closed', color: '#fee2e2', borderColor: '#ff8b8b', textColor: '#ff8b8b' };

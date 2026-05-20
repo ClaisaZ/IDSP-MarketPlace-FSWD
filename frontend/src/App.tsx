@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import {
   BrowserRouter,
-  Link,
   Outlet,
   Route,
   Routes,
@@ -23,7 +22,6 @@ const PaymentSelection = lazy(() => import('./components/PaymentSelection'));
 const PaymentDetails = lazy(() => import('./components/PaymentDetails'));
 const Receipt = lazy(() => import('./components/Reciept'));
 const EditProfile = lazy(() => import('./components/EditProfile'));
-const WorkshopDetails = lazy(() => import('./components/WorkshopDetails'));
 const Login = lazy(() => import('./components/login'));
 const Signup = lazy(() => import('./components/Signup'));
 const SkillMatching = lazy(() => import('./components/SkillMatching'));
