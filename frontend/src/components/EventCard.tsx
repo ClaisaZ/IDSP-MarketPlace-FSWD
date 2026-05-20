@@ -99,7 +99,7 @@ function EventCard({ event }: { event: Event }) {
             fontWeight: "700",
             overflow: "hidden",
             display: "-webkit-box",
-            WebkitLineClamp: 2,
+            WebkitLineClamp: 1,
             WebkitBoxOrient: "vertical",
           }}
         >
