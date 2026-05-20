@@ -62,9 +62,16 @@ function SkillMatchingFeature() {
         );
     }
 
-    const filteredSkills = skillsList.filter((skill) =>
-        skill.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredSkills = skillsList
+        .filter((skill) => skill.toLowerCase().includes(search.toLowerCase()))
+        .sort((a, b) => {
+            const aSelected = selectedSkills.includes(a);
+            const bSelected = selectedSkills.includes(b);
+
+            if (aSelected && !bSelected) return -1;
+            if (!aSelected && bSelected) return 1;
+            return 0;
+        });
 
     async function handleSkillMatch() {
         if (selectedSkills.length === 0)
@@ -131,7 +138,7 @@ function SkillMatchingFeature() {
                 Match your skills to workshops made by professionals.
             </p>
 
-            <HomeSearchBar value={search} onChange={setSearch} onFilterClick={() => {}} onSearch={() => {}} />
+            <HomeSearchBar value={search} onChange={setSearch} onFilterClick={() => { }} onSearch={() => { }} />
 
             <div style={{ marginTop: "24px" }}>
                 <p
@@ -210,7 +217,7 @@ function SkillMatchingFeature() {
                         overflowY: "auto",
                         paddingRight: "6px",
                         padding: "10px",
-                        fontSize:"0.9rem"
+                        fontSize: "0.9rem"
                     }}
                 >
                     <div
