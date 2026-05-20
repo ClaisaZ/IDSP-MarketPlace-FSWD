@@ -42,6 +42,8 @@ export default function Profile() {
   const [registeredWorkshops, setRegisteredWorkshops] = useState<Workshop[]>([]);
   const navigate = useNavigate();
 
+  // Fetches the logged-in user's profile and the workshops they are hosting.
+  // Redirects to a logged-out state if the token is missing or invalid.
   useEffect(() => {
     const fetchAll = async () => {
       const token = localStorage.getItem('token');
@@ -84,6 +86,9 @@ export default function Profile() {
     fetchAll();
   }, []);
 
+  // Fetches registered workshops independently.
+  // We do not combine this with the main profile fetch to avoid blocking the initial UI render.
+  // This allows the user's profile to load instantly, even if this specific query is slow.
   useEffect(() => {
     const fetchRegistered = async () => {
       try {
@@ -100,6 +105,7 @@ export default function Profile() {
         setRegisteredWorkshops(res.data);
       } catch (error) {
         console.error('Failed to fetch registered workshops:', error);
+        toast.error("Failed to fetch registred workshops. Please try again!")
       }
     };
     fetchRegistered();

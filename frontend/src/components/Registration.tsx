@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useCheckout } from '../context/useCheckout';
 import { type RegistrationFormData, registrationSchema } from '../schemas/registrationSchema';
 
-// Reusable field component — eliminates the repeated input-group pattern
+// Reusable field component
 type FormFieldProps = {
   label: string;
   error?: string;
