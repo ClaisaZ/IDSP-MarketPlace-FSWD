@@ -1,5 +1,12 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Link, Outlet, Route, Routes, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  Navigate,
+} from 'react-router-dom';
 import NavBar from './components/navbar';
 import { Toaster } from 'sonner';
 import './App.css';
@@ -15,7 +22,6 @@ const PaymentSelection = lazy(() => import('./components/PaymentSelection'));
 const PaymentDetails = lazy(() => import('./components/PaymentDetails'));
 const Receipt = lazy(() => import('./components/Reciept'));
 const EditProfile = lazy(() => import('./components/EditProfile'));
-const WorkshopDetails = lazy(() => import('./components/WorkshopDetails'));
 const Login = lazy(() => import('./components/login'));
 const Signup = lazy(() => import('./components/Signup'));
 const SkillMatching = lazy(() => import('./components/SkillMatching'));
@@ -136,7 +142,7 @@ function App() {
             <Route path="/skill-matching-feature" element={<SkillMatchingFeature />} />
 
             <Route path="/course" element={<CourseLayout />}>
-              {/* <Route index element={<WorkshopDetails />} /> */}
+              <Route index element={<Navigate to="/home" replace />} />{' '}
               <Route path="register" element={<Registration />} />
               <Route path="payments" element={<PaymentSelection />} />
               <Route path="purchase" element={<PaymentDetails />} />
