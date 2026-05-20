@@ -113,9 +113,6 @@ function Home() {
   const visibleEvents = filteredEvents.slice(0, visibleCount);
   const featuredEvents = events.slice(0, 10);
 
-  useEffect(() => {
-    setVisibleCount(6);
-  }, [search, activeCategory, filters]);
   if (showResults) {
   return <SearchResults
     events={filteredEvents}
