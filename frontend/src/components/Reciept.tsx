@@ -51,8 +51,8 @@ const Receipt: React.FC = () => {
   const email = state.registration?.email || 'myemail@bcit.ca';
   const phone = state.registration?.phone || '+1 577 656 6789';
   const ticketAmount = state.registration?.ticketAmount || 1;
-  // TODO: totalPayment is hardcoded at $24/ticket -->  we will update when dynamic pricing is added
-  const totalPayment = ticketAmount * 24;
+  const ticketPrice = state.registration?.ticketPrice || 0;
+  const totalPayment = ticketAmount * ticketPrice;
 
   // If user came from a workshop, we are going to register them as an attendee after payment
   // workshopId is passed through the entire checkout flow from WorkshopPreview

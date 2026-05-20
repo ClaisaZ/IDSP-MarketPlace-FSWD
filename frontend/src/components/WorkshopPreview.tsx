@@ -214,7 +214,12 @@ const WorkshopPreview: React.FC = () => {
   };
 
   const handleAttend = () => {
-    navigate('/course/register', { state: { workshopId: workshopData._id } });
+    navigate('/course/register', {
+      state: {
+        workshopId: workshopData._id,
+        ticketPrice: parseFloat(workshopData.ticketPrice?.replace(/[^0-9.]/g, '')) || 0,
+      },
+    });
   };
 
   return (
