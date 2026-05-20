@@ -6,6 +6,7 @@ export type Registration = {
   age: number;
   phone: string;
   ticketAmount: number;
+  ticketPrice: number;
 };
 
 export type PaymentData = {

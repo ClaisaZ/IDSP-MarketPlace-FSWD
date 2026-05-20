@@ -1,5 +1,13 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Link, Outlet, Route, Routes, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Link,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  Navigate,
+} from 'react-router-dom';
 import NavBar from './components/navbar';
 import { Toaster } from 'sonner';
 import './App.css';
@@ -136,7 +144,7 @@ function App() {
             <Route path="/skill-matching-feature" element={<SkillMatchingFeature />} />
 
             <Route path="/course" element={<CourseLayout />}>
-              {/* <Route index element={<WorkshopDetails />} /> */}
+              <Route index element={<Navigate to="/home" replace />} />{' '}
               <Route path="register" element={<Registration />} />
               <Route path="payments" element={<PaymentSelection />} />
               <Route path="purchase" element={<PaymentDetails />} />
