@@ -134,7 +134,7 @@ export default function Profile() {
           <button
             className="primary-button"
             style={{ marginTop: "10px", background: "var(--dark-purple)" }}
-            onClick={() => navigate("/course")}
+            onClick={() => navigate("/home")}
           >
             No, Go Back
           </button>
