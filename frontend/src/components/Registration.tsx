@@ -21,6 +21,7 @@ const FormField: React.FC<FormFieldProps> = ({ label, error, children }) => (
 );
 
 const Registration: React.FC = () => {
+  // triggers state update (messenger that delivers x)
   const { dispatch } = useCheckout();
   const navigate = useNavigate();
 
