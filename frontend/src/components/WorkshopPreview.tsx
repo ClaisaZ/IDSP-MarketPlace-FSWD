@@ -218,7 +218,7 @@ const WorkshopPreview: React.FC = () => {
     navigate('/course/register', {
       state: {
         workshopId: workshopData._id,
-        ticketPrice: parseFloat(workshopData.ticketPrice?.replace(/[^0-9.]/g, '')) || 0,
+        ticketPrice: parseFloat(workshopData.ticketPrice?.replace(/[^0-9.]/g, '')) || 0, // removes all expressions (commas, etc) other than 0 to 9
       },
     });
   };
