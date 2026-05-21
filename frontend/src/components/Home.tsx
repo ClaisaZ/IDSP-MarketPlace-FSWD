@@ -5,6 +5,7 @@ import FeaturedEventsCarousel from "./FeaturedEventsCarousel";
 import HomeSearchBar from "./HomeSearchBar";
 import FilterModal from "./FilterModal";
 import SearchResults from "./SearchResults";
+// 1
 
 type Workshop = {
   _id: string;
@@ -27,6 +28,7 @@ type Workshop = {
   reviews?: { name: string; comment: string; rating: number }[];
 };
 
+// 2
 function Home() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -47,12 +49,13 @@ function Home() {
 
   const token = localStorage.getItem("token");
   const savedSkills = JSON.parse(localStorage.getItem("skills") || "[]");
-
+// 5
   const visibleCategories =
     token && Array.isArray(savedSkills) && savedSkills.length > 0
       ? savedSkills.slice(0, 4)
       : defaultCategories;
 
+// 3
   useEffect(() => {
     fetch("http://localhost:3000/api/workshops", {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -63,7 +66,8 @@ function Home() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  const filteredEvents = events.filter((event) => {
+  // 4
+  const filteredEvents = events.filter((event) => { 
     const searchText = search.toLowerCase();
 
     const matchesSearch =
@@ -110,7 +114,8 @@ function Home() {
     return matchesSearch && matchesCategory && matchesLocation && matchesDate && matchesPrice;
   });
 
-  const visibleEvents = filteredEvents.slice(0, visibleCount);
+  // 6
+  const visibleEvents = filteredEvents.slice(0, visibleCount); 
   const featuredEvents = events.slice(0, 10);
 
   useEffect(() => {
